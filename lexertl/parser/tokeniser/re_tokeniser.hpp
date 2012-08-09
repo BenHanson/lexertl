@@ -40,8 +40,6 @@ public:
 
         do
         {
-            skipped_ = !eos_ && ch_ == '"';
-
             // string begin/end
             while (!eos_ && ch_ == '"')
             {
@@ -50,7 +48,7 @@ public:
             }
 
             // (?# ...)
-            skipped_ |= comment (eos_, ch_, state_);
+            skipped_ = comment (eos_, ch_, state_);
             // skip_ws set
             skipped_ |= skip (eos_, ch_, state_);
         } while (skipped_);
@@ -258,13 +256,24 @@ private:
             !state_.eos () && *state_._curr == '?' &&
             state_._curr + 1 < state_._end && *(state_._curr + 1) == '#')
         {
+            std::size_t paren_count_ = 1;
+
             state_.increment ();
             state_.increment ();
 
             do
             {
                 eos_ = state_.next (ch_);
-            } while (!eos_ && ch_ != ')');
+
+                if (ch_ == '(')
+                {
+                    ++paren_count_;
+                }
+                else if (ch_ == ')')
+                {
+                    --paren_count_;
+                }
+            } while (!eos_ && !(ch_ == ')' && paren_count_ == 0));
 
             if (eos_)
             {
@@ -291,13 +300,16 @@ private:
 
         if (!eos_ && (state_._flags & skip_ws) && !state_._in_string)
         {
-            bool c_comment_ = ch_ == '/' && !state_.eos () &&
-                *state_._curr == '*';
-            bool skip_ws_ = !c_comment_ && (ch_ == ' ' || ch_ == '\t' ||
-                ch_ == '\n' || ch_ == '\r' || ch_ == '\f' || ch_ == '\v');
+            bool c_comment_ = false;
+            bool skip_ws_ = false;
 
             do
             {
+                c_comment_ = ch_ == '/' && !state_.eos () &&
+                    *state_._curr == '*';
+                skip_ws_ = !c_comment_ && (ch_ == ' ' || ch_ == '\t' ||
+                    ch_ == '\n' || ch_ == '\r' || ch_ == '\f' || ch_ == '\v');
+
                 if (c_comment_)
                 {
                     state_.increment ();
@@ -323,21 +335,11 @@ private:
                         eos_ = state_.next (ch_);
                     }
 
-                    c_comment_ = !eos_ && ch_ == '/' && !state_.eos () &&
-                        *state_._curr == '*';
-                    skip_ws_ = !c_comment_ && !eos_ && (ch_ == ' ' ||
-                        ch_ == '\t' || ch_ == '\n' || ch_ == '\r' ||
-                        ch_ == '\f' || ch_ == '\v');
                     skipped_ = true;
                 }
                 else if (skip_ws_)
                 {
                     eos_ = state_.next (ch_);
-                    c_comment_ = !eos_ && ch_ == '/' && !state_.eos () &&
-                        *state_._curr == '*';
-                    skip_ws_ = !c_comment_ && !eos_ && (ch_ == ' ' ||
-                        ch_ == '\t' || ch_ == '\n' || ch_ == '\r' ||
-                        ch_ == '\f' || ch_ == '\v');
                     skipped_ = true;
                 }
             } while (c_comment_ || skip_ws_);
