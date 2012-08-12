@@ -6,7 +6,6 @@
 #ifndef LEXERTL_RE_TOKENISER_HPP
 #define LEXERTL_RE_TOKENISER_HPP
 
-// memcpy()
 #include <cstring>
 #include "re_token.hpp"
 #include "../../runtime_error.hpp"
@@ -121,6 +120,7 @@ public:
                             state_._flags = state_._flags_stack.top ();
                             state_._flags_stack.pop ();
                         }
+
                         break;
                     case '?':
                         if (!state_.eos () && *state_._curr == '?')
