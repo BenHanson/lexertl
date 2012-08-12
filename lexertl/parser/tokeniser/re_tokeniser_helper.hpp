@@ -562,7 +562,7 @@ private:
         if (!*lower_ && !state_.eos () && *state_._curr == ']')
         {
             std::string str_ = sizeof(input_char_type) == 1 ?
-                make_lower (state_._locale) :
+                create_lower (state_._locale) :
                 std::string ("[\\p{Ll}]");
 
             state_.increment ();
@@ -578,7 +578,7 @@ private:
         }
     }
 
-    static std::string make_lower (std::locale &locale_)
+    static std::string create_lower (std::locale &locale_)
     {
         std::string str_ (1, '[');
 
@@ -740,7 +740,7 @@ private:
         if (!*upper_ && !state_.eos () && *state_._curr == ']')
         {
             std::string str_ = sizeof(input_char_type) == 1 ?
-                make_upper (state_._locale) :
+                create_upper (state_._locale) :
                 std::string ("[\\p{Lu}]");
 
             state_.increment ();
@@ -756,7 +756,7 @@ private:
         }
     }
 
-    static std::string make_upper (std::locale &locale_)
+    static std::string create_upper (std::locale &locale_)
     {
         std::string str_ (1, '[');
 
@@ -812,6 +812,9 @@ private:
     static void insert_charset (const char *str_, state_type &state_,
         string_token &token_, const bool negate_)
     {
+        // Some systems have strlen in namespace std.
+        using namespace std;
+
         char_state temp_state_ (str_ + 1, str_ + strlen (str_),
             state_._id, state_._flags, state_._locale, false);
         string_token temp_token_;
@@ -1227,7 +1230,6 @@ private:
                 }
 
                 break;
-
             default:
             {
                 std::ostringstream ss_;
