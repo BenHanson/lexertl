@@ -205,13 +205,15 @@ private:
             }
             else
             {
-                const std::size_t start_ = _buffer.size () - lowest_;
-                const std::size_t len_ = _buffer.size () - start_;
+                // Some systems have memcpy in namespace std
+                using namespace std;
+                const size_t start_ = _buffer.size () - lowest_;
+                const size_t len_ = _buffer.size () - start_;
 
-                ::memcpy (&_buffer.front (), &_buffer[lowest_], start_ *
+                memcpy (&_buffer.front (), &_buffer[lowest_], start_ *
                     sizeof (char_type));
                 _stream.read (&_buffer.front () + start_, len_);
-                read_ = static_cast<std::size_t>(_stream.gcount ());
+                read_ = static_cast<size_t>(_stream.gcount ());
                 subtract (lowest_);
 
                 if (read_)
