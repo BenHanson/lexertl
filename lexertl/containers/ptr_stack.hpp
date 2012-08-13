@@ -18,7 +18,8 @@ class ptr_stack
 public:
     typedef std::stack<ptr_type *> stack;
 
-    ptr_stack ()
+    ptr_stack () :
+        _stack ()
     {
     }
 

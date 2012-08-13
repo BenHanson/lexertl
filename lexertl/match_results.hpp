@@ -105,12 +105,14 @@ struct recursive_match_results : public match_results<iter, flags, id_type>
     std::stack<id_type_pair> stack;
 
     recursive_match_results () :
-        match_results<iter, flags, id_type> ()
+        match_results<iter, flags, id_type> (),
+        stack ()
     {
     }
 
     recursive_match_results (const iter &start_, const iter &end_) :
-        match_results<iter, flags, id_type> (start_, end_)
+        match_results<iter, flags, id_type> (start_, end_),
+        stack ()
     {
     }
 

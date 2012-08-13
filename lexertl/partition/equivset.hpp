@@ -29,8 +29,10 @@ struct basic_equivset
     node_vector _followpos;
 
     basic_equivset () :
+        _index_vector (),
         _id (0),
-        _greedy (true)
+        _greedy (true),
+        _followpos ()
     {
     }
 

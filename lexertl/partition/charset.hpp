@@ -26,12 +26,15 @@ struct basic_charset
     token _token;
     index_set _index_set;
 
-    basic_charset ()
+    basic_charset () :
+        _token (),
+        _index_set ()
     {
     }
 
     basic_charset (const token &token_, const std::size_t index_) :
-        _token (token_)
+        _token (token_),
+        _index_set ()
     {
         _index_set.insert (index_);
     }

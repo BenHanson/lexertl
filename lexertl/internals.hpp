@@ -27,7 +27,10 @@ struct basic_internals
 
     basic_internals () :
         _eoi (0),
-        _features (0)
+        _lookup (),
+        _dfa_alphabet (),
+        _features (0),
+        _dfa ()
     {
     }
 

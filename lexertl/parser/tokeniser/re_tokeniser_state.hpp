@@ -42,6 +42,7 @@ struct basic_re_tokeniser_state
         _curr (start_),
         _id (id_),
         _flags (flags_),
+        _flags_stack (),
         _locale (locale_),
         _macro (macro_),
         _paren_count (0),
@@ -50,9 +51,19 @@ struct basic_re_tokeniser_state
     {
     }
 
+    basic_re_tokeniser_state (const basic_re_tokeniser_state &rhs_)
+    {
+        assign (rhs_);
+    }
+
     // prevent VC++ 7.1 warning:
     const basic_re_tokeniser_state &operator =
         (const basic_re_tokeniser_state &rhs_)
+    {
+        assign (rhs_);
+    }
+
+    void assign (const basic_re_tokeniser_state &rhs_)
     {
         _start = rhs_._start;
         _end = rhs_._end;

@@ -28,16 +28,19 @@ struct basic_string_token
 
     range_vector _ranges;
 
-    basic_string_token ()
+    basic_string_token () :
+        _ranges ()
     {
     }
 
-    basic_string_token (char_type ch_)
+    basic_string_token (char_type ch_) :
+        _ranges ()
     {
         insert (range (ch_, ch_));
     }
 
-    basic_string_token (char_type first_, char_type second_)
+    basic_string_token (char_type first_, char_type second_) :
+        _ranges ()
     {
         insert (range (first_, second_));
     }

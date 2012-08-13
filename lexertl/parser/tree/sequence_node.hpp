@@ -114,6 +114,11 @@ private:
 
         perform_op_stack_.pop ();
     }
+
+    // No copy construction.
+    basic_sequence_node (const basic_sequence_node &);
+    // No assignment.
+    const basic_sequence_node &operator = (const basic_sequence_node &);
 };
 }
 }

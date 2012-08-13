@@ -30,7 +30,8 @@ public:
         basic_node<id_type> (token_ == node::null_token ()),
         _token (token_),
         _set_greedy (!greedy_),
-        _greedy (greedy_)
+        _greedy (greedy_),
+        _followpos ()
     {
         if (!node::_nullable)
         {

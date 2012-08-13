@@ -30,19 +30,23 @@ struct basic_re_token
     static const char *_precedence_strings[END + 1];
 
     basic_re_token (const token_type type_ = BEGIN) :
-        _type (type_)
+        _type (type_),
+        _extra (),
+        _str ()
     {
     }
 
     void clear ()
     {
         _type = BEGIN;
+        _extra.clear ();
         _str.clear ();
     }
 
     basic_re_token &operator = (const basic_re_token &rhs_)
     {
         _type = rhs_._type;
+        _extra = rhs_._extra;
         _str = rhs_._str;
         return *this;
     }

@@ -33,7 +33,8 @@ public:
         _user_id (user_id_),
         _next_dfa (next_dfa_),
         _push_dfa (push_dfa_),
-        _pop_dfa (pop_dfa_)
+        _pop_dfa (pop_dfa_),
+        _followpos ()
     {
         basic_node<id_type>::_firstpos.push_back (this);
         basic_node<id_type>::_lastpos.push_back (this);

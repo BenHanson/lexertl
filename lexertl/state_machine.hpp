@@ -31,6 +31,12 @@ public:
     compile_assert<(static_cast<id_type>(~0) > 0)>
         _valid_id_type;
 
+    basic_state_machine () :
+        _valid_id_type (),
+        _internals ()
+    {
+    } 
+
     void clear ()
     {
         _internals.clear ();
@@ -224,7 +230,8 @@ struct basic_char_state_machine
             _user_id (traits::npos ()),
             _push_dfa (traits::npos ()),
             _next_dfa (0),
-            _eol_index (traits::npos ())
+            _eol_index (traits::npos ()),
+            _transitions ()
         {
         }
 
@@ -278,6 +285,12 @@ struct basic_char_state_machine
     // failed to define an unsigned id type.
     compile_assert<(static_cast<id_type>(~0) > 0)>
         _valid_id_type;
+
+    basic_char_state_machine () :
+        _sm_deque (),
+        _valid_id_type ()
+    {
+    }
 
     void append (const string_token_vector &token_vector_,
         const internals &internals_, const id_type dfa_index_)

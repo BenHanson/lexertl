@@ -46,7 +46,20 @@ public:
         _valid_id_type;
 
     basic_rules (const std::size_t flags_ = dot_not_newline) :
+        _valid_id_type (),
+        _statemap (),
+        _macrodeque (),
+        _macroset (),
+        _regexes (),
+        _features (),
+        _ids (),
+        _user_ids (),
+        _next_dfas (),
+        _pushes (),
+        _pops (),
         _flags (flags_),
+        _locale (),
+        _lexer_state_names (),
         _eoi (0)
     {
         add_state (initial ());
@@ -66,6 +79,7 @@ public:
         _pops.clear ();
         _flags = dot_not_newline;
         _locale = std::locale ();
+        _lexer_state_names.clear ();
         _eoi = 0;
         add_state (initial ());
     }

@@ -18,7 +18,8 @@ class ptr_list
 public:
     typedef std::list<ptr_type *> list;
 
-    ptr_list ()
+    ptr_list () :
+        _list ()
     {
     }
 

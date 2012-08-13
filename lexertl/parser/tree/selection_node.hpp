@@ -94,6 +94,11 @@ private:
 
         perform_op_stack_.pop ();
     }
+
+    // No copy construction.
+    basic_selection_node (const basic_selection_node &);
+    // No assignment.
+    const basic_selection_node &operator = (const basic_selection_node &);
 };
 }
 }

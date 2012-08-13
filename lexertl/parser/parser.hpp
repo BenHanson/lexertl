@@ -77,7 +77,9 @@ public:
         _node_ptr_vector (node_ptr_vector_),
         _macro_map (macro_map_),
         _charset_map (charset_map_),
-        _eoi (eoi_)
+        _eoi (eoi_),
+        _token_stack (),
+        _tree_node_stack ()
     {
     }
 
@@ -228,7 +230,6 @@ private:
     const macro_map &_macro_map;
     charset_map &_charset_map;
     id_type _eoi;
-    bool _compression;
     token_stack _token_stack;
     tree_node_stack _tree_node_stack;
 

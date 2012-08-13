@@ -31,12 +31,16 @@ public:
     typedef ptr_vector<basic_node<id_type> > node_ptr_vector;
 
     basic_node () :
-        _nullable (false)
+        _nullable (false),
+        _firstpos (),
+        _lastpos ()
     {
     }
 
     basic_node (const bool nullable_) :
-        _nullable (nullable_)
+        _nullable (nullable_),
+        _firstpos (),
+        _lastpos ()
     {
     }
 
@@ -192,8 +196,8 @@ protected:
         bool &down_) const = 0;
 
 private:
-    basic_node (basic_node const &); // No copy construction.
-    basic_node &operator = (basic_node const &); // No assignment.
+    basic_node (const basic_node &); // No copy construction.
+    const basic_node &operator = (const basic_node &); // No assignment.
 };
 }
 }

@@ -19,7 +19,8 @@ class ptr_vector
 public:
     typedef std::vector<ptr_type *> vector;
 
-    ptr_vector ()
+    ptr_vector () :
+        _vector ()
     {
     }
 
