@@ -18,6 +18,9 @@ namespace detail
 template<bool>
 struct bol_state
 {
+    bol_state (const bool)
+    {
+    }
 };
 
 template<>
@@ -25,6 +28,12 @@ struct bol_state<true>
 {
     bool _bol;
     bool _end_bol;
+
+    bol_state (const bool bol_) :
+        _bol (bol_),
+        _end_bol (bol_)
+    {
+    }
 };
 
 template<typename id_type, bool>
@@ -36,22 +45,38 @@ template<typename id_type>
 struct eol_state<id_type, true>
 {
     id_type _EOL_state;
+
+    eol_state () :
+        _EOL_state (0)
+    {
+    }
 };
 
 template<typename id_type, bool>
 struct multi_state_state
 {
+    multi_state_state (const id_type)
+    {
+    }
 };
 
 template<typename id_type>
 struct multi_state_state<id_type, true>
 {
     id_type _start_state;
+
+    multi_state_state (const id_type state_) :
+        _start_state (state_)
+    {
+    }
 };
 
 template<typename id_type, bool>
 struct recursive_state
 {
+    recursive_state (const id_type *)
+    {
+    }
 };
 
 template<typename id_type>
@@ -59,14 +84,16 @@ struct recursive_state<id_type, true>
 {
     bool _pop;
     id_type _push_dfa;
+
+    recursive_state (const id_type *ptr_) :
+        _pop ((*ptr_ & pop_dfa_bit) != 0),
+        _push_dfa (*(ptr_ + push_dfa_index))
+    {
+    }
 };
 
 template<typename id_type, typename index_type, std::size_t flags>
-struct lookup_state :
-    public bol_state<(flags & bol_bit) != 0>,
-    public eol_state<id_type, (flags & eol_bit) != 0>,
-    public multi_state_state<id_type, (flags & multi_state_bit) != 0>,
-    public recursive_state<id_type, (flags & recursive_bit) != 0>
+struct lookup_state
 {
     typedef basic_internals<id_type> internals;
 
@@ -77,56 +104,25 @@ struct lookup_state :
     bool _end_state;
     id_type _id;
     id_type _uid;
+    bol_state<(flags & bol_bit) != 0> _bol_state;
+    eol_state<id_type, (flags & eol_bit) != 0> _eol_state;
+    multi_state_state<id_type, (flags & multi_state_bit) != 0> _multi_state_state;
+    recursive_state<id_type, (flags & recursive_bit) != 0> _recursive_state;
 
-    lookup_state (const internals &internals_, const id_type state_)
+    lookup_state (const internals &internals_, const bool bol_,
+        const id_type state_) :
+        _lookup (&internals_._lookup[state_]->front ()),
+        _dfa_alphabet (internals_._dfa_alphabet[state_]),
+        _dfa (&internals_._dfa[state_]->front ()),
+        _ptr (_dfa + _dfa_alphabet),
+        _end_state (*_ptr != 0),
+        _id (*(_ptr + id_index)),
+        _uid (*(_ptr + user_id_index)),
+        _bol_state (bol_),
+        _eol_state (),
+        _multi_state_state (state_),
+        _recursive_state (_ptr)
     {
-        set_sm (internals_, bool_<(flags & multi_state_bit) != 0> ());
-        set_start_state (state_, bool_<(flags & multi_state_bit) != 0> ());
-        set_eol (bool_<(flags & eol_bit) != 0> ());
-    }
-
-    void reset_bol (const bool, const false_ &)
-    {
-        // Do nothing
-    }
-
-    void reset_bol (const bool bol_, const true_ &)
-    {
-        bol_state<true>::_bol = bol_;
-        bol_state<true>::_end_bol = bol_;
-    }
-
-    void set_sm (const internals &internals_, const false_ &)
-    {
-        _lookup = &internals_._lookup[0]->front ();
-        _dfa_alphabet = internals_._dfa_alphabet[0];
-        _dfa = &internals_._dfa[0]->front ();
-    }
-
-    void set_sm (const internals &, const true_ &)
-    {
-        // Do nothing
-    }
-
-    void reset_sm (const internals &, const id_type, const false_ &)
-    {
-        // Do nothing
-    }
-
-    void reset_sm (const internals &internals_, const id_type state_,
-        const true_ &)
-    {
-        _lookup = &internals_._lookup[state_]->front ();
-        _dfa_alphabet = internals_._dfa_alphabet[state_];
-        _dfa = &internals_._dfa[state_]->front ();
-    }
-
-    void reset_flags ()
-    {
-        _ptr = _dfa + _dfa_alphabet;
-        _end_state = *_ptr != 0;
-        _id = *(_ptr + id_index);
-        _uid = *(_ptr + user_id_index);
     }
 
     void reset_recursive (const false_ &)
@@ -136,28 +132,8 @@ struct lookup_state :
 
     void reset_recursive (const true_ &)
     {
-        recursive_state<id_type, true>::_pop = (*_ptr & pop_dfa_bit) != 0;
-        recursive_state<id_type, true>::_push_dfa = *(_ptr + push_dfa_index);
-    }
-
-    void set_start_state (const id_type, const false_ &)
-    {
-        // Do nothing
-    }
-
-    void set_start_state (const id_type state_, const true_ &)
-    {
-        multi_state_state<id_type, true>::_start_state = state_;
-    }
-
-    void set_eol (const false_ &)
-    {
-        // Do nothing
-    }
-
-    void set_eol (const true_ &)
-    {
-        eol_state<id_type, true>::_EOL_state = 0;
+        _recursive_state._pop = (*_ptr & pop_dfa_bit) != 0;
+        _recursive_state._push_dfa = *(_ptr + push_dfa_index);
     }
 
     void bol (const false_ &)
@@ -167,7 +143,7 @@ struct lookup_state :
 
     void bol (const true_ &)
     {
-        if (bol_state<true>::_bol)
+        if (_bol_state._bol)
         {
             const id_type state_ = *_dfa;
 
@@ -189,12 +165,12 @@ struct lookup_state :
     {
         bool ret_ = false;
 
-        eol_state<id_type, true>::_EOL_state = _ptr[eol_index];
-        ret_ = eol_state<id_type, true>::_EOL_state && curr_ == '\n';
+        _eol_state._EOL_state = _ptr[eol_index];
+        ret_ = _eol_state._EOL_state && curr_ == '\n';
 
         if (ret_)
         {
-            _ptr = &_dfa[eol_state<id_type, true>::_EOL_state * _dfa_alphabet];
+            _ptr = &_dfa[_eol_state._EOL_state * _dfa_alphabet];
         }
 
         return ret_;
@@ -247,7 +223,7 @@ struct lookup_state :
     template<typename char_type>
     void bol (const char_type prev_char_, const true_ &)
     {
-        bol_state<true>::_bol = prev_char_ == '\n';
+        _bol_state._bol = prev_char_ == '\n';
     }
 
     void eol (const id_type, const false_ &)
@@ -257,7 +233,7 @@ struct lookup_state :
 
     void eol (const id_type err_val_, const true_ &)
     {
-        eol_state<id_type, true>::_EOL_state = err_val_;
+        _eol_state._EOL_state = err_val_;
     }
 
     void reset_start_state (const false_ &)
@@ -267,8 +243,7 @@ struct lookup_state :
 
     void reset_start_state (const true_ &)
     {
-        multi_state_state<id_type, true>::_start_state =
-            *(_ptr + next_dfa_index);
+        _multi_state_state._start_state = *(_ptr + next_dfa_index);
     }
 
     void reset_end_bol (const false_ &)
@@ -278,7 +253,7 @@ struct lookup_state :
 
     void reset_end_bol (const true_ &)
     {
-        bol_state<true>::_end_bol = bol_state<true>::_bol;
+        _bol_state._end_bol = _bol_state._bol;
     }
 
     template<typename iter_type>
@@ -307,14 +282,13 @@ struct lookup_state :
     void check_eol (iter_type &end_token_, iter_type &curr_,
         const id_type npos, const char_type eoi_, const true_ &)
     {
-        if (eol_state<id_type, true>::_EOL_state != npos && curr_ == eoi_)
+        if (_eol_state._EOL_state != npos && curr_ == eoi_)
         {
-            eol_state<id_type, true>::_EOL_state = _ptr[eol_index];
+            _eol_state._EOL_state = _ptr[eol_index];
 
-            if (eol_state<id_type, true>::_EOL_state)
+            if (_eol_state._EOL_state)
             {
-                _ptr = &_dfa[eol_state<id_type, true>::_EOL_state *
-                    _dfa_alphabet];
+                _ptr = &_dfa[_eol_state._EOL_state * _dfa_alphabet];
                 end_state (end_token_, curr_);
             }
         }
@@ -329,16 +303,15 @@ struct lookup_state :
     template<typename results>
     void pop (results &results_, const true_ &)
     {
-        if (recursive_state<id_type, true>::_pop)
+        if (_recursive_state._pop)
         {
-            multi_state_state<id_type, true>::_start_state =
-                results_.stack.top ().first;
+            _multi_state_state._start_state = results_.stack.top ().first;
             results_.stack.pop ();
         }
-        else if (recursive_state<id_type, true>::_push_dfa != results::npos ())
+        else if (_recursive_state._push_dfa != results::npos ())
         {
             results_.stack.push (typename results::id_type_pair
-                (recursive_state<id_type, true>::_push_dfa, _id));
+                (_recursive_state._push_dfa, _id));
         }
     }
 
@@ -351,7 +324,7 @@ struct lookup_state :
     template<typename results>
     bool id_eoi (const id_type eoi_, const results &results_, const true_ &)
     {
-        return _id == eoi_ || (recursive_state<id_type, true>::_pop &&
+        return _id == eoi_ || (_recursive_state._pop &&
             !results_.stack.empty () && results_.stack.top ().second == eoi_);
     }
 
@@ -362,7 +335,7 @@ struct lookup_state :
 
     void start_state (id_type &start_state_, const true_ &)
     {
-        start_state_ = multi_state_state<id_type, true>::_start_state;
+        start_state_ = _multi_state_state._start_state;
     }
 
     void bol (bool &, const false_ &)
@@ -372,7 +345,7 @@ struct lookup_state :
 
     void bol (bool &end_bol_, const true_ &)
     {
-        end_bol_ = bol_state<true>::_end_bol;
+        end_bol_ = _bol_state._end_bol;
     }
 };
 
@@ -397,8 +370,6 @@ void next (const basic_state_machine<typename std::iterator_traits
 {
     const basic_internals<id_type> &internals_ = sm_.data ();
     typename results::iter_type end_token_ = results_.end;
-    lookup_state<id_type, typename results::index_type, flags> lu_state_
-        (internals_, results_.state);
 
 skip:
     typename results::iter_type curr_ = results_.end;
@@ -413,10 +384,9 @@ again:
         return;
     }
 
-    lu_state_.reset_bol (results_.bol, bool_<(flags & bol_bit) != 0> ());
-    lu_state_.reset_sm (internals_, results_.state,
-        bool_<(flags & multi_state_bit) != 0> ());
-    lu_state_.reset_flags ();
+    lookup_state<id_type, typename results::index_type, flags> lu_state_
+        (internals_, results_.bol, results_.state);
+
     lu_state_.reset_recursive (bool_<(flags & recursive_bit) != 0> ());
     lu_state_.bol (bool_<(flags & bol_bit) != 0> ());
 
