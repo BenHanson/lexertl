@@ -136,12 +136,12 @@ struct lookup_state
         _recursive_state._push_dfa = *(_ptr + push_dfa_index);
     }
 
-    void bol (const false_ &)
+    void bol_start_state (const false_ &)
     {
         // Do nothing
     }
 
-    void bol (const true_ &)
+    void bol_start_state (const true_ &)
     {
         if (_bol_state._bol)
         {
@@ -386,9 +386,7 @@ again:
 
     lookup_state<id_type, typename results::index_type, flags> lu_state_
         (internals_, results_.bol, results_.state);
-
-    lu_state_.reset_recursive (bool_<(flags & recursive_bit) != 0> ());
-    lu_state_.bol (bool_<(flags & bol_bit) != 0> ());
+    lu_state_.bol_start_state (bool_<(flags & bol_bit) != 0> ());
 
     while (curr_ != results_.eoi)
     {
@@ -434,10 +432,10 @@ again:
     }
     else
     {
-        // No match causes char to be skipped
         results_.end = end_token_;
         results_.bol = *results_.end == '\n';
         results_.start = results_.end;
+        // No match causes char to be skipped
         inc_end (results_, bool_<(flags & advance_bit) != 0> ());
         lu_state_._id = results::npos ();
         lu_state_._uid = results::npos ();
