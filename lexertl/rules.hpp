@@ -84,17 +84,17 @@ public:
         add_state (initial ());
     }
 
-    void clear (id_type next_dfa_)
+    void clear (const id_type dfa_)
     {
-        if (_regexes.size () > next_dfa_)
+        if (_regexes.size () > dfa_)
         {
-            _regexes[next_dfa_].clear ();
-            _features[next_dfa_] = 0;
-            _ids[next_dfa_].clear ();
-            _user_ids[next_dfa_].clear ();
-            _next_dfas[next_dfa_].clear ();
-            _pushes[next_dfa_].clear ();
-            _pops[next_dfa_].clear ();
+            _regexes[dfa_].clear ();
+            _features[dfa_] = 0;
+            _ids[dfa_].clear ();
+            _user_ids[dfa_].clear ();
+            _next_dfas[dfa_].clear ();
+            _pushes[dfa_].clear ();
+            _pops[dfa_].clear ();
         }
     }
 
@@ -123,7 +123,7 @@ public:
         return _eoi;
     }
 
-    std::locale imbue (std::locale &locale_)
+    std::locale imbue (const std::locale &locale_)
     {
         std::locale loc_ = _locale;
 
@@ -134,20 +134,6 @@ public:
     const std::locale &locale () const
     {
         return _locale;
-    }
-
-    id_type next_dfa (const char_type *name_) const
-    {
-        id_type next_dfa_ = npos ();
-        typename string_id_type_map::const_iterator iter_ =
-            _statemap.find (name_);
-
-        if (iter_ != _statemap.end ())
-        {
-            next_dfa_ = iter_->second;
-        }
-
-        return next_dfa_;
     }
 
     const char_type *state (const id_type index_) const
