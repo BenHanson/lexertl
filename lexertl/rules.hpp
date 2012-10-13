@@ -144,15 +144,15 @@ public:
         }
         else
         {
-            const id_type vec_index_ = index_ - 1;
+            const id_type i_ = index_ - 1;
 
-            if (vec_index_ > _lexer_state_names.size () - 1)
+            if (_lexer_state_names.size () > i_)
             {
-                return 0;
+                return _lexer_state_names[i_].c_str ();
             }
             else
             {
-                return _lexer_state_names[vec_index_].c_str ();
+                return 0;
             }
         }
     }
@@ -284,6 +284,7 @@ public:
         }
     }
 
+    // Add rule to INITIAL
     void add (const char_type *regex_, const id_type id_,
         const id_type user_id_ = npos ())
     {
@@ -328,6 +329,7 @@ public:
         _pops.front ().push_back (false);
     }
 
+    // Add rule with no id
     void add (const char_type *curr_dfa_,
         const char_type *regex_, const char_type *new_dfa_)
     {
@@ -347,6 +349,7 @@ public:
         add (curr_dfa_, regex_, _eoi, new_dfa_, false);
     }
 
+    // Add rule with id
     void add (const char_type *curr_dfa_,
         const char_type *regex_, const id_type id_,
         const char_type *new_dfa_, const id_type user_id_ = npos ())
