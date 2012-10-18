@@ -241,7 +241,7 @@ struct basic_char_state_machine
                 _push_pop_dfa == rhs_._push_pop_dfa &&
                 _id == rhs_._id &&
                 _user_id == rhs_._user_id &&
-                _push_dfa == rhs_.push_dfa &&
+                _push_dfa == rhs_._push_dfa &&
                 _next_dfa == rhs_._next_dfa &&
                 _eol_index == rhs_._eol_index &&
                 _transitions == rhs_._transitions;
@@ -480,7 +480,11 @@ private:
                 new_ptr_->_id = ptr_->_end_state;
                 new_ptr_->_user_id = ptr_->_user_id;
                 new_ptr_->_next_dfa = ptr_->_next_dfa;
-                new_ptr_->_eol_index = lookup_ptr_[ptr_->_eol_index];
+
+                if (ptr_->_eol_index != npos ())
+                {
+                    new_ptr_->_eol_index = lookup_ptr_[ptr_->_eol_index];
+                }
 
                 typename state::id_type_string_token_map::const_iterator
                     iter_ = ptr_->_transitions.begin ();
