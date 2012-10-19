@@ -128,7 +128,7 @@ public:
                         "' against '" << rhs_token_->precedence_string () <<
                         "' preceding index " << state_.index () <<
                         " in rule id " <<
-                        state_._id;
+                        state_._id << '.';
                     throw runtime_error (ss_.str ());
                     break;
                 }
@@ -139,7 +139,8 @@ public:
         {
             std::ostringstream ss_;
 
-            ss_ << "Empty rules are not allowed in rule id " << state_._id;
+            ss_ << "Empty rules are not allowed in rule id " <<
+                state_._id << '.';
             throw runtime_error (ss_.str ());
         }
 
@@ -197,7 +198,7 @@ public:
                     ss_ << "Rules that match zero characters are not allowed "
                         "as this can cause an infinite loop in user code. The "
                         "match_zero_len flag overrides this check. Rule id " <<
-                        state_._id;
+                        state_._id << '.';
                     throw runtime_error (ss_.str ());
                 }
             }
@@ -338,7 +339,7 @@ private:
             break;
         default:
             throw runtime_error
-                ("Internal error regex_parser::reduce");
+                ("Internal error in regex_parser::reduce.");
             break;
         }
     }
@@ -826,7 +827,7 @@ private:
                 os_ << ss_.narrow (*name_++, ' ');
             }
 
-            os_ << "' in rule id " << state_._id;
+            os_ << "' in rule id " << state_._id << '.';
             throw runtime_error (os_.str ());
         }
 

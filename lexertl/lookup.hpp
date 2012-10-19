@@ -106,7 +106,8 @@ struct lookup_state
     id_type _uid;
     bol_state<(flags & bol_bit) != 0> _bol_state;
     eol_state<id_type, (flags & eol_bit) != 0> _eol_state;
-    multi_state_state<id_type, (flags & multi_state_bit) != 0> _multi_state_state;
+    multi_state_state<id_type, (flags & multi_state_bit) != 0>
+        _multi_state_state;
     recursive_state<id_type, (flags & recursive_bit) != 0> _recursive_state;
 
     lookup_state (const internals &internals_, const bool bol_,

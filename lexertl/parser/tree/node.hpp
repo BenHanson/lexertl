@@ -72,7 +72,7 @@ public:
 
     virtual void append_followpos (const node_vector &/*followpos_*/)
     {
-        throw runtime_error ("Internal error node::append_followpos()");
+        throw runtime_error ("Internal error node::append_followpos().");
     }
 
     basic_node *copy (node_ptr_vector &node_ptr_vector_) const
@@ -138,52 +138,52 @@ public:
 
     virtual id_type id () const
     {
-        throw runtime_error ("Internal error node::id()");
+        throw runtime_error ("Internal error node::id().");
     }
 
     virtual id_type user_id () const
     {
-        throw runtime_error ("Internal error node::user_id()");
+        throw runtime_error ("Internal error node::user_id().");
     }
 
     virtual id_type next_dfa () const
     {
-        throw runtime_error ("Internal error node::next_dfa()");
+        throw runtime_error ("Internal error node::next_dfa().");
     }
 
     virtual id_type push_dfa () const
     {
-        throw runtime_error ("Internal error node::push_dfa()");
+        throw runtime_error ("Internal error node::push_dfa().");
     }
 
     virtual bool pop_dfa () const
     {
-        throw runtime_error ("Internal error node::pop_dfa()");
+        throw runtime_error ("Internal error node::pop_dfa().");
     }
 
     virtual id_type token () const
     {
-        throw runtime_error ("Internal error node::token()");
+        throw runtime_error ("Internal error node::token().");
     }
 
     virtual void greedy (const bool /*greedy_*/)
     {
-        throw runtime_error ("Internal error node::token(bool)");
+        throw runtime_error ("Internal error node::greedy(bool).");
     }
 
     virtual bool greedy () const
     {
-        throw runtime_error ("Internal error node::token()");
+        throw runtime_error ("Internal error node::greedy().");
     }
 
     virtual const node_vector &followpos () const
     {
-        throw runtime_error ("Internal error node::followpos()");
+        throw runtime_error ("Internal error node::followpos().");
     }
 
     virtual node_vector &followpos ()
     {
-        throw runtime_error ("Internal error node::followpos()");
+        throw runtime_error ("Internal error node::followpos().");
     }
 
 protected:
