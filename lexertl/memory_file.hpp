@@ -59,7 +59,7 @@ public:
         {
             _fmh = ::CreateFileMapping (_fh, 0, PAGE_READONLY, 0, 0, 0);
 
-            if (_fmh != INVALID_HANDLE_VALUE)
+            if (_fmh != NULL)
             {
                 _data = static_cast<CharT *>(::MapViewOfFile
                     (_fmh, FILE_MAP_READ, 0, 0, 0));
