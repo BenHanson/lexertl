@@ -73,7 +73,7 @@ struct match_results
         state = 0;
     }
 
-    virtual void reset (iter_type &start_, iter_type &end_)
+    virtual void reset (const iter_type &start_, const iter_type &end_)
     {
         id  = 0;
         user_id = npos ();
@@ -127,7 +127,7 @@ struct recursive_match_results : public match_results<iter, flags, id_type>
         while (!stack.empty()) stack.pop ();
     }
 
-    virtual void reset (iter &start_, iter &end_)
+    virtual void reset (const iter &start_, const iter &end_)
     {
         match_results<iter, flags, id_type>::reset (start_, end_);
 

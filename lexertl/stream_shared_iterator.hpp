@@ -87,7 +87,7 @@ public:
     }
 
     basic_stream_shared_iterator &operator =
-        (basic_stream_shared_iterator &rhs_)
+        (const basic_stream_shared_iterator &rhs_)
     {
         if (this != &rhs_)
         {
@@ -311,7 +311,7 @@ private:
     bool _live;
     std::size_t _index;
     shared *_shared;
-    typename shared::iter_list::iterator _iter;
+    mutable typename shared::iter_list::iterator _iter;
 
     void check_master ()
     {
