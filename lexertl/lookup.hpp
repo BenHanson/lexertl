@@ -447,10 +447,10 @@ again:
 }
 }
 
-template<typename iter_type, std::size_t flags, typename id_type>
+template<typename iter_type, typename id_type, std::size_t flags>
 void lookup (const basic_state_machine<typename std::iterator_traits
     <iter_type>::value_type, id_type> &sm_,
-    match_results<iter_type, flags, id_type> &results_)
+    match_results<iter_type, id_type, flags> &results_)
 {
     // If this asserts, you have either not defined all the correct
     // flags, or you should be using recursive_match_results instead
@@ -461,10 +461,10 @@ void lookup (const basic_state_machine<typename std::iterator_traits
         false_ ());
 }
 
-template<typename iter_type, std::size_t flags, typename id_type>
+template<typename iter_type, typename id_type, std::size_t flags>
 void lookup (const basic_state_machine<typename std::iterator_traits
     <iter_type>::value_type, id_type> &sm_,
-    recursive_match_results<iter_type, flags, id_type> &results_)
+    recursive_match_results<iter_type, id_type, flags> &results_)
 {
     // If this asserts, you have not defined all the correct flags
     assert ((sm_.data ()._features & flags) == sm_.data ()._features);

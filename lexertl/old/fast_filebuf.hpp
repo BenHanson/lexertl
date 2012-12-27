@@ -41,5 +41,5 @@ typedef basic_fast_filebuf<wchar_t, std::char_traits<wchar_t> > wfast_filebuf;
 // std::istream if_(&buf);
 // lexertl::stream_shared_iterator iter_ (if_);
 // lexertl::stream_shared_iterator end_;
-// lexertl::match_results<lexertl::stream_shared_iterator, std::size_t>
+// lexertl::match_results<lexertl::stream_shared_iterator>
 //     results_(iter_, end_);

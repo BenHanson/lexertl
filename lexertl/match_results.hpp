@@ -14,9 +14,9 @@
 
 namespace lexertl
 {
-template<typename iter,
+template<typename iter, typename id_type = std::size_t,
     std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
-        multi_state_bit | advance_bit, typename id_type = std::size_t>
+        multi_state_bit | advance_bit>
 struct match_results
 {
     typedef iter iter_type;
@@ -95,23 +95,22 @@ struct match_results
     }
 };
 
-template<typename iter,
+template<typename iter, typename id_type = std::size_t,
     std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
-        multi_state_bit | recursive_bit | advance_bit,
-        typename id_type = std::size_t>
-struct recursive_match_results : public match_results<iter, flags, id_type>
+        multi_state_bit | recursive_bit | advance_bit>
+struct recursive_match_results : public match_results<iter, id_type, flags>
 {
     typedef std::pair<id_type, id_type> id_type_pair;
     std::stack<id_type_pair> stack;
 
     recursive_match_results () :
-        match_results<iter, flags, id_type> (),
+        match_results<iter, id_type, flags> (),
         stack ()
     {
     }
 
     recursive_match_results (const iter &start_, const iter &end_) :
-        match_results<iter, flags, id_type> (start_, end_),
+        match_results<iter, id_type, flags> (start_, end_),
         stack ()
     {
     }
@@ -122,14 +121,14 @@ struct recursive_match_results : public match_results<iter, flags, id_type>
 
     virtual void clear ()
     {
-        match_results<iter, flags, id_type>::clear ();
+        match_results<iter, id_type, flags>::clear ();
 
         while (!stack.empty()) stack.pop ();
     }
 
     virtual void reset (const iter &start_, const iter &end_)
     {
-        match_results<iter, flags, id_type>::reset (start_, end_);
+        match_results<iter, id_type, flags>::reset (start_, end_);
 
         while (!stack.empty()) stack.pop ();
     }
