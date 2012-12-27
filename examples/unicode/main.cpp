@@ -16,7 +16,7 @@ void lex_prop_list()
     std::ifstream if_ ("PropList.txt");
     lexertl::stream_shared_iterator iter_ (if_);
     lexertl::stream_shared_iterator end_;
-    lexertl::match_results<lexertl::stream_shared_iterator, std::size_t>
+    lexertl::match_results<lexertl::stream_shared_iterator>
         results_(iter_, end_);
     enum {eRange = 1, eName, eShortName};
 
@@ -124,7 +124,7 @@ void case_mapping ()
     std::ifstream if_ ("UnicodeData.txt");
     lexertl::stream_shared_iterator iter_ (if_);
     lexertl::stream_shared_iterator end_;
-    lexertl::match_results<lexertl::stream_shared_iterator, std::size_t>
+    lexertl::match_results<lexertl::stream_shared_iterator>
         results_(iter_, end_);
     enum e_Token {eEOF, eCodeValue, eName, eLl, eLu, eNeither, eMapping, eEmpty};
     e_Token eToken = eEOF;

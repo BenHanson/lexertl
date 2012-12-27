@@ -10,7 +10,7 @@ int main(int /*argc*/, char** /*argv*/)
     std::ifstream if_ ("datetest.txt");
     lexertl::stream_shared_iterator iter_ (if_);
     lexertl::stream_shared_iterator end_;
-    lexertl::match_results<lexertl::stream_shared_iterator, std::size_t>
+    lexertl::match_results<lexertl::stream_shared_iterator>
         results_(iter_, end_);
 
     rules_.add_macro("skip", "of|the|[ \t,]+");
