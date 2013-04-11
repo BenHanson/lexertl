@@ -26,8 +26,6 @@ struct basic_re_token
     token_type _type;
     string _extra;
     string_token _str;
-    static const char _precedence_table[END + 1][END + 1];
-    static const char *_precedence_strings[END + 1];
 
     basic_re_token (const token_type type_ = BEGIN) :
         _type (type_),
@@ -53,18 +51,8 @@ struct basic_re_token
 
     char precedence (const token_type type_) const
     {
-        return _precedence_table[_type][type_];
-    }
-
-    const char *precedence_string () const
-    {
-        return _precedence_strings[_type];
-    }
-};
-
-template<typename input_char_type, typename char_type>
-const char basic_re_token<input_char_type, char_type>::
-    _precedence_table[END + 1][END + 1] = {
+        // Moved in here for Solaris compiler.
+        static const char precedence_table_[END + 1][END + 1] = {
 //        BEG, REG, ORE, SEQ, SUB, EXP, RPT, DUP,  | , CHR, BOL, EOL, MCR,  ( ,  ) ,  ? , ?? ,  * , *? ,  + , +?, {n}?, {n}, END
 /*BEGIN*/{' ', '<', '<', '<', '<', '<', '<', ' ', ' ', '<', '<', '<', '<', '<', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '>'},
 /*REGEX*/{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '=', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '>'},
@@ -92,12 +80,20 @@ const char basic_re_token<input_char_type, char_type>::
 /* END */{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
 };
 
-template<typename input_char_type, typename char_type>
-const char *basic_re_token<input_char_type,
-    char_type>::_precedence_strings[END + 1] =
-{"BEGIN", "REGEX", "OREXP", "SEQUENCE", "SUB", "EXPRESSION", "REPEAT",
-    "DUPLICATE", "|", "CHARSET", "^", "$", "MACRO", "(", ")", "?", "??", "*",
-    "*?", "+", "+?", "{n[,[m]]}", "{n[,[m]]}?", "END"};
+        return precedence_table_[_type][type_];
+    }
+
+    const char *precedence_string () const
+    {
+        // Moved in here for Solaris compiler.
+        static const char *precedence_strings_[END + 1] =
+            {"BEGIN", "REGEX", "OREXP", "SEQUENCE", "SUB", "EXPRESSION",
+            "REPEAT", "DUPLICATE", "|", "CHARSET", "^", "$", "MACRO", "(", ")",
+            "?", "??", "*", "*?", "+", "+?", "{n[,[m]]}", "{n[,[m]]}?", "END"};
+
+        return precedence_strings_[_type];
+    }
+};
 }
 }
 
