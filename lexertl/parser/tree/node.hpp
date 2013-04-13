@@ -139,31 +139,55 @@ public:
     virtual id_type id () const
     {
         throw runtime_error ("Internal error node::id().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return id_type ();
+#endif
     }
 
     virtual id_type user_id () const
     {
         throw runtime_error ("Internal error node::user_id().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return id_type ();
+#endif
     }
 
     virtual id_type next_dfa () const
     {
         throw runtime_error ("Internal error node::next_dfa().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return id_type ();
+#endif
     }
 
     virtual id_type push_dfa () const
     {
         throw runtime_error ("Internal error node::push_dfa().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return id_type ();
+#endif
     }
 
     virtual bool pop_dfa () const
     {
         throw runtime_error ("Internal error node::pop_dfa().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return false;
+#endif
     }
 
     virtual id_type token () const
     {
         throw runtime_error ("Internal error node::token().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return id_type ();
+#endif
     }
 
     virtual void greedy (const bool /*greedy_*/)
@@ -174,16 +198,28 @@ public:
     virtual bool greedy () const
     {
         throw runtime_error ("Internal error node::greedy().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return false;
+#endif
     }
 
     virtual const node_vector &followpos () const
     {
         throw runtime_error ("Internal error node::followpos().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return firstpos;
+#endif
     }
 
     virtual node_vector &followpos ()
     {
         throw runtime_error ("Internal error node::followpos().");
+#ifdef __SUNPRO_CC
+        // Stop bogus Solaris compiler warning
+        return firstpos;
+#endif
     }
 
 protected:
