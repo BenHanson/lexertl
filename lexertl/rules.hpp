@@ -239,7 +239,8 @@ public:
 
             while (*name_)
             {
-                os_ << ss_.narrow (*name_++, static_cast<char_type> (' '));
+                // Safe to simply cast to char.
+                os_ << static_cast<char>(*name_++);
             }
 
             os_ << "'.";
@@ -544,7 +545,8 @@ private:
 
                 while (*new_dfa_)
                 {
-                    os_ << ss_.narrow (*new_dfa_++, ' ');
+                    // Safe to simply cast to char.
+                    os_ << static_cast<char>(*new_dfa_++);
                 }
 
                 os_ << "'.";
@@ -566,7 +568,8 @@ private:
 
                     while (*push_dfa_)
                     {
-                        os_ << ss_.narrow (*push_dfa_++, ' ');
+                        // Safe to simply cast to char.
+                        os_ << static_cast<char>(*push_dfa_++);
                     }
 
                     os_ << "'.";
@@ -619,7 +622,8 @@ private:
 
                     while (*curr_dfa_)
                     {
-                        os_ << ss_.narrow (*curr_dfa_++, ' ');
+                        // Safe to simply cast to char.
+                        os_ << static_cast<char>(*curr_dfa_++);
                     }
 
                     os_ << "'.";
@@ -684,7 +688,8 @@ private:
 
             while (*name_)
             {
-                os_ << ss_.narrow (*name_++, ' ');
+                // Safe to simply cast to char.
+                os_ << static_cast<char>(*name_++);
             }
 
             os_ << "'.";
@@ -710,7 +715,8 @@ private:
 
                 while (*name_)
                 {
-                    os_ << ss_.narrow (*name_++, ' ');
+                    // Safe to simply cast to char.
+                    os_ << static_cast<char>(*name_++);
                 }
 
                 os_ << "'.";

@@ -824,7 +824,8 @@ private:
 
             while (*name_)
             {
-                os_ << ss_.narrow (*name_++, ' ');
+                // Safe to simply cast to char.
+                os_ << static_cast<char>(*name_++);
             }
 
             os_ << "' in rule id " << state_._id << '.';
