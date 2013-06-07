@@ -227,15 +227,15 @@ public:
                             (std::isupper (ch_, state_._locale) ||
                             std::islower (ch_, state_._locale)))
                         {
-                            char_type upper_ = std::toupper
-                                (ch_, state_._locale);
-                            char_type lower_ = std::tolower
-                                (ch_, state_._locale);
+                            char_type other_ = tokeniser_helper::fold
+                                (ch_, state_._locale,
+                                typename tokeniser_helper::template size
+                                <sizeof(char_type)> ());
 
                             token_->_str.insert (typename string_token::range
-                                (upper_, upper_));
+                                (ch_, ch_));
                             token_->_str.insert (typename string_token::range
-                                (lower_, lower_));
+                                (other_, other_));
                         }
                         else
                         {
