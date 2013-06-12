@@ -223,19 +223,21 @@ public:
                     default:
                         token_->_type = CHARSET;
 
-                        if ((state_._flags & icase) &&
-                            (std::isupper (ch_, state_._locale) ||
-                            std::islower (ch_, state_._locale)))
+                        if (state_._flags & icase)
                         {
-                            char_type other_ = tokeniser_helper::fold
+                            const char_type folded_ = tokeniser_helper::fold
                                 (ch_, state_._locale,
                                 typename tokeniser_helper::template size
                                 <sizeof(char_type)> ());
 
                             token_->_str.insert (typename string_token::range
                                 (ch_, ch_));
-                            token_->_str.insert (typename string_token::range
-                                (other_, other_));
+
+                            if (ch_ != folded_)
+                            {
+                                token_->_str.insert (typename string_token::range
+                                    (folded_, folded_));
+                            }
                         }
                         else
                         {
