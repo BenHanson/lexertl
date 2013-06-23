@@ -156,13 +156,13 @@ struct lookup_state
     }
 
     template<typename char_type>
-    bool eol (const char_type, const false_ &)
+    bool is_eol (const char_type, const false_ &)
     {
         return false;
     }
 
     template<typename char_type>
-    bool eol (const char_type curr_, const true_ &)
+    bool is_eol (const char_type curr_, const true_ &)
     {
         bool ret_ = false;
 
@@ -317,13 +317,13 @@ struct lookup_state
     }
 
     template<typename results>
-    bool id_eoi (const id_type eoi_, const results &, const false_ &)
+    bool is_id_eoi (const id_type eoi_, const results &, const false_ &)
     {
         return _id == eoi_;
     }
 
     template<typename results>
-    bool id_eoi (const id_type eoi_, const results &results_, const true_ &)
+    bool is_id_eoi (const id_type eoi_, const results &results_, const true_ &)
     {
         return _id == eoi_ || (_recursive_state._pop &&
             !results_.stack.empty () && results_.stack.top ().second == eoi_);
@@ -391,7 +391,7 @@ again:
 
     while (curr_ != results_.eoi)
     {
-        if (!lu_state_.eol (*curr_, bool_<(flags & eol_bit) != 0> ()))
+        if (!lu_state_.is_eol (*curr_, bool_<(flags & eol_bit) != 0> ()))
         {
             const typename results::char_type prev_char_ = *curr_++;
             const id_type state_ = lu_state_.next_char (prev_char_,
@@ -401,7 +401,7 @@ again:
 
             if (state_ == 0)
             {
-                lu_state_.eol (results::npos (),
+                lu_state_.is_eol (results::npos (),
                     bool_<(flags & eol_bit) != 0> ());
                 break;
             }
@@ -425,7 +425,7 @@ again:
 
         if (lu_state_._id == sm_.skip ()) goto skip;
 
-        if (lu_state_.id_eoi (internals_._eoi, results_, recursive_))
+        if (lu_state_.is_id_eoi (internals_._eoi, results_, recursive_))
         {
             curr_ = end_token_;
             goto again;

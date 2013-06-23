@@ -16,6 +16,9 @@ class basic_utf8_in_iterator :
     public std::iterator<std::input_iterator_tag, char_type>
 {
 public:
+    typedef typename std::iterator_traits<char_iterator>::
+        difference_type difference_type;
+
     basic_utf8_in_iterator () :
         _char (0)
     {
@@ -58,8 +61,6 @@ public:
     }
 
 private:
-    typedef typename std::iterator_traits<char_iterator>::
-        difference_type difference_type;
     char_iterator _it;
     char_type _char;
 
@@ -219,6 +220,9 @@ class basic_utf16_in_iterator :
     public std::iterator<std::input_iterator_tag, char_type>
 {
 public:
+    typedef typename std::iterator_traits<char_iterator>::
+        difference_type difference_type;
+
     basic_utf16_in_iterator () :
         _char (0)
     {
@@ -261,8 +265,6 @@ public:
     }
 
 private:
-    typedef typename std::iterator_traits<char_iterator>::
-        difference_type difference_type;
     char_iterator _it;
     char_type _char;
 

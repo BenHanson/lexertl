@@ -576,7 +576,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *blank_ && *state_._curr == *blank_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *blank_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*blank_++))
         {
             state_.increment ();
         }
@@ -612,7 +615,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *cntrl_ && *state_._curr == *cntrl_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *cntrl_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*cntrl_++))
         {
             state_.increment ();
         }
@@ -648,7 +654,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *digit_ && *state_._curr == *digit_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *digit_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*digit_++))
         {
             state_.increment ();
         }
@@ -684,7 +693,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *graph_ && *state_._curr == *graph_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *graph_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*graph_++))
         {
             state_.increment ();
         }
@@ -720,7 +732,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *lower_ && *state_._curr == *lower_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *lower_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*lower_++))
         {
             state_.increment ();
         }
@@ -862,7 +877,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *space_ && *state_._curr == *space_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *space_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*space_++))
         {
             state_.increment ();
         }
@@ -898,7 +916,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *upper_ && *state_._curr == *upper_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *upper_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*upper_++))
         {
             state_.increment ();
         }
@@ -952,7 +973,10 @@ private:
 
         state_.increment ();
 
-        while (!state_.eos () && *xdigit_ && *state_._curr == *xdigit_++)
+        // Casts to prevent warnings (VC++ 2012)
+        while (!state_.eos () && *xdigit_ &&
+            static_cast<rules_char_type>(*state_._curr) ==
+            static_cast<rules_char_type>(*xdigit_++))
         {
             state_.increment ();
         }
