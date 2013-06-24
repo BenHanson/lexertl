@@ -24,11 +24,15 @@ public:
     {
     }
 
-    explicit basic_utf8_in_iterator (const char_iterator& it_) :
+    explicit basic_utf8_in_iterator (const char_iterator& it_,
+        const char_iterator& end_) :
         _it (it_),
         _char (0)
     {
-        next ();
+        if (it_ != end_)
+        {
+            next ();
+        }
     }
 
     char_type operator * () const
@@ -119,12 +123,16 @@ public:
     {
     }
 
-    explicit basic_utf8_out_iterator (const char_iterator& it_) :
+    explicit basic_utf8_out_iterator (const char_iterator& it_,
+        const char_iterator& end_) :
         _it (it_),
         _count (0),
         _index (0)
     {
-        next ();
+        if (it_ != end_)
+        {
+            next ();
+        }
     }
 
     char operator * () const
@@ -228,11 +236,15 @@ public:
     {
     }
 
-    explicit basic_utf16_in_iterator (const char_iterator &it_) :
+    explicit basic_utf16_in_iterator (const char_iterator &it_,
+        const char_iterator &end_) :
         _it (it_),
         _char (0)
     {
-        next ();
+        if (it_ != end_)
+        {
+            next ();
+        }
     }
 
     char_type operator * () const
@@ -295,12 +307,16 @@ public:
     {
     }
 
-    explicit basic_utf16_out_iterator (const char_iterator& it_) :
+    explicit basic_utf16_out_iterator (const char_iterator& it_,
+        const char_iterator& end_) :
         _it (it_),
         _count (0),
         _index (0)
     {
-        next ();
+        if (it_ != end_)
+        {
+            next ();
+        }
     }
 
     wchar_t operator * () const

@@ -23,15 +23,14 @@ void lex_prop_list()
     rules_.add_state("RANGE");
     rules_.add_state("WS");
     rules_.add_state("NAME");
-    rules_.add_state("WS2");
     rules_.add_state("SHORT_NAME");
     rules_.add_state("FINISH");
     rules_.add ("^#.*", rules_.skip ());
     rules_.add ("\n", rules_.skip ());
     rules_.add ("INITIAL", "^[0-9A-F]+(\\.\\.[0-9A-F]+)?", eRange, "RANGE");
     rules_.add ("RANGE", " *; ", rules_.skip (), "NAME");
-    rules_.add ("NAME", "[A-Z][a-zA-Z_]+", eName, "WS2");
-    rules_.add ("WS2", " # ", rules_.skip (), "SHORT_NAME");
+    rules_.add ("NAME", "[A-Z][a-zA-Z_]+", eName, "WS");
+    rules_.add ("WS", " # ", rules_.skip (), "SHORT_NAME");
     rules_.add ("SHORT_NAME", "[A-Z][a-z&]", eShortName, "FINISH");
     rules_.add ("FINISH", ".*\n", rules_.skip (), "INITIAL");
     lexertl::generator::build (rules_, state_machine_);
@@ -206,8 +205,9 @@ void test_unicode ()
     r_.clear ();
     r_.reset (i_, i_);
 
-    const char *utf8_ = "\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88\x7f";
-    lexertl::basic_utf8_in_iterator<const char *, int> u8iter_(utf8_);
+    const char utf8_[] = "\xf0\x90\x8d\x86\xe6\x97\xa5\xd1\x88\x7f";
+    lexertl::basic_utf8_in_iterator<const char *, int> u8iter_(utf8_,
+        utf8_ + sizeof(utf8_));
     int i = *u8iter_; // 0x10346
 
     i = *++u8iter_; // 0x65e5
@@ -216,7 +216,8 @@ void test_unicode ()
     i = *++u8iter_; // 0x7f
 
     const wchar_t utf16_[] = L"\xdbff\xdfff\xd801\xdc01\xd800\xdc00\xd7ff";
-    lexertl::basic_utf16_in_iterator<const wchar_t *, int> u16iter_(utf16_);
+    lexertl::basic_utf16_in_iterator<const wchar_t *, int> u16iter_(utf16_,
+        utf16_ + sizeof(utf16_) / sizeof(wchar_t));
 
     i = *u16iter_; // 0x10ffff
     i = *++u16iter_; // 0x10401
@@ -255,17 +256,17 @@ void test_unicode ()
 
 #ifdef WIN32
         str_.assign(lexertl::basic_utf16_out_iterator<const int *>
-            (results_.start),
+            (results_.start, results_.end),
             lexertl::basic_utf16_out_iterator<const int *>
-            (results_.end));
+            (results_.end, results_.end));
         std::wcout << L"Id: " << results_.id << L", Token: '";
         ::WriteConsoleW(hStdOut, str_.c_str(), str_.size(), &dwBytesWritten, 0);
         std::wcout << '\'' << std::endl;
 #else
         str_.assign(lexertl::basic_utf8_out_iterator<const int *>
-            (results_.start),
+            (results_.start, results_.end),
             lexertl::basic_utf8_out_iterator<const int *>
-            (results_.end));
+            (results_.end, results_.end));
         std::cout << "Id: " << results_.id << ", Token: '" <<
             str_ << '\'' << std::endl;
 #endif
