@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // iterator.hpp
 // Copyright (c) 2013 Ben Hanson (http://www.benhanson.net/)
 //
