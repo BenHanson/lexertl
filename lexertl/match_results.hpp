@@ -93,6 +93,17 @@ struct match_results
     {
         return static_cast<id_type>(~1);
     }
+
+    bool operator == (const match_results &rhs_) const
+    {
+        return id == rhs_.id &&
+            user_id == rhs_.user_id &&
+            start == rhs_.start &&
+            end == rhs_.end &&
+            eoi == rhs_.eoi &&
+            bol == rhs_.bol &&
+            state == rhs_.state;
+    }
 };
 
 template<typename iter, typename id_type = std::size_t,

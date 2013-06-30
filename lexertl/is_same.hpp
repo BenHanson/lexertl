@@ -26,4 +26,3 @@ struct is_same<t1, t1>
 }
 
 #endif
-

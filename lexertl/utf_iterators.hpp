@@ -16,16 +16,18 @@ class basic_utf8_in_iterator :
     public std::iterator<std::input_iterator_tag, char_type>
 {
 public:
+    typedef char_type value_type;
     typedef typename std::iterator_traits<char_iterator>::
         difference_type difference_type;
+    typedef std::forward_iterator_tag iterator_category;
 
     basic_utf8_in_iterator () :
         _char (0)
     {
     }
 
-    explicit basic_utf8_in_iterator (const char_iterator& it_,
-        const char_iterator& end_) :
+    explicit basic_utf8_in_iterator (const char_iterator &it_,
+        const char_iterator &end_) :
         _it (it_),
         _char (0)
     {
@@ -117,14 +119,19 @@ class basic_utf8_out_iterator :
     public std::iterator<std::input_iterator_tag, char>
 {
 public:
+    typedef char value_type;
+    typedef typename std::iterator_traits<char_iterator>::
+        difference_type difference_type;
+    typedef std::forward_iterator_tag iterator_category;
+
     basic_utf8_out_iterator () :
         _count (0),
         _index (0)
     {
     }
 
-    explicit basic_utf8_out_iterator (const char_iterator& it_,
-        const char_iterator& end_) :
+    explicit basic_utf8_out_iterator (const char_iterator &it_,
+        const char_iterator &end_) :
         _it (it_),
         _count (0),
         _index (0)
@@ -228,8 +235,10 @@ class basic_utf16_in_iterator :
     public std::iterator<std::input_iterator_tag, char_type>
 {
 public:
+    typedef char_type value_type;
     typedef typename std::iterator_traits<char_iterator>::
         difference_type difference_type;
+    typedef std::forward_iterator_tag iterator_category;
 
     basic_utf16_in_iterator () :
         _char (0)
@@ -301,14 +310,19 @@ class basic_utf16_out_iterator :
     public std::iterator<std::input_iterator_tag, wchar_t>
 {
 public:
+    typedef wchar_t value_type;
+    typedef typename std::iterator_traits<char_iterator>::
+        difference_type difference_type;
+    typedef std::forward_iterator_tag iterator_category;
+
     basic_utf16_out_iterator () :
         _count (0),
         _index (0)
     {
     }
 
-    explicit basic_utf16_out_iterator (const char_iterator& it_,
-        const char_iterator& end_) :
+    explicit basic_utf16_out_iterator (const char_iterator &it_,
+        const char_iterator &end_) :
         _it (it_),
         _count (0),
         _index (0)
