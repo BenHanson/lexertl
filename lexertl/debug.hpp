@@ -1,5 +1,5 @@
 // debug.hpp
-// Copyright (c) 2005-2012 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,6 +10,7 @@
 #include <ostream>
 #include "rules.hpp"
 #include "size_t.hpp"
+#include "sm_to_csm.hpp"
 #include "state_machine.hpp"
 #include "string_token.hpp"
 #include <vector>
@@ -70,38 +71,6 @@ protected:
     typedef typename char_state_machine::state dfa_state;
     typedef typename dfa_state::string_token string_token;
     typedef std::basic_stringstream<char_type> stringstream;
-
-    static void sm_to_csm (const sm &sm_, char_state_machine &csm_)
-    {
-        const detail::basic_internals<id_type> &internals_ = sm_.data ();
-        const std::size_t dfas_ = internals_._dfa->size ();
-
-        for (id_type i_ = 0; i_ < dfas_; ++i_)
-        {
-            if (internals_._dfa_alphabet[i_] == 0) continue;
-
-            const std::size_t alphabet_ = internals_._dfa_alphabet[i_] -
-                transitions_index;
-            typename char_state_machine::string_token_vector token_vector_
-                (alphabet_, string_token ());
-            id_type *ptr_ = &internals_._lookup[i_]->front ();
-
-            for (std::size_t c_ = 0; c_ < 256; ++c_, ++ptr_)
-            {
-                if (*ptr_ >= transitions_index)
-                {
-                    string_token &token_ = token_vector_
-                        [*ptr_ - transitions_index];
-
-                    token_.insert (typename string_token::range
-                        (typename string_token::index_type (c_),
-                        typename string_token::index_type (c_)));
-                }
-            }
-
-            csm_.append (token_vector_, internals_, i_);
-        }
-    }
 
     static void dump_ex (const typename char_state_machine::dfa &dfa_,
         ostream &stream_)

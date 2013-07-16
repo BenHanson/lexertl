@@ -1,5 +1,5 @@
 // memory_file.hpp
-// Copyright (c) 2012 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2013 Ben Hanson (http://www.benhanson.net/)
 // Inspired by http://en.wikibooks.org/wiki/Optimizing_C%2B%2B/General_optimization_techniques/Input/Output#Memory-mapped_file
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
