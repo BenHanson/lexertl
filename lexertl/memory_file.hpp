@@ -46,7 +46,7 @@ public:
                 }
                 else
                 {
-                    _size = sbuf_.st_size;
+                    _size = sbuf_.st_size / sizeof(CharT);
                 }
             }
         }
@@ -64,7 +64,7 @@ public:
                 _data = static_cast<CharT *>(::MapViewOfFile
                     (_fmh, FILE_MAP_READ, 0, 0, 0));
 
-                if (_data) _size = ::GetFileSize(_fh, 0);
+                if (_data) _size = ::GetFileSize(_fh, 0) / sizeof(CharT);
             }
         }
 #endif
