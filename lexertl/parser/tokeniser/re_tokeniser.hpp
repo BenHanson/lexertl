@@ -233,7 +233,7 @@ public:
                             token_->_str.insert (typename string_token::range
                                 (ch_, ch_));
 
-                            if (ch_ != folded_)
+                            if (static_cast<char_type>(ch_) != folded_)
                             {
                                 token_->_str.insert (typename string_token::range
                                     (folded_, folded_));

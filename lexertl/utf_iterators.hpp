@@ -54,6 +54,7 @@ public:
 
     basic_utf8_in_iterator &operator ++ ()
     {
+        ++_it;
         next ();
         return *this;
     }
@@ -62,6 +63,7 @@ public:
     {
         basic_utf8_in_iterator temp_ = *this;
 
+        ++_it;
         next ();
         return temp_;
     }
@@ -99,7 +101,6 @@ private:
             break;
         }
 
-        ++_it;
         _char = ch_;
     }
 
@@ -163,6 +164,7 @@ public:
 
         if (_index >= _count)
         {
+            ++_it;
             next ();
         }
 
@@ -177,6 +179,7 @@ public:
 
         if (_index >= _count)
         {
+            ++_it;
             next ();
         }
 
@@ -217,8 +220,6 @@ private:
             _bytes[3] = (ch_ & 0x3f) | 0x80;
             break;
         }
-
-        ++_it;
     }
 
     char len (const std::size_t ch_) const
@@ -273,6 +274,7 @@ public:
 
     basic_utf16_in_iterator &operator ++ ()
     {
+        ++_it;
         next ();
         return *this;
     }
@@ -281,6 +283,7 @@ public:
     {
         basic_utf16_in_iterator temp_ = *this;
 
+        ++_it;
         next ();
         return temp_;
     }
@@ -300,7 +303,6 @@ private:
             ch_ = (((ch_ - 0xd800) << 10) | (surrogate_ - 0xdc00)) + 0x10000;
         }
 
-        ++_it;
         _char = ch_;
     }
 };
@@ -354,6 +356,7 @@ public:
 
         if (_index >= _count)
         {
+            ++_it;
             next ();
         }
 
@@ -368,6 +371,7 @@ public:
 
         if (_index >= _count)
         {
+            ++_it;
             next ();
         }
 
@@ -398,8 +402,6 @@ private:
             _chars[1] = static_cast<wchar_t>((ch_ & 0x3ff) + 0xdc00u);
             break;
         }
-
-        ++_it;
     }
 
     char len (const std::size_t ch_) const
