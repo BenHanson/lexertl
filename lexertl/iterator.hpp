@@ -12,13 +12,11 @@
 
 namespace lexertl
 {
-template<typename iter, typename sm_type, typename id_type = std::size_t,
-    std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
-        multi_state_bit | advance_bit>
+template<typename iter, typename sm_type, typename results>
 class iterator
 {
 public:
-    typedef match_results<iter, id_type, flags> value_type;
+    typedef results value_type;
     typedef ptrdiff_t difference_type;
     typedef const value_type *pointer;
     typedef const value_type &reference;
@@ -106,12 +104,20 @@ private:
     }
 };
 
-typedef iterator<const char *, lexertl::state_machine> citerator;
-typedef iterator<const wchar_t *, lexertl::wstate_machine> wciterator;
-typedef iterator<std::string::const_iterator,
-    lexertl::state_machine> siterator;
-typedef iterator<std::wstring::const_iterator,
-    lexertl::wstate_machine> wsiterator;
+typedef iterator<std::string::const_iterator, lexertl::state_machine, smatch>
+    siterator;
+typedef iterator<const char *, lexertl::state_machine, cmatch> citerator;
+typedef iterator<std::wstring::const_iterator, lexertl::wstate_machine,
+    wsmatch> wsiterator;
+typedef iterator<const wchar_t *, lexertl::wstate_machine, wcmatch> wciterator;
+
+typedef iterator<std::string::const_iterator, lexertl::state_machine, srmatch>
+    sriterator;
+typedef iterator<const char *, lexertl::state_machine, crmatch> criterator;
+typedef iterator<std::wstring::const_iterator, lexertl::wstate_machine,
+    wsrmatch> wsriterator;
+typedef iterator<const wchar_t *, lexertl::wstate_machine, wcrmatch>
+    wcriterator;
 }
 
 #endif
