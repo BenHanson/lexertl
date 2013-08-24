@@ -28,7 +28,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   execute_process(COMMAND
     ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 
-  list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long")
+  if(GCC_VERSION VERSION_LESS 4.3)
+    message(WARNING "GCC 4.3+ is recommended, otherwise compilation may fail")
+  endif()
+
+  list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long -std=c++0x")
 
   if(GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
     list(APPEND CMAKE_CXX_FLAGS "-Wpedantic")
