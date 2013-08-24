@@ -8,6 +8,8 @@
 #ifndef LEXERTL_MEMORY_FILE_H
 #define LEXERTL_MEMORY_FILE_H
 
+#include <cstddef>
+
 #ifdef __unix__
 #include <fcntl.h>
 #include <unistd.h>
