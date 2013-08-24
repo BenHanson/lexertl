@@ -10,3 +10,6 @@
 *.lai
 *.la
 *.a
+
+# CMake
+_build
