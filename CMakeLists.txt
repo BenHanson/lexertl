@@ -28,16 +28,22 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   execute_process(COMMAND
     ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 
+  list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long")
+
   if(GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-long-long")
+    list(APPEND CMAKE_CXX_FLAGS "-Wpedantic")
   else()
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+    list(APPEND CMAKE_CXX_FLAGS "-pedantic")
   endif()
 endif()
 
 if(CMAKE_CXX_COMPILER MATCHES "clang")
   set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 endif()
+
+separate_arguments(CMAKE_CXX_FLAGS)
+list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS)
+string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 include_directories(${CMAKE_SOURCE_DIR}/lexertl)
 
