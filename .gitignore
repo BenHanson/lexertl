@@ -11,5 +11,6 @@
 *.la
 *.a
 
-# CMake
+# Visual Studio/Qt Creator/CMake
+*.user
 _build
