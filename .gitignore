@@ -10,3 +10,7 @@
 *.lai
 *.la
 *.a
+
+# Visual Studio/Qt Creator/CMake
+*.user
+_build
