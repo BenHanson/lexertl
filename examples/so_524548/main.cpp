@@ -4,6 +4,7 @@
 #include "../../lexertl/generator.hpp"
 #include <iostream>
 #include "../../lexertl/lookup.hpp"
+#include "../../lexertl/memory_file.hpp"
 
 int main (int /*argc*/, char ** /*argv*/)
 {
