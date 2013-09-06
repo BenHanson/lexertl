@@ -2122,8 +2122,8 @@ private:
 
             ss_ << "Escape \\" << std::oct << oct_ <<
                 " is too big for the state machine char type "
-                "preceding index " << state_.index () << " in rule " <<
-                std::dec << state_._id << '.';
+                "preceding index " << std::dec << state_.index () <<
+                " in rule " << state_._id << '.';
             throw runtime_error (ss_.str ());
         }
 
@@ -2249,7 +2249,7 @@ private:
 
             ss_ << "Escape \\x" << std::hex << hex_ <<
                 " is too big for the state machine char type at index " <<
-                state_.index () << " in rule id " << std::dec <<
+                std::dec << state_.index () << " in rule id " <<
                 state_._id << '.';
             throw runtime_error (ss_.str ());
         }
