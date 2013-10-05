@@ -26,7 +26,7 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   execute_process(COMMAND
-    ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    "${CMAKE_C_COMPILER}" -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 
   if(GCC_VERSION VERSION_LESS 4.3)
     message(WARNING "GCC 4.3+ is recommended, otherwise compilation may fail")
@@ -49,6 +49,6 @@ separate_arguments(CMAKE_CXX_FLAGS)
 list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS)
 string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-include_directories(${CMAKE_SOURCE_DIR}/lexertl)
+include_directories("${CMAKE_SOURCE_DIR}/lexertl")
 
 add_subdirectory(examples)
