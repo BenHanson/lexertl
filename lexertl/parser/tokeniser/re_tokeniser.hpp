@@ -235,7 +235,7 @@ public:
 
                             if (!folded_.empty())
                             {
-                                token_->_str.insert(range_);
+                                token_->_str.insert(folded_);
                             }
                         }
                         else
