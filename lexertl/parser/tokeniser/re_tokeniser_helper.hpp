@@ -169,9 +169,9 @@ public:
                     fold(range_, state_._locale, folded_,
                         size<sizeof(input_char_type)>());
 
-                    if (prev_ != range_.first || prev_ != range_.second)
+                    if (!folded_.empty())
                     {
-                        token_.insert(range_);
+                        token_.insert(folded_);
                     }
                 }
             }
@@ -2407,7 +2407,7 @@ private:
 
             if (!folded_.empty())
             {
-                chars_.insert(range_);
+                chars_.insert(folded_);
             }
         }
         else
