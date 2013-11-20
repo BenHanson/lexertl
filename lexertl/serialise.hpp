@@ -13,9 +13,9 @@ namespace lexertl
 {
 // IMPORTANT! This won't work if you don't enable RTTI!
 template<typename CharT, typename id_type, class Archive>
-void serialise (basic_state_machine<CharT, id_type> &sm_, Archive &ar_)
+void serialise(basic_state_machine<CharT, id_type> &sm_, Archive &ar_)
 {
-    detail::basic_internals<id_type> &internals_ = sm_.data ();
+    detail::basic_internals<id_type> &internals_ = sm_.data();
 
     ar_ & internals_._eoi;
     ar_ & *internals_._lookup;

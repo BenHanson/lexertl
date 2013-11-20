@@ -25,54 +25,54 @@ struct basic_internals
     id_type _features;
     id_type_vector_vector _dfa;
 
-    basic_internals () :
-        _eoi (0),
-        _lookup (),
-        _dfa_alphabet (),
-        _features (0),
-        _dfa ()
+    basic_internals() :
+        _eoi(0),
+        _lookup(),
+        _dfa_alphabet(),
+        _features(0),
+        _dfa()
     {
     }
 
-    void clear ()
+    void clear()
     {
         _eoi = 0;
-        _lookup.clear ();
-        _dfa_alphabet.clear ();
+        _lookup.clear();
+        _dfa_alphabet.clear();
         _features = 0;
-        _dfa.clear ();
+        _dfa.clear();
     }
 
-    bool empty () const
+    bool empty() const
     {
-        return _dfa->empty ();
+        return _dfa->empty();
     }
 
-    void add_states (const std::size_t num_)
+    void add_states(const std::size_t num_)
     {
         for (std::size_t index_ = 0; index_ < num_; ++index_)
         {
-            _lookup->push_back (static_cast<id_type_vector *>(0));
+            _lookup->push_back(static_cast<id_type_vector *>(0));
             // lookup *always* has a size 256 now.
-            _lookup->back () = new id_type_vector (256, dead_state_index);
-            _dfa_alphabet.push_back (0);
-            _dfa->push_back (static_cast<id_type_vector *>(0));
-            _dfa->back () = new id_type_vector;
+            _lookup->back() = new id_type_vector(256, dead_state_index);
+            _dfa_alphabet.push_back(0);
+            _dfa->push_back(static_cast<id_type_vector *>(0));
+            _dfa->back() = new id_type_vector;
         }
     }
 
-    void swap (basic_internals &internals_)
+    void swap(basic_internals &internals_)
     {
-        std::swap (_eoi, internals_._eoi);
-        _lookup->swap (*internals_._lookup);
-        _dfa_alphabet.swap (internals_._dfa_alphabet);
-        std::swap (_features, internals_._features);
-        _dfa->swap (*internals_._dfa);
+        std::swap(_eoi, internals_._eoi);
+        _lookup->swap(*internals_._lookup);
+        _dfa_alphabet.swap(internals_._dfa_alphabet);
+        std::swap(_features, internals_._features);
+        _dfa->swap(*internals_._dfa);
     }
 
 private:
-    basic_internals (const basic_internals &); // No copy construction.
-    basic_internals &operator = (const basic_internals &); // No assignment.
+    basic_internals(const basic_internals &); // No copy construction.
+    basic_internals &operator =(const basic_internals &); // No assignment.
 };
 }
 }

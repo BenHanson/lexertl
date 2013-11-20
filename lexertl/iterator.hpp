@@ -22,28 +22,28 @@ public:
     typedef const value_type &reference;
     typedef std::forward_iterator_tag iterator_category;
 
-    iterator () :
-        _results (iter (), iter ()),
-        _sm (0)
+    iterator() :
+        _results(iter(), iter()),
+        _sm(0)
     {
     }
 
-    iterator (const iter &start_, const iter &end_, const sm_type &sm) :
-        _results (start_, end_),
-        _sm (&sm)
+    iterator(const iter &start_, const iter &end_, const sm_type &sm) :
+        _results(start_, end_),
+        _sm(&sm)
     {
-        lookup ();
+        lookup();
     }
 
     // Only need this because of warnings with gcc with -Weffc++
-    iterator (const iterator &rhs_)
+    iterator(const iterator &rhs_)
     {
         _results = rhs_._results;
         _sm = rhs_._sm;
     }
 
     // Only need this because of warnings with gcc with -Weffc++
-    iterator &operator = (const iterator &rhs_)
+    iterator &operator =(const iterator &rhs_)
     {
         if (&rhs_ != this)
         {
@@ -54,37 +54,37 @@ public:
         return *this;
     }
 
-    iterator &operator ++ ()
+    iterator &operator ++()
     {
-        lookup ();
+        lookup();
         return *this;
     }
 
-    iterator operator ++ (int)
+    iterator operator ++(int)
     {
         iterator iter_ = *this;
 
-        lookup ();
+        lookup();
         return iter_;
     }
 
-    const value_type &operator * () const
+    const value_type &operator *() const
     {
         return _results;
     }
 
-    const value_type *operator -> () const
+    const value_type *operator ->() const
     {
         return &_results;
     }
 
-    bool operator == (const iterator &rhs_) const
+    bool operator ==(const iterator &rhs_) const
     {
         return _sm == rhs_._sm && (_sm == 0 ? true :
             _results == rhs_._results);
     }
 
-    bool operator != (const iterator &rhs_) const
+    bool operator !=(const iterator &rhs_) const
     {
         return !(*this == rhs_);
     }
@@ -93,9 +93,9 @@ private:
     value_type _results;
     const sm_type *_sm;
 
-    void lookup ()
+    void lookup()
     {
-        lexertl::lookup (*_sm, _results);
+        lexertl::lookup(*_sm, _results);
 
         if (_results.start == _results.eoi)
         {

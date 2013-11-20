@@ -24,7 +24,7 @@ public:
     {
         typedef basic_state_machine<char_type, id_type> sm;
         typedef typename sm::internals internals;
-        const internals &internals_ = sm_.data ();
+        const internals &internals_ = sm_.data();
         std::size_t additional_tabs_ = 0;
 
         os_ << "template<typename iter_type, typename id_type>\n";
@@ -74,7 +74,7 @@ public:
         // We want a number regardless of id_type.
         os_ << "        results_.id = " << static_cast<std::size_t>
             (internals_._eoi) << ";\n";
-        os_ << "        results_.user_id = results::npos ();\n";
+        os_ << "        results_.user_id = results::npos();\n";
         os_ << "        return;\n";
         os_ << "    }\n\n";
 
@@ -83,9 +83,9 @@ public:
             os_ << "    bool bol_ = results_.bol;\n";
         }
 
-        dump_tables (sm_, 1, pointers_, os_);
+        dump_tables(sm_, 1, pointers_, os_);
 
-        if (internals_._dfa->size () > 1)
+        if (internals_._dfa->size() > 1)
         {
             os_ << "    const id_type *lookup_ = lookups_[results_.state];\n";
             os_ << "    const id_type dfa_alphabet_ = dfa_alphabets_"
@@ -198,7 +198,7 @@ public:
             os_ << ";\n";
         }
 
-        if (internals_._dfa->size () > 1)
+        if (internals_._dfa->size() > 1)
         {
             os_ << "    id_type start_state_ = results_.state;\n";
         }
@@ -299,12 +299,12 @@ public:
             ++additional_tabs_;
         }
 
-        output_char_loop (internals_._features, additional_tabs_, pointers_,
-            os_, bool_<(sizeof (typename sm::traits::input_char_type) > 1)> ());
+        output_char_loop(internals_._features, additional_tabs_, pointers_,
+            os_, bool_<(sizeof(typename sm::traits::input_char_type) > 1)>());
 
         if (internals_._features & eol_bit)
         {
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << "    }\n";
             --additional_tabs_;
         }
@@ -395,7 +395,7 @@ public:
             os_ << ";\n";
         }
 
-        if (internals_._dfa->size () > 1)
+        if (internals_._dfa->size() > 1)
         {
             os_ << "            start_state_ = ";
 
@@ -423,8 +423,8 @@ public:
         os_ << "            end_token_ = curr_;\n";
         os_ << "        }\n";
         os_ << "    }\n\n";
-        output_quit (os_,
-            bool_<(sizeof (typename sm::traits::input_char_type) > 1)> ());
+        output_quit(os_,
+            bool_<(sizeof(typename sm::traits::input_char_type) > 1)>());
 
         if (internals_._features & eol_bit)
         {
@@ -545,7 +545,7 @@ public:
                 os_ << ";\n";
             }
 
-            if (internals_._dfa->size () > 1)
+            if (internals_._dfa->size() > 1)
             {
                 os_ << "                start_state_ = ";
 
@@ -585,18 +585,18 @@ public:
             os_ << "        if (pop_)\n";
             os_ << "        {\n";
             os_ << "            start_state_ =  results_."
-                "stack.top ().first;\n";
-            os_ << "            results_.stack.pop ();\n";
+                "stack.top().first;\n";
+            os_ << "            results_.stack.pop();\n";
             os_ << "        }\n";
-            os_ << "        else if (push_dfa_ != results_.npos ())\n";
+            os_ << "        else if (push_dfa_ != results_.npos())\n";
             os_ << "        {\n";
-            os_ << "            results_.stack.push (typename results::"
+            os_ << "            results_.stack.push(typename results::"
                 "id_type_pair\n";
             os_ << "                (push_dfa_, id_));\n";
             os_ << "        }\n\n";
         }
 
-        if (internals_._dfa->size () > 1)
+        if (internals_._dfa->size() > 1)
         {
             os_ << "        results_.state = start_state_;\n";
         }
@@ -611,7 +611,7 @@ public:
         if (internals_._features & skip_bit)
         {
             // We want a number regardless of id_type.
-            os_ << "\n        if (id_ == results_.skip ()) goto skip;\n";
+            os_ << "\n        if (id_ == results_.skip()) goto skip;\n";
         }
 
         if (internals_._features & again_bit)
@@ -622,9 +622,9 @@ public:
 
             if (internals_._features & recursive_bit)
             {
-                os_ << " || (pop_ && !results_.stack.empty () &&\n";
+                os_ << " || (pop_ && !results_.stack.empty() &&\n";
                 // We want a number regardless of id_type.
-                os_ << "            results_.stack.top ().second == "
+                os_ << "            results_.stack.top().second == "
                     << static_cast<std::size_t>(internals_._eoi) << ')';
             }
 
@@ -648,8 +648,8 @@ public:
 
         os_ << "        results_.start = results_.end;\n";
         os_ << "        ++results_.end;\n";
-        os_ << "        id_ = results::npos ();\n";
-        os_ << "        uid_ = results::npos ();\n";
+        os_ << "        id_ = results::npos();\n";
+        os_ << "        uid_ = results::npos();\n";
         os_ << "    }\n\n";
         os_ << "    results_.id = id_;\n";
         os_ << "    results_.user_id = uid_;\n";
@@ -662,15 +662,15 @@ public:
         const std::size_t tabs_, const bool pointers_, std::ostream &os_)
     {
         const typename detail::basic_internals<id_type> &internals_ =
-            sm_.data ();
+            sm_.data();
         const std::size_t lookup_divisor_ = 8;
         // Lookup is always 256 entries long now
         const std::size_t lookup_quotient_ = 256 / lookup_divisor_;
-        const std::size_t dfas_ = internals_._lookup->size ();
+        const std::size_t dfas_ = internals_._lookup->size();
         std::size_t col_ = 1;
         std::size_t row_ = 1;
 
-        output_tabs (tabs_, os_);
+        output_tabs(tabs_, os_);
         os_ << "static const id_type lookup";
 
         if (dfas_ > 1)
@@ -683,7 +683,7 @@ public:
         }
 
         os_ << "] = \n";
-        output_tabs (tabs_ + 1, os_);
+        output_tabs(tabs_ + 1, os_);
 
         if (dfas_ > 1)
         {
@@ -692,7 +692,7 @@ public:
 
         for (std::size_t l_ = 0; l_ < dfas_; ++l_)
         {
-            const id_type *ptr_ = &internals_._lookup[l_]->front ();
+            const id_type *ptr_ = &internals_._lookup[l_]->front();
 
             // We want numbers regardless of id_type.
             os_ << "{0x" << std::hex << static_cast<std::size_t>(*ptr_++);
@@ -706,7 +706,7 @@ public:
             for (row_ = 1; row_ < lookup_quotient_; ++row_)
             {
                 os_ << ",\n";
-                output_tabs (tabs_ + 1, os_);
+                output_tabs(tabs_ + 1, os_);
                 // We want numbers regardless of id_type.
                 os_ << "0x" << std::hex << static_cast<std::size_t>(*ptr_++);
 
@@ -723,7 +723,7 @@ public:
             if (l_ + 1 < dfas_)
             {
                 os_ << ",\n";
-                output_tabs (tabs_ + 1, os_);
+                output_tabs(tabs_ + 1, os_);
             }
         }
 
@@ -733,7 +733,7 @@ public:
         }
 
         os_ << ";\n";
-        output_tabs (tabs_, os_);
+        output_tabs(tabs_, os_);
         os_ << "static const id_type dfa_alphabet";
 
         if (dfas_ > 1)
@@ -767,12 +767,12 @@ public:
         for (std::size_t dfa_ = 0; dfa_ < dfas_; ++dfa_)
         {
             const id_type dfa_alphabet_ = internals_._dfa_alphabet[dfa_];
-            const std::size_t rows_ = internals_._dfa[dfa_]->size () /
+            const std::size_t rows_ = internals_._dfa[dfa_]->size() /
                 dfa_alphabet_;
-            const id_type *ptr_ = &internals_._dfa[dfa_]->front ();
+            const id_type *ptr_ = &internals_._dfa[dfa_]->front();
             std::string dfa_name_ = "dfa";
 
-            output_tabs (tabs_, os_);
+            output_tabs(tabs_, os_);
             os_ << "static const ";
 
             if (pointers_)
@@ -791,7 +791,7 @@ public:
                 std::ostringstream ss_;
 
                 ss_ << dfa_;
-                dfa_name_ += ss_.str ();
+                dfa_name_ += ss_.str();
                 os_ << dfa_;
             }
 
@@ -800,13 +800,13 @@ public:
 
             for (std::size_t row_ = 0; row_ < rows_; ++row_)
             {
-                dump_row (row_ == 0, ptr_, dfa_name_, dfa_alphabet_,
+                dump_row(row_ == 0, ptr_, dfa_name_, dfa_alphabet_,
                     pointers_, os_);
 
                 if (row_ + 1 < rows_)
                 {
                     os_ << ",\n";
-                    output_tabs (tabs_ + 1, os_);
+                    output_tabs(tabs_ + 1, os_);
                 }
             }
 
@@ -815,7 +815,7 @@ public:
 
         if (dfas_ > 1)
         {
-            output_tabs (tabs_, os_);
+            output_tabs(tabs_, os_);
             os_ << "static const ";
 
             if (pointers_)
@@ -840,7 +840,7 @@ public:
 
 protected:
     template<typename id_type>
-    static void dump_row (const bool first_, const id_type * &ptr_,
+    static void dump_row(const bool first_, const id_type * &ptr_,
         const std::string &dfa_name_, const id_type dfa_alphabet_,
         const bool pointers_, std::ostream &os_)
     {
@@ -918,7 +918,7 @@ protected:
         }
     }
 
-    static void output_tabs (const std::size_t tabs_, std::ostream &os_)
+    static void output_tabs(const std::size_t tabs_, std::ostream &os_)
     {
         for (std::size_t i_ = 0; i_ < tabs_; ++i_)
         {
@@ -927,14 +927,14 @@ protected:
     }
 
     template<typename id_type>
-    static void output_char_loop (const id_type features_,
+    static void output_char_loop(const id_type features_,
         const std::size_t additional_tabs_, const bool pointers_,
         std::ostream &os_, const false_ &)
     {
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        const typename results::char_type prev_char_ = "
             "*curr_++;\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        const ";
 
         if (pointers_)
@@ -951,7 +951,7 @@ protected:
         if (pointers_)
         {
             os_ << "reinterpret_cast<void * const *>\n            ";
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << '(';
         }
 
@@ -960,7 +960,7 @@ protected:
         if (!pointers_)
         {
             os_ << "\n            ";
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
         }
 
         os_ << "[static_cast<typename results::index_type>";
@@ -968,7 +968,7 @@ protected:
         if (pointers_)
         {
             os_ << "\n            ";
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
         }
 
         os_ << "(prev_char_)]]";
@@ -982,26 +982,26 @@ protected:
 
         if (features_ & bol_bit)
         {
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << "        bol_ = prev_char_ == '\\n';\n\n";
         }
 
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        if (state_ == 0)\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        {\n";
 
         if (features_ & eol_bit)
         {
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << "            EOL_state_ = 0;\n";
         }
 
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "            break;\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        }\n\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        ptr_ = ";
 
         if (pointers_)
@@ -1017,33 +1017,33 @@ protected:
     }
 
     template<typename id_type>
-    static void output_char_loop (const id_type features_,
+    static void output_char_loop(const id_type features_,
         const std::size_t additional_tabs_, const bool pointers_,
         std::ostream &os_, const true_ &)
     {
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        const std::size_t bytes_ =\n";
-        output_tabs (additional_tabs_, os_);
-        os_ << "            sizeof (typename results::char_type) < 3 ?\n";
-        output_tabs (additional_tabs_, os_);
-        os_ << "            sizeof (typename results::char_type) : 3;\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
+        os_ << "            sizeof(typename results::char_type) < 3 ?\n";
+        output_tabs(additional_tabs_, os_);
+        os_ << "            sizeof(typename results::char_type) : 3;\n";
+        output_tabs(additional_tabs_, os_);
         os_ << "        const std::size_t shift_[] = {0, 8, 16};\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        typename results::char_type prev_char_ = "
             "*curr_++;\n\n";
 
         if (features_ & bol_bit)
         {
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << "        bol_ = prev_char_ == '\\n';\n\n";
         }
 
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        for (std::size_t i_ = 0; i_ < bytes_; ++i_)\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        {\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "            const ";
 
         if (pointers_)
@@ -1060,12 +1060,12 @@ protected:
         if (pointers_)
         {
             os_ << "reinterpret_cast<void * const *>\n                ";
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << '(';
         }
 
         os_ << "ptr_[lookup_[static_cast\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "                <unsigned char>((prev_char_ >>\n"
             "                shift_[bytes_ - 1 - i_]) & 0xff)]]";
 
@@ -1075,22 +1075,22 @@ protected:
         }
 
         os_ << ";\n\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "            if (state_ == 0)\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "            {\n";
 
         if (features_ & eol_bit)
         {
-            output_tabs (additional_tabs_, os_);
+            output_tabs(additional_tabs_, os_);
             os_ << "                EOL_state_ = 0;\n";
         }
 
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "                goto quit;\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "            }\n\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "            ptr_ = ";
 
         if (pointers_)
@@ -1103,16 +1103,16 @@ protected:
         }
 
         os_ << ";\n";
-        output_tabs (additional_tabs_, os_);
+        output_tabs(additional_tabs_, os_);
         os_ << "        }\n";
     }
 
-    static void output_quit (std::ostream &, const false_ &)
+    static void output_quit(std::ostream &, const false_ &)
     {
         // Nothing to do
     }
 
-    static void output_quit (std::ostream &os_, const true_ &)
+    static void output_quit(std::ostream &os_, const true_ &)
     {
         os_ << "quit:\n";
     }

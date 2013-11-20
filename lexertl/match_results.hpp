@@ -32,51 +32,51 @@ struct match_results
     bool bol;
     id_type state;
 
-    match_results () :
-        id (0),
-        user_id (npos ()),
-        start (iter_type ()),
-        end (iter_type ()),
-        eoi (iter_type ()),
-        bol (true),
-        state (0)
+    match_results() :
+        id(0),
+        user_id(npos()),
+        start(iter_type()),
+        end(iter_type()),
+        eoi(iter_type()),
+        bol(true),
+        state(0)
     {
     }
 
-    match_results (const iter_type &start_, const iter_type &end_) :
-        id (0),
-        user_id (npos ()),
-        start (start_),
-        end (start_),
-        eoi (end_),
-        bol (true),
-        state (0)
+    match_results(const iter_type &start_, const iter_type &end_) :
+        id(0),
+        user_id(npos()),
+        start(start_),
+        end(start_),
+        eoi(end_),
+        bol(true),
+        state(0)
     {
     }
 
-    virtual ~match_results ()
+    virtual ~match_results()
     {
     }
 
-    string str () const
+    string str() const
     {
-        return string (start, end);
+        return string(start, end);
     }
 
-    virtual void clear ()
+    virtual void clear()
     {
         id  = 0;
-        user_id = npos ();
+        user_id = npos();
         start = eoi;
         end = eoi;
         bol = true;
         state = 0;
     }
 
-    virtual void reset (const iter_type &start_, const iter_type &end_)
+    virtual void reset(const iter_type &start_, const iter_type &end_)
     {
         id  = 0;
-        user_id = npos ();
+        user_id = npos();
         start = start_;
         end  = start_;
         eoi = end_;
@@ -84,17 +84,17 @@ struct match_results
         state = 0;
     }
 
-    static id_type npos ()
+    static id_type npos()
     {
         return static_cast<id_type>(~0);
     }
 
-    static id_type skip ()
+    static id_type skip()
     {
         return static_cast<id_type>(~1);
     }
 
-    bool operator == (const match_results &rhs_) const
+    bool operator ==(const match_results &rhs_) const
     {
         return id == rhs_.id &&
             user_id == rhs_.user_id &&
@@ -114,34 +114,34 @@ struct recursive_match_results : public match_results<iter, id_type, flags>
     typedef std::pair<id_type, id_type> id_type_pair;
     std::stack<id_type_pair> stack;
 
-    recursive_match_results () :
-        match_results<iter, id_type, flags> (),
-        stack ()
+    recursive_match_results() :
+        match_results<iter, id_type, flags>(),
+        stack()
     {
     }
 
-    recursive_match_results (const iter &start_, const iter &end_) :
-        match_results<iter, id_type, flags> (start_, end_),
-        stack ()
+    recursive_match_results(const iter &start_, const iter &end_) :
+        match_results<iter, id_type, flags>(start_, end_),
+        stack()
     {
     }
 
-    virtual ~recursive_match_results ()
+    virtual ~recursive_match_results()
     {
     }
 
-    virtual void clear ()
+    virtual void clear()
     {
-        match_results<iter, id_type, flags>::clear ();
+        match_results<iter, id_type, flags>::clear();
 
-        while (!stack.empty()) stack.pop ();
+        while (!stack.empty()) stack.pop();
     }
 
-    virtual void reset (const iter &start_, const iter &end_)
+    virtual void reset(const iter &start_, const iter &end_)
     {
-        match_results<iter, id_type, flags>::reset (start_, end_);
+        match_results<iter, id_type, flags>::reset(start_, end_);
 
-        while (!stack.empty()) stack.pop ();
+        while (!stack.empty()) stack.pop();
     }
 };
 

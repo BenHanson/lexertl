@@ -21,50 +21,50 @@ public:
         difference_type difference_type;
     typedef std::forward_iterator_tag iterator_category;
 
-    basic_utf8_in_iterator () :
-        _char (0)
+    basic_utf8_in_iterator() :
+        _char(0)
     {
     }
 
-    explicit basic_utf8_in_iterator (const char_iterator &it_,
+    explicit basic_utf8_in_iterator(const char_iterator &it_,
         const char_iterator &end_) :
-        _it (it_),
-        _char (0)
+        _it(it_),
+        _char(0)
     {
         if (it_ != end_)
         {
-            next ();
+            next();
         }
     }
 
-    char_type operator * () const
+    char_type operator *() const
     {
         return _char;
     }
 
-    bool operator == (const basic_utf8_in_iterator &rhs_) const
+    bool operator ==(const basic_utf8_in_iterator &rhs_) const
     {
         return _it == rhs_._it;
     }
 
-    bool operator != (const basic_utf8_in_iterator &rhs_) const
+    bool operator !=(const basic_utf8_in_iterator &rhs_) const
     {
         return _it != rhs_._it;
     }
 
-    basic_utf8_in_iterator &operator ++ ()
+    basic_utf8_in_iterator &operator ++()
     {
         ++_it;
-        next ();
+        next();
         return *this;
     }
 
-    basic_utf8_in_iterator operator ++ (int)
+    basic_utf8_in_iterator operator ++(int)
     {
         basic_utf8_in_iterator temp_ = *this;
 
         ++_it;
-        next ();
+        next();
         return temp_;
     }
 
@@ -72,9 +72,9 @@ private:
     char_iterator _it;
     char_type _char;
 
-    void next ()
+    void next()
     {
-        const char len_ = len (_it);
+        const char len_ = len(_it);
         char_type ch_ = *_it & 0xff;
 
         switch (len_)
@@ -104,7 +104,7 @@ private:
         _char = ch_;
     }
 
-    char len (const char_iterator &it_) const
+    char len(const char_iterator &it_) const
     {
         const unsigned char ch_ = *it_;
 
@@ -125,53 +125,53 @@ public:
         difference_type difference_type;
     typedef std::forward_iterator_tag iterator_category;
 
-    basic_utf8_out_iterator () :
-        _count (0),
-        _index (0)
+    basic_utf8_out_iterator() :
+        _count(0),
+        _index(0)
     {
     }
 
-    explicit basic_utf8_out_iterator (const char_iterator &it_,
+    explicit basic_utf8_out_iterator(const char_iterator &it_,
         const char_iterator &end_) :
-        _it (it_),
-        _count (0),
-        _index (0)
+        _it(it_),
+        _count(0),
+        _index(0)
     {
         if (it_ != end_)
         {
-            next ();
+            next();
         }
     }
 
-    char operator * () const
+    char operator *() const
     {
         return _bytes[_index];
     }
 
-    bool operator == (const basic_utf8_out_iterator &rhs_) const
+    bool operator ==(const basic_utf8_out_iterator &rhs_) const
     {
         return _it == rhs_._it;
     }
 
-    bool operator != (const basic_utf8_out_iterator &rhs_) const
+    bool operator !=(const basic_utf8_out_iterator &rhs_) const
     {
         return _it != rhs_._it;
     }
 
-    basic_utf8_out_iterator &operator ++ ()
+    basic_utf8_out_iterator &operator ++()
     {
         ++_index;
 
         if (_index >= _count)
         {
             ++_it;
-            next ();
+            next();
         }
 
         return *this;
     }
 
-    basic_utf8_out_iterator operator ++ (int)
+    basic_utf8_out_iterator operator ++(int)
     {
         basic_utf8_out_iterator temp_ = *this;
 
@@ -180,7 +180,7 @@ public:
         if (_index >= _count)
         {
             ++_it;
-            next ();
+            next();
         }
 
         return temp_;
@@ -192,11 +192,11 @@ private:
     unsigned char _count;
     unsigned char _index;
 
-    void next ()
+    void next()
     {
         const std::size_t ch_ = *_it;
 
-        _count = len (ch_);
+        _count = len(ch_);
         _index = 0;
 
         switch (_count)
@@ -222,7 +222,7 @@ private:
         }
     }
 
-    char len (const std::size_t ch_) const
+    char len(const std::size_t ch_) const
     {
         return ch_ < 0x80 ? 1 :
             ch_ < 0x800 ? 2 :
@@ -241,50 +241,50 @@ public:
         difference_type difference_type;
     typedef std::forward_iterator_tag iterator_category;
 
-    basic_utf16_in_iterator () :
-        _char (0)
+    basic_utf16_in_iterator() :
+        _char(0)
     {
     }
 
-    explicit basic_utf16_in_iterator (const char_iterator &it_,
+    explicit basic_utf16_in_iterator(const char_iterator &it_,
         const char_iterator &end_) :
-        _it (it_),
-        _char (0)
+        _it(it_),
+        _char(0)
     {
         if (it_ != end_)
         {
-            next ();
+            next();
         }
     }
 
-    char_type operator * () const
+    char_type operator *() const
     {
         return _char;
     }
 
-    bool operator == (const basic_utf16_in_iterator &rhs_) const
+    bool operator ==(const basic_utf16_in_iterator &rhs_) const
     {
         return _it == rhs_._it;
     }
 
-    bool operator != (const basic_utf16_in_iterator &rhs_) const
+    bool operator !=(const basic_utf16_in_iterator &rhs_) const
     {
         return _it != rhs_._it;
     }
 
-    basic_utf16_in_iterator &operator ++ ()
+    basic_utf16_in_iterator &operator ++()
     {
         ++_it;
-        next ();
+        next();
         return *this;
     }
 
-    basic_utf16_in_iterator operator ++ (int)
+    basic_utf16_in_iterator operator ++(int)
     {
         basic_utf16_in_iterator temp_ = *this;
 
         ++_it;
-        next ();
+        next();
         return temp_;
     }
 
@@ -292,7 +292,7 @@ private:
     char_iterator _it;
     char_type _char;
 
-    void next ()
+    void next()
     {
         char_type ch_ = *_it & 0xffff;
 
@@ -317,53 +317,53 @@ public:
         difference_type difference_type;
     typedef std::forward_iterator_tag iterator_category;
 
-    basic_utf16_out_iterator () :
-        _count (0),
-        _index (0)
+    basic_utf16_out_iterator() :
+        _count(0),
+        _index(0)
     {
     }
 
-    explicit basic_utf16_out_iterator (const char_iterator &it_,
+    explicit basic_utf16_out_iterator(const char_iterator &it_,
         const char_iterator &end_) :
-        _it (it_),
-        _count (0),
-        _index (0)
+        _it(it_),
+        _count(0),
+        _index(0)
     {
         if (it_ != end_)
         {
-            next ();
+            next();
         }
     }
 
-    wchar_t operator * () const
+    wchar_t operator *() const
     {
         return _chars[_index];
     }
 
-    bool operator == (const basic_utf16_out_iterator &rhs_) const
+    bool operator ==(const basic_utf16_out_iterator &rhs_) const
     {
         return _it == rhs_._it;
     }
 
-    bool operator != (const basic_utf16_out_iterator &rhs_) const
+    bool operator !=(const basic_utf16_out_iterator &rhs_) const
     {
         return _it != rhs_._it;
     }
 
-    basic_utf16_out_iterator &operator ++ ()
+    basic_utf16_out_iterator &operator ++()
     {
         ++_index;
 
         if (_index >= _count)
         {
             ++_it;
-            next ();
+            next();
         }
 
         return *this;
     }
 
-    basic_utf16_out_iterator operator ++ (int)
+    basic_utf16_out_iterator operator ++(int)
     {
         basic_utf16_out_iterator temp_ = *this;
 
@@ -372,7 +372,7 @@ public:
         if (_index >= _count)
         {
             ++_it;
-            next ();
+            next();
         }
 
         return temp_;
@@ -384,11 +384,11 @@ private:
     unsigned char _count;
     unsigned char _index;
 
-    void next ()
+    void next()
     {
         const std::size_t ch_ = *_it;
 
-        _count = len (ch_);
+        _count = len(ch_);
         _index = 0;
 
         switch (_count)
@@ -404,7 +404,7 @@ private:
         }
     }
 
-    char len (const std::size_t ch_) const
+    char len(const std::size_t ch_) const
     {
         return ch_ > 0xffff ? 2 : 1;
     }

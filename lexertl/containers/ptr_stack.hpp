@@ -18,50 +18,50 @@ class ptr_stack
 public:
     typedef std::stack<ptr_type *> stack;
 
-    ptr_stack () :
-        _stack ()
+    ptr_stack() :
+        _stack()
     {
     }
 
-    ~ptr_stack ()
+    ~ptr_stack()
     {
-        clear ();
+        clear();
     }
 
-    stack *operator -> ()
+    stack *operator ->()
     {
         return &_stack;
     }
 
-    const stack *operator -> () const
+    const stack *operator ->() const
     {
         return &_stack;
     }
 
-    stack &operator * ()
+    stack &operator *()
     {
         return _stack;
     }
 
-    const stack &operator * () const
+    const stack &operator *() const
     {
         return _stack;
     }
 
-    void clear ()
+    void clear()
     {
-        while (!_stack.empty ())
+        while (!_stack.empty())
         {
-            delete _stack.top ();
-            _stack.pop ();
+            delete _stack.top();
+            _stack.pop();
         }
     }
 
 private:
     stack _stack;
 
-    ptr_stack (const ptr_stack &); // No copy construction.
-    ptr_stack &operator = (const ptr_stack &); // No assignment.
+    ptr_stack(const ptr_stack &); // No copy construction.
+    ptr_stack &operator =(const ptr_stack &); // No assignment.
 };
 }
 }

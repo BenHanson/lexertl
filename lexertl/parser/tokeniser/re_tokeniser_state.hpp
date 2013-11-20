@@ -34,36 +34,36 @@ struct basic_re_tokeniser_state
     bool _in_string;
     id_type _nl_id;
 
-    basic_re_tokeniser_state (const char_type *start_,
+    basic_re_tokeniser_state(const char_type *start_,
         const char_type * const end_, id_type id_, const std::size_t flags_,
         const std::locale locale_, const bool macro_) :
-        _start (start_),
-        _end (end_),
-        _curr (start_),
-        _id (id_),
-        _flags (flags_),
-        _flags_stack (),
-        _locale (locale_),
-        _macro (macro_),
-        _paren_count (0),
-        _in_string (false),
-        _nl_id (static_cast<id_type>(~0))
+        _start(start_),
+        _end(end_),
+        _curr(start_),
+        _id(id_),
+        _flags(flags_),
+        _flags_stack(),
+        _locale(locale_),
+        _macro(macro_),
+        _paren_count(0),
+        _in_string(false),
+        _nl_id(static_cast<id_type>(~0))
     {
     }
 
-    basic_re_tokeniser_state (const basic_re_tokeniser_state &rhs_)
+    basic_re_tokeniser_state(const basic_re_tokeniser_state &rhs_)
     {
-        assign (rhs_);
+        assign(rhs_);
     }
 
     // prevent VC++ 7.1 warning:
     const basic_re_tokeniser_state &operator =
         (const basic_re_tokeniser_state &rhs_)
     {
-        assign (rhs_);
+        assign(rhs_);
     }
 
-    void assign (const basic_re_tokeniser_state &rhs_)
+    void assign(const basic_re_tokeniser_state &rhs_)
     {
         _start = rhs_._start;
         _end = rhs_._end;
@@ -79,7 +79,7 @@ struct basic_re_tokeniser_state
         return this;
     }
 
-    inline bool next (char_type &ch_)
+    inline bool next(char_type &ch_)
     {
         if (_curr >= _end)
         {
@@ -89,22 +89,22 @@ struct basic_re_tokeniser_state
         else
         {
             ch_ = *_curr;
-            increment ();
+            increment();
             return false;
         }
     }
 
-    inline void increment ()
+    inline void increment()
     {
         ++_curr;
     }
 
-    inline std::size_t index ()
+    inline std::size_t index()
     {
         return _curr - _start;
     }
 
-    inline bool eos ()
+    inline bool eos()
     {
         return _curr >= _end;
     }

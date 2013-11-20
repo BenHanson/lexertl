@@ -26,21 +26,27 @@ template<typename CharT>
 class basic_memory_file
 {
 public:
-    basic_memory_file (const char *pathname_) :
-        _data (0),
-        _size (0)
+    basic_memory_file(const char *pathname_) :
+        _data(0),
+        _size(0),
+#ifdef __unix__
+        _fh(0)
+#else
+        _fh(0),
+        _fmh(0)
+#endif
     {
 #ifdef __unix__
-        _fh = ::open (pathname_, O_RDONLY);
+        _fh = ::open(pathname_, O_RDONLY);
 
         if (_fh > -1)
         {
             struct stat sbuf_;
 
-            if (::fstat (_fh, &sbuf_) > -1)
+            if (::fstat(_fh, &sbuf_) > -1)
             {
                 _data = static_cast<const CharT *>
-                    (::mmap (0, sbuf_.st_size, PROT_READ, MAP_SHARED, _fh, 0));
+                    (::mmap(0, sbuf_.st_size, PROT_READ, MAP_SHARED, _fh, 0));
 
                 if (_data == MAP_FAILED)
                 {
@@ -53,13 +59,13 @@ public:
             }
         }
 #elif defined _WIN32
-        _fh = ::CreateFileA (pathname_, GENERIC_READ, FILE_SHARE_READ, 0,
+        _fh = ::CreateFileA(pathname_, GENERIC_READ, FILE_SHARE_READ, 0,
             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
         _fmh = 0;
 
         if (_fh != INVALID_HANDLE_VALUE)
         {
-            _fmh = ::CreateFileMapping (_fh, 0, PAGE_READONLY, 0, 0, 0);
+            _fmh = ::CreateFileMapping(_fh, 0, PAGE_READONLY, 0, 0, 0);
 
             if (_fmh != 0)
             {
@@ -72,7 +78,7 @@ public:
 #endif
     }
 
-    ~basic_memory_file ()
+    ~basic_memory_file()
     {
 #if defined(__unix__)
         ::munmap(const_cast<CharT *>(_data), _size);
@@ -84,12 +90,12 @@ public:
 #endif
     }
 
-    const CharT *data () const
+    const CharT *data() const
     {
         return _data;
     }
 
-    std::size_t size () const
+    std::size_t size() const
     {
         return _size;
     }
@@ -105,6 +111,11 @@ private:
 #else
     #error Only Posix or Windows are supported.
 #endif
+
+    // No copy construction.
+    basic_memory_file(const basic_memory_file &);
+    // No assignment.
+	basic_memory_file &operator =(const basic_memory_file &);
 };
 
 typedef basic_memory_file<char> memory_file;

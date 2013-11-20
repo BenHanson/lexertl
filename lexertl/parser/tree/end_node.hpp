@@ -25,68 +25,68 @@ public:
     typedef typename node::node_type node_type;
     typedef typename node::node_vector node_vector;
 
-    basic_end_node (const id_type id_, const id_type user_id_,
+    basic_end_node(const id_type id_, const id_type user_id_,
         const id_type next_dfa_, const id_type push_dfa_,
         const bool pop_dfa_) :
-        basic_node<id_type> (false),
-        _id (id_),
-        _user_id (user_id_),
-        _next_dfa (next_dfa_),
-        _push_dfa (push_dfa_),
-        _pop_dfa (pop_dfa_),
-        _followpos ()
+        basic_node<id_type>(false),
+        _id(id_),
+        _user_id(user_id_),
+        _next_dfa(next_dfa_),
+        _push_dfa(push_dfa_),
+        _pop_dfa(pop_dfa_),
+        _followpos()
     {
-        basic_node<id_type>::_firstpos.push_back (this);
-        basic_node<id_type>::_lastpos.push_back (this);
+        basic_node<id_type>::_firstpos.push_back(this);
+        basic_node<id_type>::_lastpos.push_back(this);
     }
 
-    virtual ~basic_end_node ()
+    virtual ~basic_end_node()
     {
     }
 
-    virtual node_type what_type () const
+    virtual node_type what_type() const
     {
         return node::END;
     }
 
-    virtual bool traverse (const_node_stack &/*node_stack_*/,
+    virtual bool traverse(const_node_stack &/*node_stack_*/,
         bool_stack &/*perform_op_stack_*/) const
     {
         return false;
     }
 
-    virtual const node_vector &followpos () const
+    virtual const node_vector &followpos() const
     {
         // _followpos is always empty..!
         return _followpos;
     }
 
-    virtual bool end_state () const
+    virtual bool end_state() const
     {
         return true;
     }
 
-    virtual id_type id () const
+    virtual id_type id() const
     {
         return _id;
     }
 
-    virtual id_type user_id () const
+    virtual id_type user_id() const
     {
         return _user_id;
     }
 
-    virtual id_type next_dfa () const
+    virtual id_type next_dfa() const
     {
         return _next_dfa;
     }
 
-    virtual id_type push_dfa () const
+    virtual id_type push_dfa() const
     {
         return _push_dfa;
     }
 
-    virtual bool pop_dfa () const
+    virtual bool pop_dfa() const
     {
         return _pop_dfa;
     }
@@ -99,7 +99,7 @@ private:
     bool _pop_dfa;
     node_vector _followpos;
 
-    virtual void copy_node (node_ptr_vector &/*node_ptr_vector_*/,
+    virtual void copy_node(node_ptr_vector &/*node_ptr_vector_*/,
         node_stack &/*new_node_stack_*/, bool_stack &/*perform_op_stack_*/,
         bool &/*down_*/) const
     {

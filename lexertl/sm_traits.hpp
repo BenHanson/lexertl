@@ -19,7 +19,7 @@ struct basic_sm_traits
     typedef ch_type char_type;
     typedef sm_type id_type;
 
-    static id_type npos ()
+    static id_type npos()
     {
         return static_cast<id_type>(~0);
     }
@@ -34,7 +34,7 @@ struct basic_sm_traits<ch_type, sm_type, true, look, dfa_nfa>
     typedef unsigned char char_type;
     typedef sm_type id_type;
 
-    static id_type npos ()
+    static id_type npos()
     {
         return static_cast<id_type>(~0);
     }

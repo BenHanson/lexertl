@@ -23,45 +23,45 @@ public:
     typedef typename node::node_stack node_stack;
     typedef typename node::node_type node_type;
 
-    basic_selection_node (basic_node<id_type> *left_,
+    basic_selection_node(basic_node<id_type> *left_,
         basic_node<id_type> *right_) :
-        basic_node<id_type> (left_->nullable () || right_->nullable ()),
-        _left (left_),
-        _right (right_)
+        basic_node<id_type>(left_->nullable() || right_->nullable()),
+        _left(left_),
+        _right(right_)
     {
-        _left->append_firstpos (node::_firstpos);
-        _right->append_firstpos (node::_firstpos);
-        _left->append_lastpos (node::_lastpos);
-        _right->append_lastpos (node::_lastpos);
+        _left->append_firstpos(node::_firstpos);
+        _right->append_firstpos(node::_firstpos);
+        _left->append_lastpos(node::_lastpos);
+        _right->append_lastpos(node::_lastpos);
     }
 
-    virtual ~basic_selection_node ()
+    virtual ~basic_selection_node()
     {
     }
 
-    virtual node_type what_type () const
+    virtual node_type what_type() const
     {
         return node::SELECTION;
     }
 
-    virtual bool traverse (const_node_stack &node_stack_,
+    virtual bool traverse(const_node_stack &node_stack_,
         bool_stack &perform_op_stack_) const
     {
-        perform_op_stack_.push (true);
+        perform_op_stack_.push(true);
 
-        switch (_right->what_type ())
+        switch (_right->what_type())
         {
         case node::SEQUENCE:
         case node::SELECTION:
         case node::ITERATION:
-            perform_op_stack_.push (false);
+            perform_op_stack_.push(false);
             break;
         default:
             break;
         }
 
-        node_stack_.push (_right);
-        node_stack_.push (_left);
+        node_stack_.push(_right);
+        node_stack_.push(_left);
         return true;
     }
 
@@ -70,35 +70,35 @@ private:
     basic_node<id_type> *_left;
     basic_node<id_type> *_right;
 
-    virtual void copy_node (node_ptr_vector &node_ptr_vector_,
+    virtual void copy_node(node_ptr_vector &node_ptr_vector_,
         node_stack &new_node_stack_, bool_stack &perform_op_stack_,
         bool &down_) const
     {
-        if (perform_op_stack_.top ())
+        if (perform_op_stack_.top())
         {
-            basic_node<id_type> *rhs_ = new_node_stack_.top ();
+            basic_node<id_type> *rhs_ = new_node_stack_.top();
 
-            new_node_stack_.pop ();
+            new_node_stack_.pop();
 
-            basic_node<id_type> *lhs_ = new_node_stack_.top ();
+            basic_node<id_type> *lhs_ = new_node_stack_.top();
 
             node_ptr_vector_->push_back
                 (static_cast<basic_selection_node *>(0));
-            node_ptr_vector_->back () = new basic_selection_node (lhs_, rhs_);
-            new_node_stack_.top () = node_ptr_vector_->back ();
+            node_ptr_vector_->back() = new basic_selection_node(lhs_, rhs_);
+            new_node_stack_.top() = node_ptr_vector_->back();
         }
         else
         {
             down_ = true;
         }
 
-        perform_op_stack_.pop ();
+        perform_op_stack_.pop();
     }
 
     // No copy construction.
-    basic_selection_node (const basic_selection_node &);
+    basic_selection_node(const basic_selection_node &);
     // No assignment.
-    const basic_selection_node &operator = (const basic_selection_node &);
+    const basic_selection_node &operator =(const basic_selection_node &);
 };
 }
 }

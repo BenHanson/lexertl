@@ -26,43 +26,43 @@ struct basic_charset
     token _token;
     index_set _index_set;
 
-    basic_charset () :
-        _token (),
-        _index_set ()
+    basic_charset() :
+        _token(),
+        _index_set()
     {
     }
 
-    basic_charset (const token &token_, const std::size_t index_) :
-        _token (token_),
-        _index_set ()
+    basic_charset(const token &token_, const std::size_t index_) :
+        _token(token_),
+        _index_set()
     {
-        _index_set.insert (index_);
+        _index_set.insert(index_);
     }
 
-    bool empty () const
+    bool empty() const
     {
-        return _token.empty () && _index_set.empty ();
+        return _token.empty() && _index_set.empty();
     }
 
-    void intersect (basic_charset &rhs_, basic_charset &overlap_)
+    void intersect(basic_charset &rhs_, basic_charset &overlap_)
     {
-        _token.intersect (rhs_._token, overlap_._token);
+        _token.intersect(rhs_._token, overlap_._token);
 
-        if (!overlap_._token.empty ())
+        if (!overlap_._token.empty())
         {
-            std::merge (_index_set.begin (), _index_set.end (),
-                rhs_._index_set.begin (), rhs_._index_set.end (),
-                std::inserter (overlap_._index_set,
-                overlap_._index_set.end ()));
+            std::merge(_index_set.begin(), _index_set.end(),
+                rhs_._index_set.begin(), rhs_._index_set.end(),
+                std::inserter(overlap_._index_set,
+                overlap_._index_set.end()));
 
-            if (_token.empty ())
+            if (_token.empty())
             {
-                _index_set.clear ();
+                _index_set.clear();
             }
 
-            if (rhs_._token.empty ())
+            if (rhs_._token.empty())
             {
-                rhs_._index_set.clear ();
+                rhs_._index_set.clear();
             }
         }
     }

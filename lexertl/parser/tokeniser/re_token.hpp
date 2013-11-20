@@ -27,21 +27,21 @@ struct basic_re_token
     string _extra;
     string_token _str;
 
-    basic_re_token (const token_type type_ = BEGIN) :
-        _type (type_),
-        _extra (),
-        _str ()
+    basic_re_token(const token_type type_ = BEGIN) :
+        _type(type_),
+        _extra(),
+        _str()
     {
     }
 
-    void clear ()
+    void clear()
     {
         _type = BEGIN;
-        _extra.clear ();
-        _str.clear ();
+        _extra.clear();
+        _str.clear();
     }
 
-    basic_re_token &operator = (const basic_re_token &rhs_)
+    basic_re_token &operator =(const basic_re_token &rhs_)
     {
         _type = rhs_._type;
         _extra = rhs_._extra;
@@ -49,7 +49,7 @@ struct basic_re_token
         return *this;
     }
 
-    char precedence (const token_type type_) const
+    char precedence(const token_type type_) const
     {
         // Moved in here for Solaris compiler.
         static const char precedence_table_[END + 1][END + 1] = {
@@ -83,7 +83,7 @@ struct basic_re_token
         return precedence_table_[_type][type_];
     }
 
-    const char *precedence_string () const
+    const char *precedence_string() const
     {
         // Moved in here for Solaris compiler.
         static const char *precedence_strings_[END + 1] =

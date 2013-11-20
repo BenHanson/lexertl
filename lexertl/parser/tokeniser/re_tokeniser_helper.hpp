@@ -39,10 +39,10 @@ public:
     typedef size<4> four;
 
     template<typename state_type, typename char_type>
-    static const char *escape_sequence (state_type &state_,
+    static const char *escape_sequence(state_type &state_,
         char_type &ch_, std::size_t &str_len_)
     {
-        bool eos_ = state_.eos ();
+        bool eos_ = state_.eos();
 
         if (eos_)
         {
@@ -51,18 +51,18 @@ public:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following '\\' in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
-        const char *str_ = charset_shortcut (state_, str_len_);
+        const char *str_ = charset_shortcut(state_, str_len_);
 
         if (str_)
         {
-            state_.increment ();
+            state_.increment();
         }
         else
         {
-            ch_ = chr (state_);
+            ch_ = chr(state_);
         }
 
         return str_;
@@ -70,11 +70,11 @@ public:
 
     // This function can call itself.
     template<typename state_type>
-    static void charset (state_type &state_, string_token &token_)
+    static void charset(state_type &state_, string_token &token_)
     {
         bool negated_ = false;
         typename state_type::char_type ch_ = 0;
-        bool eos_ = state_.next (ch_);
+        bool eos_ = state_.next(ch_);
 
         if (eos_)
         {
@@ -83,14 +83,14 @@ public:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following '[' in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
         negated_ = ch_ == '^';
 
         if (negated_)
         {
-            eos_ = state_.next (ch_);
+            eos_ = state_.next(ch_);
 
             if (eos_)
             {
@@ -99,7 +99,7 @@ public:
                 // Pointless returning index if at end of string
                 ss_ << "Unexpected end of regex following '^' in rule id " <<
                     state_._id << '.';
-                throw runtime_error (ss_.str ());
+                throw runtime_error(ss_.str());
             }
         }
 
@@ -111,25 +111,25 @@ public:
             if (ch_ == '\\')
             {
                 std::size_t str_len_ = 0;
-                const char *str_ = escape_sequence (state_, prev_,
+                const char *str_ = escape_sequence(state_, prev_,
                     str_len_);
 
                 chset_ = str_ != 0;
 
                 if (chset_)
                 {
-                    char_state temp_state_ (str_ + 1, str_ + str_len_,
+                    char_state temp_state_(str_ + 1, str_ + str_len_,
                         state_._id, state_._flags, state_._locale, false);
                     string_token temp_token_;
 
-                    charset (temp_state_, temp_token_);
-                    token_.insert (temp_token_);
+                    charset(temp_state_, temp_token_);
+                    token_.insert(temp_token_);
                 }
             }
-            else if (ch_ == '[' && !state_.eos () && *state_._curr == ':')
+            else if (ch_ == '[' && !state_.eos() && *state_._curr == ':')
             {
-                state_.increment ();
-                posix (state_, token_);
+                state_.increment();
+                posix(state_, token_);
                 chset_ = true;
             }
             else
@@ -138,7 +138,7 @@ public:
                 prev_ = ch_;
             }
 
-            eos_ = state_.next (ch_);
+            eos_ = state_.next(ch_);
 
             // Covers preceding if, else if and else
             if (eos_)
@@ -148,27 +148,30 @@ public:
                 // Pointless returning index if at end of string
                 ss_ << "Unexpected end of regex (missing ']') in rule id " <<
                     state_._id << '.';
-                throw runtime_error (ss_.str ());
+                throw runtime_error(ss_.str());
             }
 
             if (ch_ == '-')
             {
-                charset_range (chset_, state_, eos_, ch_, prev_,
+                charset_range(chset_, state_, eos_, ch_, prev_,
                     token_);
             }
             else if (!chset_)
             {
-                token_.insert (typename string_token::range (prev_, prev_));
+                typename string_token::range range_(prev_, prev_);
+
+                token_.insert(range_);
 
                 if (state_._flags & icase)
                 {
-                    const input_char_type folded_ = fold (prev_,
-                        state_._locale, size<sizeof(input_char_type)> ());
+                    string_token folded_;
 
-                    if (prev_ != folded_)
+                    fold(range_, state_._locale, folded_,
+                        size<sizeof(input_char_type)>());
+
+                    if (prev_ != range_.first || prev_ != range_.second)
                     {
-                        token_.insert (typename string_token::range
-                            (folded_, folded_));
+                        token_.insert(range_);
                     }
                 }
             }
@@ -176,34 +179,52 @@ public:
 
         if (negated_)
         {
-            token_.negate ();
+            token_.negate();
         }
 
-        if (token_.empty ())
+        if (token_.empty())
         {
             std::ostringstream ss_;
 
             ss_ << "Empty charsets not allowed preceding index " <<
-                state_.index () << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
     }
 
-    static input_char_type fold (const input_char_type char_,
-        const std::locale &locale_, const one &)
+    static void fold(const typename string_token::range &range_,
+        const std::locale &locale_, string_token &out_, const one &)
     {
-        const input_char_type upper_ = std::toupper
-            (char_, locale_);
-        const input_char_type lower_ = std::tolower
-            (char_, locale_);
+        // If string_token::char_type is 16 bit may overflow,
+        // so use std::size_t.
+        std::size_t start_ = range_.first;
+        std::size_t end_ = range_.second;
 
-        return upper_ != char_ ? upper_ : lower_;
+        // In 8 bit char mode, use locale and therefore consider every char
+        // individually.
+        for (; start_ <= end_; ++start_)
+        {
+            const input_char_type upper_ = std::toupper
+                (static_cast<input_char_type>(start_), locale_);
+            const input_char_type lower_ = std::tolower
+                (static_cast<input_char_type>(start_), locale_);
+
+            if (upper_ != static_cast<input_char_type>(start_))
+            {
+                out_.insert(typename string_token::range(upper_, upper_));
+            }
+
+            if (lower_ != static_cast<input_char_type>(start_))
+            {
+                out_.insert(typename string_token::range(lower_, lower_));
+            }
+        }
     }
 
-    static input_char_type fold (const input_char_type char_,
-        const std::locale &, const two &)
+    static void fold(const typename string_token::range &range_,
+        const std::locale &, string_token &out_, const two &)
     {
-        const fold_pair mapping_[] =
+        static const fold_pair mapping_[] =
             {{{0x0041, 0x005a}, {0x0061, 0x007a}},
             {{0x0061, 0x007a}, {0x0041, 0x005a}},
             {{0x00b5, 0x00b5}, {0x039c, 0x039c}},
@@ -317,44 +338,74 @@ public:
             {{0xff21, 0xff3a}, {0xff41, 0xff5a}},
             {{0xff41, 0xff5a}, {0xff21, 0xff3a}},
             {{0, 0}, {0, 0}}};
-        input_char_type ret_ = char_;
         const fold_pair *ptr_ = mapping_;
 
-        for (; ptr_->from.first != 0 && (char_ < ptr_->from.first ||
-            char_ > ptr_->from.second); ++ptr_);
-
-        if (ptr_->to.first != 0)
+        for (; ptr_->from.first != 0; ++ptr_)
         {
-            ret_ = ptr_->to.first + (char_ - ptr_->from.first);
-        }
+            if (range_.second < ptr_->from.first) break;
 
-        return ret_;
+            if (range_.first >= ptr_->from.first &&
+                range_.first <= ptr_->from.second)
+            {
+                out_.insert(typename string_token::range
+                    (ptr_->to.first + (range_.first - ptr_->from.first),
+                    range_.second > ptr_->from.second ? ptr_->to.second :
+                    ptr_->to.first + (range_.second - ptr_->from.first)));
+            }
+            else if (range_.second >= ptr_->from.first &&
+                range_.second <= ptr_->from.second)
+            {
+                out_.insert(typename string_token::range(ptr_->to.first,
+                    ptr_->to.first + (range_.second - ptr_->from.first)));
+            }
+            // Either range fully encompasses from range or not at all.
+            else if (ptr_->from.first >= range_.first &&
+                ptr_->from.first <= range_.second)
+            {
+                out_.insert(typename string_token::range(ptr_->to.first,
+                    ptr_->to.second));
+            }
+        }
     }
 
-    static input_char_type fold (const input_char_type char_,
-        const std::locale &locale_, const four &)
+    static void fold(const typename string_token::range &range_,
+        const std::locale &locale_, string_token &out_, const four &)
     {
-        if (char_ < 0x10000)
+        if (range_.first < 0x10000)
         {
-            return fold (char_, locale_, two ());
+            fold(range_, locale_, out_, two());
         }
-        else
+
+        static const fold_pair mapping_[] =
+            {{{0x10400, 0x1044f}, {0x10428, 0x10477}},
+            {{0, 0}, {0, 0}}};
+        const fold_pair *ptr_ = mapping_;
+
+        for (; ptr_->from.first != 0; ++ptr_)
         {
-            const fold_pair mapping_[] =
-                {{{0x10400, 0x1044f}, {0x10428, 0x10477}},
-                {{0, 0}, {0, 0}}};
-            input_char_type ret_ = char_;
-            const fold_pair *ptr_ = mapping_;
+            if (range_.second < ptr_->from.first) break;
 
-            for (; ptr_->from.first != 0 && (char_ < ptr_->from.first ||
-                char_ > ptr_->from.second); ++ptr_);
-
-            if (ptr_->to.first != 0)
+            if (range_.first >= ptr_->from.first &&
+                range_.first <= ptr_->from.second)
             {
-                ret_ = ptr_->to.first + (char_ - ptr_->from.first);
+                out_.insert(typename string_token::range
+                    (ptr_->to.first + (range_.first - ptr_->from.first),
+                    range_.second > ptr_->from.second ? ptr_->to.second :
+                    ptr_->to.first + (range_.second - ptr_->from.first)));
             }
-
-            return ret_;
+            else if (range_.second >= ptr_->from.first &&
+                range_.second <= ptr_->from.second)
+            {
+                out_.insert(typename string_token::range(ptr_->to.first,
+                    ptr_->to.first + (range_.second - ptr_->from.first)));
+            }
+			// Either range fully encompasses from range or not at all.
+			else if (ptr_->from.first >= range_.first &&
+                ptr_->from.first <= range_.second)
+            {
+                out_.insert(typename string_token::range(ptr_->to.first,
+                    ptr_->to.second));
+            }
         }
     }
 
@@ -372,69 +423,69 @@ private:
     };
 
     template<typename state_type>
-    static void posix (state_type &state_, string_token &token_)
+    static void posix(state_type &state_, string_token &token_)
     {
         bool negate_ = false;
 
-        if (!state_.eos () && *state_._curr == '^')
+        if (!state_.eos() && *state_._curr == '^')
         {
             negate_ = true;
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!state_.eos ())
+        if (!state_.eos())
         {
             switch (*state_._curr)
             {
                 case 'a':
                     // alnum
                     // alpha
-                    alnum_alpha (state_, token_, negate_);
+                    alnum_alpha(state_, token_, negate_);
                     break;
                 case 'b':
                     // blank
-                    blank (state_, token_, negate_);
+                    blank(state_, token_, negate_);
                     break;
                 case 'c':
                     // cntrl
-                    cntrl (state_, token_, negate_);
+                    cntrl(state_, token_, negate_);
                     break;
                 case 'd':
                     // digit
-                    digit (state_, token_, negate_);
+                    digit(state_, token_, negate_);
                     break;
                 case 'g':
                     // graph
-                    graph (state_, token_, negate_);
+                    graph(state_, token_, negate_);
                     break;
                 case 'l':
                     // lower
-                    lower (state_, token_, negate_);
+                    lower(state_, token_, negate_);
                     break;
                 case 'p':
                     // print
                     // punct
-                    print_punct (state_, token_, negate_);
+                    print_punct(state_, token_, negate_);
                     break;
                 case 's':
                     // space
-                    space (state_, token_, negate_);
+                    space(state_, token_, negate_);
                     break;
                 case 'u':
                     // upper
-                    upper (state_, token_, negate_);
+                    upper(state_, token_, negate_);
                     break;
                 case 'x':
                     // xdigit
-                    xdigit (state_, token_, negate_);
+                    xdigit(state_, token_, negate_);
                     break;
                 default:
                 {
                     std::ostringstream ss_;
 
                     ss_ << "Unknown POSIX charset at index " <<
-                        state_.index () << " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                        state_.index() << " in rule id " << state_._id << '.';
+                    throw runtime_error(ss_.str());
                     break;
                 }
             }
@@ -446,49 +497,49 @@ private:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex (unterminated POSIX charset) " <<
                 "in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void alnum_alpha (state_type &state_, string_token &token_,
+    static void alnum_alpha(state_type &state_, string_token &token_,
         const bool negate_)
     {
         bool alnum_ = true;
 
-        state_.increment ();
+        state_.increment();
 
-        if (!state_.eos () && *state_._curr == 'l')
+        if (!state_.eos() && *state_._curr == 'l')
         {
-            state_.increment ();
+            state_.increment();
 
-            if (!state_.eos ())
+            if (!state_.eos())
             {
                 if (*state_._curr == 'n')
                 {
-                    state_.increment ();
+                    state_.increment();
 
-                    if (!state_.eos () && *state_._curr == 'u')
+                    if (!state_.eos() && *state_._curr == 'u')
                     {
-                        state_.increment ();
+                        state_.increment();
 
-                        if (!state_.eos () && *state_._curr == 'm')
+                        if (!state_.eos() && *state_._curr == 'm')
                         {
-                            state_.increment ();
+                            state_.increment();
                         }
                     }
                 }
                 else if (*state_._curr == 'p')
                 {
-                    state_.increment ();
+                    state_.increment();
 
-                    if (!state_.eos () && *state_._curr == 'h')
+                    if (!state_.eos() && *state_._curr == 'h')
                     {
-                        state_.increment ();
+                        state_.increment();
 
-                        if (!state_.eos () && *state_._curr == 'a')
+                        if (!state_.eos() && *state_._curr == 'a')
                         {
-                            state_.increment ();
+                            state_.increment();
                             alnum_ = false;
                         }
                     }
@@ -496,52 +547,52 @@ private:
             }
         }
 
-        if (!state_.eos () && *state_._curr == ':')
+        if (!state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!state_.eos () && *state_._curr == ']')
+        if (!state_.eos() && *state_._curr == ']')
         {
             std::string str_;
 
-            state_.increment ();
+            state_.increment();
 
             if (alnum_)
             {
                 // alnum
                 str_ = sizeof(input_char_type) == 1 ?
-                    make_alnum (state_._locale) :
-                    std::string ("[\\p{Ll}\\p{Lu}\\p{Nd}]");
+                    make_alnum(state_._locale) :
+                    std::string("[\\p{Ll}\\p{Lu}\\p{Nd}]");
             }
             else
             {
                 // alpha
                 str_ = sizeof(input_char_type) == 1 ?
-                    make_alpha (state_._locale) :
-                    std::string ("[\\p{Ll}\\p{Lu}]");
+                    make_alpha(state_._locale) :
+                    std::string("[\\p{Ll}\\p{Lu}]");
             }
 
-            insert_charset (str_.c_str (), state_, token_, negate_);
+            insert_charset(str_.c_str(), state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " <<
-                state_.index () << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
     }
 
-    static std::string make_alnum (std::locale &locale_)
+    static std::string make_alnum(std::locale &locale_)
     {
-        std::string str_ (1, '[');
+        std::string str_(1, '[');
 
         for (std::size_t i_ = 0; i_ < 256; ++i_)
         {
-            if (std::use_facet<std::ctype<char> > (locale_).
-                is (std::ctype_base::alnum, static_cast<char>(i_)))
+            if (std::use_facet<std::ctype<char> >(locale_).
+                is(std::ctype_base::alnum, static_cast<char>(i_)))
             {
                 str_ += static_cast<char>(i_);
             }
@@ -551,14 +602,14 @@ private:
         return str_;
     }
 
-    static std::string make_alpha (std::locale &locale_)
+    static std::string make_alpha(std::locale &locale_)
     {
-        std::string str_ (1, '[');
+        std::string str_(1, '[');
 
         for (std::size_t i_ = 0; i_ < 256; ++i_)
         {
-            if (std::use_facet<std::ctype<char> > (locale_).
-                is (std::ctype_base::alpha, static_cast<char>(i_)))
+            if (std::use_facet<std::ctype<char> >(locale_).
+                is(std::ctype_base::alpha, static_cast<char>(i_)))
             {
                 str_ += static_cast<char>(i_);
             }
@@ -569,209 +620,209 @@ private:
     }
 
     template<typename state_type>
-    static void blank (state_type &state_, string_token &token_,
+    static void blank(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *blank_ = "lank";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *blank_ &&
+        while (!state_.eos() && *blank_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*blank_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*blank_ && !state_.eos () && *state_._curr == ':')
+        if (!*blank_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*blank_ && !state_.eos () && *state_._curr == ']')
+        if (!*blank_ && !state_.eos() && *state_._curr == ']')
         {
             const char *str_ = sizeof(input_char_type) == 1 ?
                 "[ \t]" : "[\\p{Zs}\t]";
 
-            state_.increment ();
-            insert_charset (str_, state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " <<
-                state_.index () << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void cntrl (state_type &state_, string_token &token_,
+    static void cntrl(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *cntrl_ = "ntrl";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *cntrl_ &&
+        while (!state_.eos() && *cntrl_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*cntrl_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*cntrl_ && !state_.eos () && *state_._curr == ':')
+        if (!*cntrl_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*cntrl_ && !state_.eos () && *state_._curr == ']')
+        if (!*cntrl_ && !state_.eos() && *state_._curr == ']')
         {
             const char *str_ = sizeof(input_char_type) == 1 ?
                 "[\\x00-\x1f\x7f]" : "[\\p{Cc}]";
 
-            state_.increment ();
-            insert_charset (str_, state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " <<
-                state_.index () << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void digit (state_type &state_, string_token &token_,
+    static void digit(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *digit_ = "igit";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *digit_ &&
+        while (!state_.eos() && *digit_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*digit_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*digit_ && !state_.eos () && *state_._curr == ':')
+        if (!*digit_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*digit_ && !state_.eos () && *state_._curr == ']')
+        if (!*digit_ && !state_.eos() && *state_._curr == ']')
         {
             const char *str_ = sizeof(input_char_type) == 1 ?
                 "[0-9]" : "[\\p{Nd}]";
 
-            state_.increment ();
-            insert_charset (str_, state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void graph (state_type &state_, string_token &token_,
+    static void graph(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *graph_ = "raph";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *graph_ &&
+        while (!state_.eos() && *graph_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*graph_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*graph_ && !state_.eos () && *state_._curr == ':')
+        if (!*graph_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*graph_ && !state_.eos () && *state_._curr == ']')
+        if (!*graph_ && !state_.eos() && *state_._curr == ']')
         {
             const char *str_ = sizeof(input_char_type) == 1 ?
                 "[\x21-\x7e]" : "[^\\p{Z}\\p{C}]";
 
-            state_.increment ();
-            insert_charset (str_, state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void lower (state_type &state_, string_token &token_,
+    static void lower(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *lower_ = "ower";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *lower_ &&
+        while (!state_.eos() && *lower_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*lower_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*lower_ && !state_.eos () && *state_._curr == ':')
+        if (!*lower_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*lower_ && !state_.eos () && *state_._curr == ']')
+        if (!*lower_ && !state_.eos() && *state_._curr == ']')
         {
             std::string str_ = sizeof(input_char_type) == 1 ?
-                create_lower (state_._locale) :
-                std::string ("[\\p{Ll}]");
+                create_lower(state_._locale) :
+                std::string("[\\p{Ll}]");
 
-            state_.increment ();
-            insert_charset (str_.c_str (), state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_.c_str(), state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
-    static std::string create_lower (std::locale &locale_)
+    static std::string create_lower(std::locale &locale_)
     {
-        std::string str_ (1, '[');
+        std::string str_(1, '[');
 
         for (std::size_t i_ = 0; i_ < 256; ++i_)
         {
-            if (std::use_facet<std::ctype<char> > (locale_).
-                is (std::ctype_base::lower, static_cast<char>(i_)))
+            if (std::use_facet<std::ctype<char> >(locale_).
+                is(std::ctype_base::lower, static_cast<char>(i_)))
             {
                 str_ += static_cast<char>(i_);
             }
@@ -782,49 +833,49 @@ private:
     }
 
     template<typename state_type>
-    static void print_punct (state_type &state_, string_token &token_,
+    static void print_punct(state_type &state_, string_token &token_,
         const bool negate_)
     {
         bool print_ = true;
 
-        state_.increment ();
+        state_.increment();
 
-        if (!state_.eos ())
+        if (!state_.eos())
         {
             if (*state_._curr == 'r')
             {
-                state_.increment ();
+                state_.increment();
 
-                if (!state_.eos () && *state_._curr == 'i')
+                if (!state_.eos() && *state_._curr == 'i')
                 {
-                    state_.increment ();
+                    state_.increment();
 
-                    if (!state_.eos () && *state_._curr == 'n')
+                    if (!state_.eos() && *state_._curr == 'n')
                     {
-                        state_.increment ();
+                        state_.increment();
 
-                        if (!state_.eos () && *state_._curr == 't')
+                        if (!state_.eos() && *state_._curr == 't')
                         {
-                            state_.increment ();
+                            state_.increment();
                         }
                     }
                 }
             }
             else if (*state_._curr == 'u')
             {
-                state_.increment ();
+                state_.increment();
 
-                if (!state_.eos () && *state_._curr == 'n')
+                if (!state_.eos() && *state_._curr == 'n')
                 {
-                    state_.increment ();
+                    state_.increment();
 
-                    if (!state_.eos () && *state_._curr == 'c')
+                    if (!state_.eos() && *state_._curr == 'c')
                     {
-                        state_.increment ();
+                        state_.increment();
 
-                        if (!state_.eos () && *state_._curr == 't')
+                        if (!state_.eos() && *state_._curr == 't')
                         {
-                            state_.increment ();
+                            state_.increment();
                             print_ = false;
                         }
                     }
@@ -832,16 +883,16 @@ private:
             }
         }
 
-        if (!state_.eos () && *state_._curr == ':')
+        if (!state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!state_.eos () && *state_._curr == ']')
+        if (!state_.eos() && *state_._curr == ']')
         {
             const char *str_ = 0;
 
-            state_.increment ();
+            state_.increment();
 
             if (print_)
             {
@@ -857,105 +908,105 @@ private:
                     "[\\p{P}\\p{S}]";
             }
 
-            insert_charset (str_, state_, token_, negate_);
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void space (state_type &state_, string_token &token_,
+    static void space(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *space_ = "pace";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *space_ &&
+        while (!state_.eos() && *space_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*space_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*space_ && !state_.eos () && *state_._curr == ':')
+        if (!*space_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*space_ && !state_.eos () && *state_._curr == ']')
+        if (!*space_ && !state_.eos() && *state_._curr == ']')
         {
             const char *str_ = sizeof(input_char_type) == 1 ?
                 "[ \t\r\n\v\f]" : "[\\p{Z}\t\r\n\v\f]";
 
-            state_.increment ();
-            insert_charset (str_, state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void upper (state_type &state_, string_token &token_,
+    static void upper(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *upper_ = "pper";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *upper_ &&
+        while (!state_.eos() && *upper_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*upper_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*upper_ && !state_.eos () && *state_._curr == ':')
+        if (!*upper_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*upper_ && !state_.eos () && *state_._curr == ']')
+        if (!*upper_ && !state_.eos() && *state_._curr == ']')
         {
             std::string str_ = sizeof(input_char_type) == 1 ?
-                create_upper (state_._locale) :
-                std::string ("[\\p{Lu}]");
+                create_upper(state_._locale) :
+                std::string("[\\p{Lu}]");
 
-            state_.increment ();
-            insert_charset (str_.c_str (), state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_.c_str(), state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
-    static std::string create_upper (std::locale &locale_)
+    static std::string create_upper(std::locale &locale_)
     {
-        std::string str_ (1, '[');
+        std::string str_(1, '[');
 
         for (std::size_t i_ = 0; i_ < 256; ++i_)
         {
-            if (std::use_facet<std::ctype<char> > (locale_).
-                is (std::ctype_base::upper, static_cast<char>(i_)))
+            if (std::use_facet<std::ctype<char> >(locale_).
+                is(std::ctype_base::upper, static_cast<char>(i_)))
             {
                 str_ += static_cast<char>(i_);
             }
@@ -966,59 +1017,59 @@ private:
     }
 
     template<typename state_type>
-    static void xdigit (state_type &state_, string_token &token_,
+    static void xdigit(state_type &state_, string_token &token_,
         const bool negate_)
     {
         const char *xdigit_ = "digit";
 
-        state_.increment ();
+        state_.increment();
 
         // Casts to prevent warnings (VC++ 2012)
-        while (!state_.eos () && *xdigit_ &&
+        while (!state_.eos() && *xdigit_ &&
             static_cast<rules_char_type>(*state_._curr) ==
             static_cast<rules_char_type>(*xdigit_++))
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*xdigit_ && !state_.eos () && *state_._curr == ':')
+        if (!*xdigit_ && !state_.eos() && *state_._curr == ':')
         {
-            state_.increment ();
+            state_.increment();
         }
 
-        if (!*xdigit_ && !state_.eos () && *state_._curr == ']')
+        if (!*xdigit_ && !state_.eos() && *state_._curr == ']')
         {
             const char *str_ = "[0-9A-Fa-f]";
 
-            state_.increment ();
-            insert_charset (str_, state_, token_, negate_);
+            state_.increment();
+            insert_charset(str_, state_, token_, negate_);
         }
         else
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index () <<
+            ss_ << "Unknown POSIX charset at index " << state_.index() <<
                 " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
     }
 
     template<typename state_type>
-    static void insert_charset (const char *str_, state_type &state_,
+    static void insert_charset(const char *str_, state_type &state_,
         string_token &token_, const bool negate_)
     {
         // Some systems have strlen in namespace std.
         using namespace std;
 
-        char_state temp_state_ (str_ + 1, str_ + strlen (str_),
+        char_state temp_state_(str_ + 1, str_ + strlen(str_),
             state_._id, state_._flags, state_._locale, false);
         string_token temp_token_;
 
-        charset (temp_state_, temp_token_);
+        charset(temp_state_, temp_token_);
 
-        if (negate_) temp_token_.negate ();
+        if (negate_) temp_token_.negate();
 
-        token_.insert (temp_token_);
+        token_.insert(temp_token_);
     }
 
     template<typename state_type>
@@ -1036,7 +1087,7 @@ private:
                 str_ = "[^0-9]";
                 break;
             case 'p':
-                str_ = unicode_escape (state_);
+                str_ = unicode_escape(state_);
                 break;
             case 's':
                 str_ = "[ \t\n\r\f\v]";
@@ -1057,7 +1108,7 @@ private:
             // Some systems have strlen in namespace std.
             using namespace std;
 
-            str_len_ = strlen (str_);
+            str_len_ = strlen(str_);
         }
         else
         {
@@ -1068,20 +1119,20 @@ private:
     }
 
     template<typename state_type>
-    static const char *unicode_escape (state_type &state_)
+    static const char *unicode_escape(state_type &state_)
     {
         const char *str_ = 0;
 
-        state_.increment ();
+        state_.increment();
 
-        if (state_.eos ())
+        if (state_.eos())
         {
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following \\p in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
         if (*state_._curr != '{')
@@ -1089,35 +1140,35 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Syntax error following \\p at index " <<
-                state_.index () << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
 
-        state_.increment ();
+        state_.increment();
 
-        if (state_.eos ())
+        if (state_.eos())
         {
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following \\p{ in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
         switch (*state_._curr)
         {
             case 'C':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{C "
                         "in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1126,46 +1177,46 @@ private:
                         str_ = "[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cs}]";
                         break;
                     case 'c':
-                        str_ = other_control ();
-                        state_.increment ();
+                        str_ = other_control();
+                        state_.increment();
                         break;
                     case 'f':
-                        str_ = other_format ();
-                        state_.increment ();
+                        str_ = other_format();
+                        state_.increment();
                         break;
 //                    case 'n':
 //                        break;
                     case 'o':
-                        str_ = other_private ();
-                        state_.increment ();
+                        str_ = other_private();
+                        state_.increment();
                         break;
                     case 's':
-                        str_ = other_surrogate ();
-                        state_.increment ();
+                        str_ = other_surrogate();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{C at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
                 break;
             case 'L':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{L "
                         " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1175,51 +1226,51 @@ private:
                         break;
                     case 'C':
                         str_ = "[\\p{Ll}\\p{Lt}\\p{Lu}]";
-                        state_.increment ();
+                        state_.increment();
                         break;
                     case 'l':
-                        str_ = letter_lowercase ();
-                        state_.increment ();
+                        str_ = letter_lowercase();
+                        state_.increment();
                         break;
                     case 'm':
-                        str_ = letter_modifier ();
-                        state_.increment ();
+                        str_ = letter_modifier();
+                        state_.increment();
                         break;
                     case 'o':
-                        str_ = letter_other ();
-                        state_.increment ();
+                        str_ = letter_other();
+                        state_.increment();
                         break;
                     case 't':
-                        str_ = letter_titlecase ();
-                        state_.increment ();
+                        str_ = letter_titlecase();
+                        state_.increment();
                         break;
                     case 'u':
-                        str_ = letter_uppercase ();
-                        state_.increment ();
+                        str_ = letter_uppercase();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{L at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
                 break;
             case 'M':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{M "
                         " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1228,40 +1279,40 @@ private:
                         str_ = "[\\p{Mc}\\p{Me}\\p{Mn}]";
                         break;
                     case 'c':
-                        str_ = mark_combining ();
-                        state_.increment ();
+                        str_ = mark_combining();
+                        state_.increment();
                         break;
                     case 'e':
-                        str_ = mark_enclosing ();
-                        state_.increment ();
+                        str_ = mark_enclosing();
+                        state_.increment();
                         break;
                     case 'n':
-                        str_ = mark_nonspacing ();
-                        state_.increment ();
+                        str_ = mark_nonspacing();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{M at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
                 break;
             case 'N':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{N "
                         " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1270,40 +1321,40 @@ private:
                         str_ = "[\\p{Nd}\\p{Nl}\\p{No}]";
                         break;
                     case 'd':
-                        str_ = number_decimal ();
-                        state_.increment ();
+                        str_ = number_decimal();
+                        state_.increment();
                         break;
                     case 'l':
-                        str_ = number_letter ();
-                        state_.increment ();
+                        str_ = number_letter();
+                        state_.increment();
                         break;
                     case 'o':
-                        str_ = number_other ();
-                        state_.increment ();
+                        str_ = number_other();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{N at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
                 break;
             case 'P':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{P "
                         " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1313,56 +1364,56 @@ private:
                             "\\p{Ps}]";
                         break;
                     case 'c':
-                        str_ = punctuation_connector ();
-                        state_.increment ();
+                        str_ = punctuation_connector();
+                        state_.increment();
                         break;
                     case 'd':
-                        str_ = punctuation_dash ();
-                        state_.increment ();
+                        str_ = punctuation_dash();
+                        state_.increment();
                         break;
                     case 'e':
-                        str_ = punctuation_close ();
-                        state_.increment ();
+                        str_ = punctuation_close();
+                        state_.increment();
                         break;
                     case 'f':
-                        str_ = punctuation_final ();
-                        state_.increment ();
+                        str_ = punctuation_final();
+                        state_.increment();
                         break;
                     case 'i':
-                        str_ = punctuation_initial ();
-                        state_.increment ();
+                        str_ = punctuation_initial();
+                        state_.increment();
                         break;
                     case 'o':
-                        str_ = punctuation_other ();
-                        state_.increment ();
+                        str_ = punctuation_other();
+                        state_.increment();
                         break;
                     case 's':
-                        str_ = punctuation_open ();
-                        state_.increment ();
+                        str_ = punctuation_open();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{P at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
                 break;
             case 'S':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{S "
                         " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1371,44 +1422,44 @@ private:
                         str_ = "[\\p{Sc}\\p{Sk}\\p{Sm}\\p{So}]";
                         break;
                     case 'c':
-                        str_ = symbol_currency ();
-                        state_.increment ();
+                        str_ = symbol_currency();
+                        state_.increment();
                         break;
                     case 'k':
-                        str_ = symbol_modifier ();
-                        state_.increment ();
+                        str_ = symbol_modifier();
+                        state_.increment();
                         break;
                     case 'm':
-                        str_ = symbol_math ();
-                        state_.increment ();
+                        str_ = symbol_math();
+                        state_.increment();
                         break;
                     case 'o':
-                        str_ = symbol_other ();
-                        state_.increment ();
+                        str_ = symbol_other();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{S at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
                 break;
             case 'Z':
-                state_.increment ();
+                state_.increment();
 
-                if (state_.eos ())
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{Z "
                         " in rule id " << state_._id << '.';
-                    throw runtime_error (ss_.str ());
+                    throw runtime_error(ss_.str());
                 }
 
                 switch (*state_._curr)
@@ -1417,25 +1468,25 @@ private:
                         str_ = "[\\p{Zl}\\p{Zp}\\p{Zs}]";
                         break;
                     case 'l':
-                        str_ = separator_line ();
-                        state_.increment ();
+                        str_ = separator_line();
+                        state_.increment();
                         break;
                     case 'p':
-                        str_ = separator_paragraph ();
-                        state_.increment ();
+                        str_ = separator_paragraph();
+                        state_.increment();
                         break;
                     case 's':
-                        str_ = separator_space ();
-                        state_.increment ();
+                        str_ = separator_space();
+                        state_.increment();
                         break;
                     default:
                     {
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{Z at index " <<
-                            state_.index () << " in rule id " <<
+                            state_.index() << " in rule id " <<
                             state_._id << '.';
-                        throw runtime_error (ss_.str ());
+                        throw runtime_error(ss_.str());
                     }
                 }
 
@@ -1445,8 +1496,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Syntax error following \\p{ at index " <<
-                    state_.index () << " in rule id " << state_._id << '.';
-                throw runtime_error (ss_.str ());
+                    state_.index() << " in rule id " << state_._id << '.';
+                throw runtime_error(ss_.str());
             }
         }
 
@@ -1454,15 +1505,15 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Missing } at index " << state_.index () <<
+            ss_ << "Missing } at index " << state_.index() <<
                 " in rule id << " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
         return str_;
     }
 
-    static const char *letter_uppercase ()
+    static const char *letter_uppercase()
     {
         return "[\\x41-\\x5a\\xc0-\\xd6\\xd8-\\xde\\x100\\x102\\x104\\x106"
             "\\x108\\x10a\\x10c\\x10e\\x110\\x112\\x114\\x116\\x118\\x11a"
@@ -1543,7 +1594,7 @@ private:
             "\\x1d756-\\x1d76e\\x1d790-\\x1d7a8\\x1d7ca]";
     }
 
-    static const char *letter_lowercase ()
+    static const char *letter_lowercase()
     {
         return "[\\x61-\\x7a\\xaa\\xb5\\xba\\xdf-\\xf6\\xf8-\\xff\\x101"
             "\\x103\\x105\\x107\\x109\\x10b\\x10d\\x10f\\x111\\x113\\x115"
@@ -1626,13 +1677,13 @@ private:
             "\\x1d78a-\\x1d78f\\x1d7aa-\\x1d7c2\\x1d7c4-\\x1d7c9\\x1d7cb]";
     }
 
-    static const char *letter_titlecase ()
+    static const char *letter_titlecase()
     {
         return "[\\x1c5\\x1c8\\x1cb\\x1f2\\x1f88-\\x1f8f\\x1f98-\\x1f9f"
             "\\x1fa8-\\x1faf\\x1fbc\\x1fcc\\x1ffc]";
     }
 
-    static const char *letter_modifier ()
+    static const char *letter_modifier()
     {
         return "[\\x2b0-\\x2c1\\x2c6-\\x2d1\\x2e0-\\x2e4\\x2ec\\x2ee\\x374"
             "\\x37a\\x559\\x640\\x6e5\\x6e6\\x7f4\\x7f5\\x7fa\\x81a\\x824"
@@ -1644,7 +1695,7 @@ private:
             "\\xa9cf\\xaa70\\xaadd\\xff70\\xff9e\\xff9f]";
     }
 
-    static const char *letter_other ()
+    static const char *letter_other()
     {
         return "[\\x1bb\\x1c0-\\x1c3\\x294\\x5d0-\\x5ea\\x5f0-\\x5f2"
             "\\x620-\\x63f\\x641-\\x64a\\x66e\\x66f\\x671-\\x6d3\\x6d5\\x6ee"
@@ -1721,7 +1772,7 @@ private:
             "\\x2b734\\x2b740\\x2b81d\\x2f800-\\x2fa1d]";
     }
 
-    static const char *mark_nonspacing ()
+    static const char *mark_nonspacing()
     {
         return "[\\x300-\\x36f\\x483-\\x487\\x591-\\x5bd\\x5bf\\x5c1\\x5c2"
             "\\x5c4\\x5c5\\x5c7\\x610-\\x61a\\x64b-\\x65f\\x670\\x6d6-\\x6dc"
@@ -1765,7 +1816,7 @@ private:
             "\\x1d242-\\x1d244\\xe0100-\\xe01ef]";
     }
 
-    static const char *mark_combining ()
+    static const char *mark_combining()
     {
         return "[\\x903\\x93b\\x93e-\\x940\\x949-\\x94c\\x94e\\x94f\\x982"
             "\\x983\\x9be-\\x9c0\\x9c7\\x9c8\\x9cb\\x9cc\\x9d7\\xa03"
@@ -1791,12 +1842,12 @@ private:
             "\\x1d166\\x1d16d-\\x1d172]";
     }
 
-    static const char *mark_enclosing ()
+    static const char *mark_enclosing()
     {
         return "[\\x488\\x489\\x20dd-\\x20e0\\x20e2-\\x20e4\\xa670-\\xa672]";
     }
 
-    static const char *number_decimal ()
+    static const char *number_decimal()
     {
         return "[\\x30-\\x39\\x660-\\x669\\x6f0-\\x6f9\\x7c0-\\x7c9"
             "\\x966-\\x96f\\x9e6-\\x9ef\\xa66-\\xa6f\\xae6-\\xaef"
@@ -1810,14 +1861,14 @@ private:
             "\\x11066-\\x1106f\\x1d7ce-\\x1d7ff]";
     }
 
-    static const char *number_letter ()
+    static const char *number_letter()
     {
         return "[\\x16ee-\\x16f0\\x2160-\\x2182\\x2185-\\x2188\\x3007"
             "\\x3021-\\x3029\\x3038-\\x303a\\xa6e6-\\xa6ef\\x10140-\\x10174"
             "\\x10341\\x1034a\\x103d1-\\x103d5\\x12400-\\x12462]";
     }
 
-    static const char *number_other ()
+    static const char *number_other()
     {
         return "[\\xb2\\xb3\\xb9\\xbc-\\xbe\\x9f4-\\x9f9\\xb72-\\xb77"
             "\\xbf0-\\xbf2\\xc78-\\xc7e\\xd70-\\xd75\\xf2a-\\xf33"
@@ -1832,19 +1883,19 @@ private:
             "\\x1d360-\\x1d371\\x1f100-\\x1f10a]";
     }
 
-    static const char *punctuation_connector ()
+    static const char *punctuation_connector()
     {
         return "[\\x5f\\x203f\\x2040\\x2054\\xfe33\\xfe34\\xfe4d-\\xfe4f"
             "\\xff3f]";
     }
 
-    static const char *punctuation_dash ()
+    static const char *punctuation_dash()
     {
         return "[\\x2d\\x58a\\x5be\\x1400\\x1806\\x2010-\\x2015\\x2e17\\x2e1a"
             "\\x301c\\x3030\\x30a0\\xfe31\\xfe32\\xfe58\\xfe63\\xff0d]";
     }
 
-    static const char *punctuation_open ()
+    static const char *punctuation_open()
     {
         return "[\\x28\\x5b\\x7b\\xf3a\\xf3c\\x169b\\x201a\\x201e\\x2045"
             "\\x207d\\x208d\\x2329\\x2768\\x276a\\x276c\\x276e\\x2770\\x2772"
@@ -1856,7 +1907,7 @@ private:
             "\\xfe47\\xfe59\\xfe5b\\xfe5d\\xff08\\xff3b\\xff5b\\xff5f\\xff62]";
     }
 
-    static const char *punctuation_close ()
+    static const char *punctuation_close()
     {
         return "[\\x29\\x5d\\x7d\\xf3b\\xf3d\\x169c\\x2046\\x207e\\x208e"
             "\\x232a\\x2769\\x276b\\x276d\\x276f\\x2771\\x2773\\x2775\\x27c6"
@@ -1868,19 +1919,19 @@ private:
             "\\xfe5a\\xfe5c\\xfe5e\\xff09\\xff3d\\xff5d\\xff60\\xff63]";
     }
 
-    static const char *punctuation_initial ()
+    static const char *punctuation_initial()
     {
         return "[\\x00AB\\x2018\\x201B\\x201C\\x201F\\x2039\\x2E02\\x2E04"
             "\\x2E09\\x2E0C\\x2E1C\\x2E20]";
     }
 
-    static const char *punctuation_final ()
+    static const char *punctuation_final()
     {
         return "[\\x00BB\\x2019\\x201D\\x203A\\x2E03\\x2E05\\x2E0A\\x2E0D"
             "\\x2E1D\\x2E21]";
     }
 
-    static const char *punctuation_other ()
+    static const char *punctuation_other()
     {
         return "[\\x21-\\x23\\x25-\\x27\\x2a\\x2c\\x2e\\x2f\\x3a\\x3b\\x3f"
             "\\x40\\x5c\\xa1\\xb7\\xbf\\x37e\\x387\\x55a-\\x55f\\x589\\x5c0"
@@ -1910,7 +1961,7 @@ private:
             "\\x110bb\\x110bc\\x110be-\\x110c1\\x12470-\\x12473]";
     }
 
-    static const char *symbol_math ()
+    static const char *symbol_math()
     {
         return "[\\x2b\\x3c-\\x3e\\x7c\\x7e\\xac\\xb1\\xd7\\xf7\\x3f6"
             "\\x606-\\x608\\x2044\\x2052\\x207a-\\x207c\\x208a-\\x208c"
@@ -1926,14 +1977,14 @@ private:
             "\\x1d76f\\x1d789\\x1d7a9\\x1d7c3]";
     }
 
-    static const char *symbol_currency ()
+    static const char *symbol_currency()
     {
         return "[\\x24\\xa2-\\xa5\\x60b\\x9f2\\x9f3\\x9fb\\xaf1\\xbf9\\xe3f"
             "\\x17db\\x20a0-\\x20b9\\xa838\\xfdfc\\xfe69\\xff04\\xffe0\\xffe1"
             "\\xffe5\\xffe6]";
     }
 
-    static const char *symbol_modifier ()
+    static const char *symbol_modifier()
     {
         return "[\\x5e\\x60\\xa8\\xaf\\xb4\\xb8\\x2c2-\\x2c5\\x2d2-\\x2df"
             "\\x2e5-\\x2eb\\x2ed\\x2ef-\\x2ff\\x375\\x384\\x385\\x1fbd"
@@ -1942,7 +1993,7 @@ private:
             "\\xa789\\xa78a\\xfbb2-\\xfbc1\\xff3e\\xff40\\xffe3]";
     }
 
-    static const char *symbol_other ()
+    static const char *symbol_other()
     {
         return "[\\xa6\\xa7\\xa9\\xae\\xb0\\xb6\\x482\\x60e\\x60f\\x6de"
             "\\x6e9\\x6fd\\x6fe\\x7f6\\x9fa\\xb70\\xbf3-\\xbf8\\xbfa\\xc7f"
@@ -1985,28 +2036,28 @@ private:
             "\\x1f680-\\x1f6c5\\x1f700-\\x1f773]";
     }
 
-    static const char *separator_space ()
+    static const char *separator_space()
     {
         return "[\\x20\\xa0\\x1680\\x180e\\x2000-\\x200a\\x202f\\x205f"
             "\\x3000]";
     }
 
-    static const char *separator_line ()
+    static const char *separator_line()
     {
         return "[\\x2028]";
     }
 
-    static const char *separator_paragraph ()
+    static const char *separator_paragraph()
     {
         return "[\\x2029]";
     }
 
-    static const char *other_control ()
+    static const char *other_control()
     {
         return "[\\x0-\\x1f\\x7f-\\x9f]";
     }
 
-    static const char *other_format ()
+    static const char *other_format()
     {
         return "[\\xad\\x600-\\x603\\x6dd\\x70f\\x17b4\\x17b5\\x200b-\\x200f"
             "\\x202a-\\x202e\\x2060-\\x2064\\x206a-\\x206f\\xfeff"
@@ -2014,18 +2065,18 @@ private:
             "\\xe0020-\\xe007f]";
     }
 
-    static const char *other_surrogate ()
+    static const char *other_surrogate()
     {
         return "[\\xD800\\xDB7F\\xDB80\\xDBFF\\xDC00\\xDFFF]";
     }
 
-    static const char *other_private ()
+    static const char *other_private()
     {
         return "[\\xE000\\xF8FF\\xF0000\\xFFFFD\\x100000\\x10FFFD]";
     }
 
     template<typename state_type>
-    static input_char_type chr (state_type &state_)
+    static input_char_type chr(state_type &state_)
     {
         input_char_type ch_ = 0;
 
@@ -2040,49 +2091,49 @@ private:
             case '5':
             case '6':
             case '7':
-                ch_ = decode_octal (state_);
+                ch_ = decode_octal(state_);
                 break;
             case 'a':
                 ch_ = '\a';
-                state_.increment ();
+                state_.increment();
                 break;
             case 'b':
                 ch_ = '\b';
-                state_.increment ();
+                state_.increment();
                 break;
             case 'c':
-                ch_ = decode_control_char (state_);
+                ch_ = decode_control_char(state_);
                 break;
             case 'e':
                 ch_ = 27; // '\e' not recognised by compiler
-                state_.increment ();
+                state_.increment();
                 break;
             case 'f':
                 ch_ = '\f';
-                state_.increment ();
+                state_.increment();
                 break;
             case 'n':
                 ch_ = '\n';
-                state_.increment ();
+                state_.increment();
                 break;
             case 'r':
                 ch_ = '\r';
-                state_.increment ();
+                state_.increment();
                 break;
             case 't':
                 ch_ = '\t';
-                state_.increment ();
+                state_.increment();
                 break;
             case 'v':
                 ch_ = '\v';
-                state_.increment ();
+                state_.increment();
                 break;
             case 'x':
-                ch_ = decode_hex (state_);
+                ch_ = decode_hex(state_);
                 break;
             default:
                 ch_ = *state_._curr;
-                state_.increment ();
+                state_.increment();
                 break;
         }
 
@@ -2090,7 +2141,7 @@ private:
     }
 
     template<typename state_type>
-    static input_char_type decode_octal (state_type &state_)
+    static input_char_type decode_octal(state_type &state_)
     {
         std::size_t oct_ = 0;
         typename state_type::char_type ch_ = *state_._curr;
@@ -2102,8 +2153,8 @@ private:
             oct_ *= 8;
             oct_ += ch_ - '0';
             --count_;
-            state_.increment ();
-            eos_ = state_.eos ();
+            state_.increment();
+            eos_ = state_.eos();
 
             if (!count_ || eos_) break;
 
@@ -2116,28 +2167,28 @@ private:
             }
         }
 
-        if (oct_ > static_cast<std::size_t>(char_traits::max_val ()))
+        if (oct_ > static_cast<std::size_t>(char_traits::max_val()))
         {
             std::ostringstream ss_;
 
             ss_ << "Escape \\" << std::oct << oct_ <<
                 " is too big for the state machine char type "
-                "preceding index " << std::dec << state_.index () <<
+                "preceding index " << std::dec << state_.index() <<
                 " in rule " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
-        return static_cast<input_char_type> (oct_);
+        return static_cast<input_char_type>(oct_);
     }
 
     template<typename state_type>
-    static input_char_type decode_control_char (state_type &state_)
+    static input_char_type decode_control_char(state_type &state_)
     {
         // Skip over 'c'
-        state_.increment ();
+        state_.increment();
 
         typename state_type::char_type ch_ = 0;
-        bool eos_ = state_.next (ch_);
+        bool eos_ = state_.next(ch_);
 
         if (eos_)
         {
@@ -2146,7 +2197,7 @@ private:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following \\c in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
         else
         {
@@ -2168,8 +2219,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Invalid control char at index " <<
-                    state_.index () - 1 << " in rule id " << state_._id << '.';
-                throw runtime_error (ss_.str ());
+                    state_.index() - 1 << " in rule id " << state_._id << '.';
+                throw runtime_error(ss_.str());
             }
         }
 
@@ -2177,13 +2228,13 @@ private:
     }
 
     template<typename state_type>
-    static input_char_type decode_hex (state_type &state_)
+    static input_char_type decode_hex(state_type &state_)
     {
         // Skip over 'x'
-        state_.increment ();
+        state_.increment();
 
         typename state_type::char_type ch_ = 0;
-        bool eos_ = state_.next (ch_);
+        bool eos_ = state_.next(ch_);
 
         if (eos_)
         {
@@ -2192,7 +2243,7 @@ private:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following \\x in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
         if (!((ch_ >= '0' && ch_ <= '9') || (ch_ >= 'a' && ch_ <= 'f') ||
@@ -2201,8 +2252,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Illegal char following \\x at index " <<
-                state_.index () - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() - 1 << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
 
         std::size_t hex_ = 0;
@@ -2224,7 +2275,7 @@ private:
                 hex_ += 10 + (ch_ - 'A');
             }
 
-            eos_ = state_.eos ();
+            eos_ = state_.eos();
 
             if (!eos_)
             {
@@ -2234,7 +2285,7 @@ private:
                 if (((ch_ >= '0' && ch_ <= '9') ||
                     (ch_ >= 'a' && ch_ <= 'f') || (ch_ >= 'A' && ch_ <= 'F')))
                 {
-                    state_.increment ();
+                    state_.increment();
                 }
                 else
                 {
@@ -2243,22 +2294,22 @@ private:
             }
         } while (!eos_);
 
-        if (hex_ > static_cast<std::size_t>(char_traits::max_val ()))
+        if (hex_ > static_cast<std::size_t>(char_traits::max_val()))
         {
             std::ostringstream ss_;
 
             ss_ << "Escape \\x" << std::hex << hex_ <<
                 " is too big for the state machine char type at index " <<
-                std::dec << state_.index () << " in rule id " <<
+                std::dec << state_.index() << " in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
-        return static_cast<input_char_type> (hex_);
+        return static_cast<input_char_type>(hex_);
     }
 
     template<typename state_type>
-    static void charset_range (const bool chset_, state_type &state_,
+    static void charset_range(const bool chset_, state_type &state_,
         bool &eos_, typename state_type::char_type &ch_,
         const input_char_type prev_, string_token &chars_)
     {
@@ -2267,12 +2318,12 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Charset cannot form start of range preceding "
-                "index " << state_.index () - 1 << " in rule id " <<
+                "index " << state_.index() - 1 << " in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
-        eos_ = state_.next (ch_);
+        eos_ = state_.next(ch_);
 
         if (eos_)
         {
@@ -2281,7 +2332,7 @@ private:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex following '-' in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
         input_char_type curr_ = 0;
@@ -2290,30 +2341,30 @@ private:
         {
             std::size_t str_len_ = 0;
 
-            if (escape_sequence (state_, curr_, str_len_))
+            if (escape_sequence(state_, curr_, str_len_))
             {
                 std::ostringstream ss_;
 
                 ss_ << "Charset cannot form end of range preceding index "
-                    << state_.index () << " in rule id " << state_._id << '.';
-                throw runtime_error (ss_.str ());
+                    << state_.index() << " in rule id " << state_._id << '.';
+                throw runtime_error(ss_.str());
             }
         }
-        else if (ch_ == '[' && !state_.eos () && *state_._curr == ':')
+        else if (ch_ == '[' && !state_.eos() && *state_._curr == ':')
         {
             std::ostringstream ss_;
 
             ss_ << "POSIX char class cannot form end of range at "
-                "index " << state_.index () - 1 << " in rule id " <<
+                "index " << state_.index() - 1 << " in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
         else
         {
             curr_ = ch_;
         }
 
-        eos_ = state_.next (ch_);
+        eos_ = state_.next(ch_);
 
         // Covers preceding if and else
         if (eos_)
@@ -2323,15 +2374,15 @@ private:
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex (missing ']') in rule id " <<
                 state_._id << '.';
-            throw runtime_error (ss_.str ());
+            throw runtime_error(ss_.str());
         }
 
-        // Use size_t because we need to go past one past the maximum value.
-        // if we use index_type, we will wrap around to 0 at max + 1.
-        std::size_t start_ = static_cast<typename char_traits::index_type>
-            (prev_);
-        std::size_t end_ = static_cast<typename char_traits::index_type>
-            (curr_);
+        // Use index_type as char is generally signed
+        // and we want to ignore signedness.
+        typename char_traits::index_type start_ =
+            static_cast<typename char_traits::index_type>(prev_);
+		typename char_traits::index_type end_ =
+            static_cast<typename char_traits::index_type>(curr_);
 
         // Semanic check
         if (end_ < start_)
@@ -2339,33 +2390,29 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Invalid range in charset preceding index " <<
-                state_.index () - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error (ss_.str ());
+                state_.index() - 1 << " in rule id " << state_._id << '.';
+            throw runtime_error(ss_.str());
         }
 
         // Even though ranges are used now, we still need to consider
         // each character if icase is set.
         if (state_._flags & icase)
         {
-            for (; start_ <= end_; ++start_)
+            typename string_token::range range_(start_, end_);
+            string_token folded_;
+
+            chars_.insert(range_);
+            fold(range_, state_._locale, folded_,
+                size<sizeof(input_char_type)>());
+
+            if (!folded_.empty())
             {
-                const input_char_type ch_ = static_cast<input_char_type>
-                    (start_);
-                const input_char_type folded_ = fold (ch_, state_._locale,
-                    size<sizeof(input_char_type)> ());
-
-                chars_.insert (typename string_token::range (ch_, ch_));
-
-                if (ch_ != folded_)
-                {
-                    chars_.insert (typename string_token::range
-                        (folded_, folded_));
-                }
+                chars_.insert(range_);
             }
         }
         else
         {
-            chars_.insert (typename string_token::range (prev_, curr_));
+            chars_.insert(typename string_token::range(prev_, curr_));
         }
     }
 };

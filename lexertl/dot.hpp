@@ -32,25 +32,25 @@ public:
 
     //! Dumps a description of the finite state machine expressed in
     //! the DOT language to the given output stream.
-    static void dump (const sm &sm_, rules &rules_, ostream &stream_)
+    static void dump(const sm &sm_, rules &rules_, ostream &stream_)
     {
         char_state_machine csm_;
 
-        sm_to_csm (sm_, csm_);
-        dump (csm_, rules_, stream_);
+        sm_to_csm(sm_, csm_);
+        dump(csm_, rules_, stream_);
     }
 
     //! Dumps a description of the finite state machine expressed in
     //! the DOT language to the given output stream.
-    static void dump (const char_state_machine &csm_, rules &rules_,
+    static void dump(const char_state_machine &csm_, rules &rules_,
         ostream &stream_)
     {
-        header (stream_);
-        for (std::size_t dfa_ = 0, dfas_ = csm_.size (); dfa_ < dfas_; ++dfa_)
+        header(stream_);
+        for (std::size_t dfa_ = 0, dfas_ = csm_.size(); dfa_ < dfas_; ++dfa_)
         {
-            dump_ex (dfa_, csm_._sm_deque[dfa_], rules_, stream_);
+            dump_ex(dfa_, csm_._sm_deque[dfa_], rules_, stream_);
         }
-        trailer (stream_);
+        trailer(stream_);
     }
 
 protected:
@@ -70,7 +70,7 @@ protected:
     // Escape control characters twice. This is necessary when
     // expressing character sets attached as to DOT nodes as
     // labels.
-    static string double_escape_char (const id_type ch_)
+    static string double_escape_char(const id_type ch_)
     {
         stringstream out_;
 
@@ -137,7 +137,7 @@ protected:
                     out_ << '\\';
                     out_ << 'x';
                     out_ << std::hex <<
-                        static_cast<std::size_t> (ch_);
+                        static_cast<std::size_t>(ch_);
                 }
                 else
                 {
@@ -153,13 +153,12 @@ protected:
 
     // Internal function actually performing the work of dumping the
     // state machine in DOT.
-    static void dump_ex (
-        id_type dfa_id_,
+    static void dump_ex(id_type dfa_id_,
         const typename char_state_machine::dfa &dfa_,
         rules &rules_,
         ostream &stream_)
     {
-        const std::size_t states_ = dfa_._states.size ();
+        const std::size_t states_ = dfa_._states.size();
         typename dfa_state::id_type_string_token_map::const_iterator iter_;
         typename dfa_state::id_type_string_token_map::const_iterator end_;
 
@@ -191,8 +190,8 @@ protected:
         {
             const dfa_state &state_ = dfa_._states[i_];
 
-            iter_ = state_._transitions.begin ();
-            end_ = state_._transitions.end ();
+            iter_ = state_._transitions.begin();
+            end_ = state_._transitions.end();
 
             const string src_name = node_name(dfa_id_, i_);
 
@@ -203,19 +202,19 @@ protected:
 
                 string_token token_ = iter_->second;
 
-                open_bracket (stream_);
+                open_bracket(stream_);
 
-                if (!iter_->second.any () && iter_->second.negatable ())
+                if (!iter_->second.any() && iter_->second.negatable())
                 {
-                    token_.negate ();
-                    negated (stream_);
+                    token_.negate();
+                    negated(stream_);
                 }
 
                 string chars_;
                 typename string_token::range_vector::const_iterator
-                    ranges_iter_ = token_._ranges.begin ();
+                    ranges_iter_ = token_._ranges.begin();
                 typename string_token::range_vector::const_iterator
-                    ranges_end_ = token_._ranges.end ();
+                    ranges_end_ = token_._ranges.end();
 
                 for (; ranges_iter_ != ranges_end_; ++ranges_iter_)
                 {
@@ -246,7 +245,7 @@ protected:
                     stream_ << chars_;
                 }
 
-                close_bracket (stream_);
+                close_bracket(stream_);
                 stream_ << "\"];" << std::endl;
             }
 
@@ -258,28 +257,28 @@ protected:
         }
     }
 
-    static void header (ostream &stream_)
+    static void header(ostream &stream_)
     {
         stream_ << "digraph DFAs {"    << std::endl;
         stream_ << "    rankdir = LR;" << std::endl;
     }
 
-    static void trailer (ostream &stream_)
+    static void trailer(ostream &stream_)
     {
         stream_ << "}" << std::endl;
     }
 
-    static void open_bracket (ostream &stream_)
+    static void open_bracket(ostream &stream_)
     {
         stream_ << "[";
     }
 
-    static void negated (ostream &stream_)
+    static void negated(ostream &stream_)
     {
         stream_ << "^";
     }
 
-    static void close_bracket (ostream &stream_)
+    static void close_bracket(ostream &stream_)
     {
         stream_ << "]";
     }

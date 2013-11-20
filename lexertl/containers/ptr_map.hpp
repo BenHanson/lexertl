@@ -20,51 +20,51 @@ public:
     typedef std::pair<key_type, ptr_type *> pair;
     typedef std::pair<typename map::iterator, bool> iter_pair;
 
-    ptr_map ()
+    ptr_map()
     {
     }
 
-    ~ptr_map ()
+    ~ptr_map()
     {
-        clear ();
+        clear();
     }
 
-    map *operator -> ()
+    map *operator ->()
     {
         return &_map;
     }
 
-    const map *operator -> () const
+    const map *operator ->() const
     {
         return &_map;
     }
 
-    map &operator * ()
+    map &operator *()
     {
         return _map;
     }
 
-    const map &operator * () const
+    const map &operator *() const
     {
         return _map;
     }
 
-    void clear ()
+    void clear()
     {
-        for (typename map::iterator iter_ = _map.begin (), end_ = _map.end ();
+        for (typename map::iterator iter_ = _map.begin(), end_ = _map.end();
             iter_ != end_; ++iter_)
         {
             delete iter_->second;
         }
 
-        _map.clear ();
+        _map.clear();
     }
 
 private:
     map _map;
 
-    ptr_map (const ptr_map &); // No copy construction.
-    ptr_map &operator = (const ptr_map &); // No assignment.
+    ptr_map(const ptr_map &); // No copy construction.
+    ptr_map &operator =(const ptr_map &); // No assignment.
 };
 }
 }

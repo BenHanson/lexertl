@@ -30,34 +30,34 @@ public:
     typedef char_type *pointer;
     typedef char_type &reference;
 
-    basic_stream_shared_iterator () :
-        _master (false),
-        _live (false),
-        _index (shared::npos ()),
-        _shared (0)
+    basic_stream_shared_iterator() :
+        _master(false),
+        _live(false),
+        _index(shared::npos()),
+        _shared(0)
     {
     }
 
-    basic_stream_shared_iterator (istream &stream_,
+    basic_stream_shared_iterator(istream &stream_,
         const std::size_t buff_size_ = 1024,
         const std::size_t increment_ = 1024) :
-        _master (true),
-        _live (false),
-        _index (shared::npos ()),
+        _master(true),
+        _live(false),
+        _index(shared::npos()),
         // For exception safety don't call new yet
-        _shared (0)
+        _shared(0)
     {
         // Safe to call potentially throwing new now.
-        _shared = new shared (stream_, buff_size_, increment_);
+        _shared = new shared(stream_, buff_size_, increment_);
         ++_shared->_ref_count;
-        _iter = _shared->_clients.insert (_shared->_clients.end (), this);
+        _iter = _shared->_clients.insert(_shared->_clients.end(), this);
     }
 
-    basic_stream_shared_iterator (const basic_stream_shared_iterator &rhs_) :
-        _master (false),
-        _live (false),
-        _index (rhs_._master ? rhs_._shared->lowest () : rhs_._index),
-        _shared (rhs_._shared)
+    basic_stream_shared_iterator(const basic_stream_shared_iterator &rhs_) :
+        _master(false),
+        _live(false),
+        _index(rhs_._master ? rhs_._shared->lowest() : rhs_._index),
+        _shared(rhs_._shared)
     {
         if (_shared)
         {
@@ -66,17 +66,17 @@ public:
             // even if the rhs is not (otherwise we will never
             // have a record of the start of the current range!)
             ++_shared->_ref_count;
-            _iter = _shared->_clients.insert (_shared->_clients.end (), this);
+            _iter = _shared->_clients.insert(_shared->_clients.end(), this);
             _live = true;
         }
     }
 
-    ~basic_stream_shared_iterator ()
+    ~basic_stream_shared_iterator()
     {
         if (_shared)
         {
             --_shared->_ref_count;
-            _shared->erase (this);
+            _shared->erase(this);
 
             if (_shared->_ref_count == 0)
             {
@@ -92,11 +92,11 @@ public:
         if (this != &rhs_)
         {
             _master = false;
-            _index  = rhs_._master ? rhs_._shared->lowest () : rhs_._index;
+            _index  = rhs_._master ? rhs_._shared->lowest() : rhs_._index;
 
             if (_live && !rhs_._live)
             {
-                _shared->erase (this);
+                _shared->erase(this);
 
                 if (!rhs_._shared)
                 {
@@ -105,8 +105,8 @@ public:
             }
             else if (!_live && rhs_._live)
             {
-                rhs_._iter = rhs_._shared->_clients.insert (rhs_._shared->
-                    _clients.end (), this);
+                rhs_._iter = rhs_._shared->_clients.insert(rhs_._shared->
+                    _clients.end(), this);
 
                 if (!_shared)
                 {
@@ -121,40 +121,40 @@ public:
         return *this;
     }
 
-    bool operator == (const basic_stream_shared_iterator &rhs_) const
+    bool operator ==(const basic_stream_shared_iterator &rhs_) const
     {
         return _index == rhs_._index &&
             (_shared == rhs_._shared ||
-            (_index == shared::npos () || rhs_._index == shared::npos ()) &&
+            (_index == shared::npos() || rhs_._index == shared::npos()) &&
             (!_shared || !rhs_._shared));
     }
 
-    bool operator != (const basic_stream_shared_iterator &rhs_) const
+    bool operator !=(const basic_stream_shared_iterator &rhs_) const
     {
         return !(*this == rhs_);
     }
 
-    const char_type &operator * ()
+    const char_type &operator *()
     {
-        check_master ();
+        check_master();
         return _shared->_buffer[_index];
     }
 
-    basic_stream_shared_iterator &operator ++ ()
+    basic_stream_shared_iterator &operator ++()
     {
-        check_master ();
+        check_master();
         ++_index;
-        update_state ();
+        update_state();
         return *this;
     }
 
-    basic_stream_shared_iterator operator ++ (int)
+    basic_stream_shared_iterator operator ++(int)
     {
         basic_stream_shared_iterator iter_ = *this;
 
-        check_master ();
+        check_master();
         ++_index;
-        update_state ();
+        update_state();
         return iter_;
     }
 
@@ -171,31 +171,31 @@ private:
         char_vector _buffer;
         iter_list _clients;
 
-        shared (istream &stream_, const std::size_t buff_size_,
+        shared(istream &stream_, const std::size_t buff_size_,
             const std::size_t increment_) :
-            _ref_count (0),
-            _increment (increment_),
-            _stream (stream_)
+            _ref_count(0),
+            _increment(increment_),
+            _stream(stream_)
         {
-            _buffer.resize (buff_size_);
-            _stream.read (&_buffer.front (), _buffer.size ());
-            _len = static_cast<std::size_t>(_stream.gcount ());
+            _buffer.resize(buff_size_);
+            _stream.read(&_buffer.front(), _buffer.size());
+            _len = static_cast<std::size_t>(_stream.gcount());
         }
 
-        bool reload_buffer ()
+        bool reload_buffer()
         {
-            const std::size_t lowest_ = lowest ();
+            const std::size_t lowest_ = lowest();
             std::size_t read_ = 0;
 
             if (lowest_ == 0)
             {
                 // Resize buffer
-                const std::size_t old_size_ = _buffer.size ();
+                const std::size_t old_size_ = _buffer.size();
                 const std::size_t new_size_ = old_size_ + _increment;
 
-                _buffer.resize (new_size_);
-                _stream.read (&_buffer.front () + old_size_, _increment);
-                read_ = static_cast<std::size_t>(_stream.gcount ());
+                _buffer.resize(new_size_);
+                _stream.read(&_buffer.front() + old_size_, _increment);
+                read_ = static_cast<std::size_t>(_stream.gcount());
 
                 if (read_)
                 {
@@ -207,14 +207,14 @@ private:
             {
                 // Some systems have memcpy in namespace std
                 using namespace std;
-                const size_t start_ = _buffer.size () - lowest_;
-                const size_t len_ = _buffer.size () - start_;
+                const size_t start_ = _buffer.size() - lowest_;
+                const size_t len_ = _buffer.size() - start_;
 
-                memcpy (&_buffer.front (), &_buffer[lowest_], start_ *
-                    sizeof (char_type));
-                _stream.read (&_buffer.front () + start_, len_);
-                read_ = static_cast<size_t>(_stream.gcount ());
-                subtract (lowest_);
+                memcpy(&_buffer.front(), &_buffer[lowest_], start_ *
+                    sizeof(char_type));
+                _stream.read(&_buffer.front() + start_, len_);
+                read_ = static_cast<size_t>(_stream.gcount());
+                subtract(lowest_);
 
                 if (read_)
                 {
@@ -223,27 +223,27 @@ private:
                 }
                 else
                 {
-                    _len = highest ();
+                    _len = highest();
                 }
             }
 
             return read_ != 0;
         }
 
-        void erase (basic_stream_shared_iterator *ptr_)
+        void erase(basic_stream_shared_iterator *ptr_)
         {
-            if (ptr_->_iter != _clients.end ())
+            if (ptr_->_iter != _clients.end())
             {
-                _clients.erase (ptr_->_iter);
-                ptr_->_iter = _clients.end ();
+                _clients.erase(ptr_->_iter);
+                ptr_->_iter = _clients.end();
             }
         }
 
-        std::size_t lowest () const
+        std::size_t lowest() const
         {
-            std::size_t lowest_ = npos ();
-            typename iter_list::const_iterator iter_ = _clients.begin ();
-            typename iter_list::const_iterator end_ = _clients.end ();
+            std::size_t lowest_ = npos();
+            typename iter_list::const_iterator iter_ = _clients.begin();
+            typename iter_list::const_iterator end_ = _clients.end();
 
             for (; iter_ != end_; ++iter_)
             {
@@ -255,7 +255,7 @@ private:
                 }
             }
 
-            if (lowest_ == npos ())
+            if (lowest_ == npos())
             {
                 lowest_ = 0;
             }
@@ -263,17 +263,17 @@ private:
             return lowest_;
         }
 
-        std::size_t highest () const
+        std::size_t highest() const
         {
             std::size_t highest_ = 0;
-            typename iter_list::const_iterator iter_ = _clients.begin ();
-            typename iter_list::const_iterator end_ = _clients.end ();
+            typename iter_list::const_iterator iter_ = _clients.begin();
+            typename iter_list::const_iterator end_ = _clients.end();
 
             for (; iter_ != end_; ++iter_)
             {
                 const basic_stream_shared_iterator *ptr_ = *iter_;
 
-                if (ptr_->_index != npos () && ptr_->_index > highest_)
+                if (ptr_->_index != npos() && ptr_->_index > highest_)
                 {
                     highest_ = ptr_->_index;
                 }
@@ -282,29 +282,29 @@ private:
             return highest_;
         }
 
-        void subtract (const std::size_t lowest_)
+        void subtract(const std::size_t lowest_)
         {
-            typename iter_list::iterator iter_ = _clients.begin ();
-            typename iter_list::iterator end_ = _clients.end ();
+            typename iter_list::iterator iter_ = _clients.begin();
+            typename iter_list::iterator end_ = _clients.end();
 
             for (; iter_ != end_; ++iter_)
             {
                 basic_stream_shared_iterator *ptr_ = *iter_;
 
-                if (ptr_->_index != npos ())
+                if (ptr_->_index != npos())
                 {
                     ptr_->_index -= lowest_;
                 }
             }
         }
 
-        static std::size_t npos ()
+        static std::size_t npos()
         {
             return static_cast<std::size_t>(~0);
         }
 
     private:
-        shared &operator = (const shared &rhs_);
+        shared &operator =(const shared &rhs_);
     };
 
     bool _master;
@@ -313,11 +313,11 @@ private:
     shared *_shared;
     mutable typename shared::iter_list::iterator _iter;
 
-    void check_master ()
+    void check_master()
     {
         if (!_shared)
         {
-            throw runtime_error ("Cannot manipulate null (end) "
+            throw runtime_error("Cannot manipulate null (end) "
                 "stream_shared_iterators.");
         }
 
@@ -325,18 +325,18 @@ private:
         {
             _master = false;
             _live = true;
-            _index = _shared->lowest ();
+            _index = _shared->lowest();
         }
     }
 
-    void update_state ()
+    void update_state()
     {
         if (_index >= _shared->_len)
         {
-            if (!_shared->reload_buffer ())
+            if (!_shared->reload_buffer())
             {
-                _shared->erase (this);
-                _index = shared::npos ();
+                _shared->erase(this);
+                _index = shared::npos();
                 _live = false;
             }
         }

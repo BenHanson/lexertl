@@ -28,54 +28,54 @@ struct basic_string_token
 
     range_vector _ranges;
 
-    basic_string_token () :
-        _ranges ()
+    basic_string_token() :
+        _ranges()
     {
     }
 
-    basic_string_token (char_type ch_) :
-        _ranges ()
+    basic_string_token(char_type ch_) :
+        _ranges()
     {
-        insert (range (ch_, ch_));
+        insert(range(ch_, ch_));
     }
 
-    basic_string_token (char_type first_, char_type second_) :
-        _ranges ()
+    basic_string_token(char_type first_, char_type second_) :
+        _ranges()
     {
-        insert (range (first_, second_));
+        insert(range(first_, second_));
     }
 
-    void clear ()
+    void clear()
     {
-        _ranges.clear ();
+        _ranges.clear();
     }
 
-    bool empty () const
+    bool empty() const
     {
-        return _ranges.empty ();
+        return _ranges.empty();
     }
 
-    bool any () const
+    bool any() const
     {
-        return _ranges.size () == 1 && _ranges.front ().first == 0 &&
-            _ranges.front ().second == char_traits::max_val ();
+        return _ranges.size() == 1 && _ranges.front().first == 0 &&
+            _ranges.front().second == char_traits::max_val();
     }
 
-    bool operator < (const basic_string_token &rhs_) const
+    bool operator <(const basic_string_token &rhs_) const
     {
         return _ranges < rhs_._ranges;
     }
 
-    bool operator == (const basic_string_token &rhs_) const
+    bool operator ==(const basic_string_token &rhs_) const
     {
         return _ranges == rhs_._ranges;
     }
 
-    bool negatable () const
+    bool negatable() const
     {
         std::size_t size_ = 0;
-        typename range_vector::const_iterator iter_ = _ranges.begin ();
-        typename range_vector::const_iterator end_ = _ranges.end ();
+        typename range_vector::const_iterator iter_ = _ranges.begin();
+        typename range_vector::const_iterator end_ = _ranges.end();
 
         for (; iter_ != end_; ++iter_)
         {
@@ -83,31 +83,31 @@ struct basic_string_token
                 static_cast<std::size_t>(iter_->first);
         }
 
-        return size_ > static_cast<std::size_t>(char_traits::max_val ()) / 2;
+        return size_ > static_cast<std::size_t>(char_traits::max_val()) / 2;
     }
 
-    void swap (basic_string_token &rhs_)
+    void swap(basic_string_token &rhs_)
     {
-        _ranges.swap (rhs_._ranges);
+        _ranges.swap(rhs_._ranges);
     }
 
-    void insert (const basic_string_token &rhs_)
+    void insert(const basic_string_token &rhs_)
     {
-        typename range_vector::const_iterator iter_ = rhs_._ranges.begin ();
-        typename range_vector::const_iterator end_ = rhs_._ranges.end ();
+        typename range_vector::const_iterator iter_ = rhs_._ranges.begin();
+        typename range_vector::const_iterator end_ = rhs_._ranges.end();
 
         for (; iter_ != end_; ++iter_)
         {
-            insert (*iter_);
+            insert(*iter_);
         }
     }
 
     // Deliberately pass by value - may modify
-    typename range_vector::iterator insert (range rhs_)
+    typename range_vector::iterator insert(range rhs_)
     {
         bool insert_ = true;
-        typename range_vector::iterator iter_ = _ranges.begin ();
-        typename range_vector::const_iterator end_ = _ranges.end ();
+        typename range_vector::iterator iter_ = _ranges.begin();
+        typename range_vector::const_iterator end_ = _ranges.end();
 
         while (iter_ != end_)
         {
@@ -162,15 +162,15 @@ struct basic_string_token
                 else
                 {
                     insert_ = false;
-                    iter_ = _ranges.end ();
+                    iter_ = _ranges.end();
                     break;
                 }
             }
 
             // Code minimisation: this always applies unless we have already
             // exited the loop, or "continue" executed.
-            iter_ = _ranges.erase (iter_);
-            end_ = _ranges.end ();
+            iter_ = _ranges.erase(iter_);
+            end_ = _ranges.end();
         }
 
         if (insert_)
@@ -181,20 +181,20 @@ struct basic_string_token
         return iter_;
     }
 
-    void negate ()
+    void negate()
     {
         index_type next_ = 0;
-        const index_type max_ = char_traits::max_val ();
+        const index_type max_ = char_traits::max_val();
         string_token temp_;
-        typename range_vector::iterator iter_ = _ranges.begin ();
-        typename range_vector::const_iterator end_ = _ranges.end ();
+        typename range_vector::iterator iter_ = _ranges.begin();
+        typename range_vector::const_iterator end_ = _ranges.end();
         bool finished_ = false;
 
         for (; iter_ != end_; ++iter_)
         {
             if (next_ < iter_->first)
             {
-                temp_.insert (range (next_, iter_->first - 1));
+                temp_.insert(range(next_, iter_->first - 1));
             }
 
             if (iter_->second < max_)
@@ -210,18 +210,18 @@ struct basic_string_token
 
         if (!finished_)
         {
-            temp_.insert (range (next_, max_));
+            temp_.insert(range(next_, max_));
         }
 
-        swap (temp_);
+        swap(temp_);
     }
 
-    void intersect (basic_string_token &rhs_, basic_string_token &overlap_)
+    void intersect(basic_string_token &rhs_, basic_string_token &overlap_)
     {
-        typename range_vector::iterator lhs_iter_ = _ranges.begin ();
-        typename range_vector::const_iterator lhs_end_ = _ranges.end ();
-        typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin ();
-        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end ();
+        typename range_vector::iterator lhs_iter_ = _ranges.begin();
+        typename range_vector::const_iterator lhs_end_ = _ranges.end();
+        typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin();
+        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end();
 
         while (lhs_iter_ != lhs_end_ && rhs_iter_ != rhs_end_)
         {
@@ -255,19 +255,19 @@ struct basic_string_token
                     range_.second = lhs_iter_->second;
                 }
 
-                adjust (range_, *this, lhs_iter_, lhs_end_);
-                adjust (range_, rhs_, rhs_iter_, rhs_end_);
-                overlap_.insert (range_);
+                adjust(range_, *this, lhs_iter_, lhs_end_);
+                adjust(range_, rhs_, rhs_iter_, rhs_end_);
+                overlap_.insert(range_);
             }
         }
     }
 
-    void remove (basic_string_token &rhs_)
+    void remove(basic_string_token &rhs_)
     {
-        typename range_vector::iterator lhs_iter_ = _ranges.begin ();
-        typename range_vector::const_iterator lhs_end_ = _ranges.end ();
-        typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin ();
-        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end ();
+        typename range_vector::iterator lhs_iter_ = _ranges.begin();
+        typename range_vector::const_iterator lhs_end_ = _ranges.end();
+        typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin();
+        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end();
 
         while (lhs_iter_ != lhs_end_ && rhs_iter_ != rhs_end_)
         {
@@ -301,12 +301,12 @@ struct basic_string_token
                     range_.second = lhs_iter_->second;
                 }
 
-                adjust (range_, *this, lhs_iter_, lhs_end_);
+                adjust(range_, *this, lhs_iter_, lhs_end_);
             }
         }
     }
 
-    static string escape_char (const typename char_traits::index_type ch_)
+    static string escape_char(const typename char_traits::index_type ch_)
     {
         string out_;
 
@@ -371,8 +371,8 @@ struct basic_string_token
                     out_ += '\\';
                     out_ += 'x';
                     ss_ << std::hex <<
-                        static_cast<std::size_t> (ch_);
-                    out_ += ss_.str ();
+                        static_cast<std::size_t>(ch_);
+                    out_ += ss_.str();
                 }
                 else
                 {
@@ -387,7 +387,7 @@ struct basic_string_token
     }
 
 private:
-    void adjust (const range &range_, basic_string_token &token_,
+    void adjust(const range &range_, basic_string_token &token_,
         typename range_vector::iterator &iter_,
         typename range_vector::const_iterator &end_)
     {
@@ -399,10 +399,10 @@ private:
 
             if (range_.second < second_)
             {
-                range new_range_ (range_.second + 1, second_);
+                range new_range_(range_.second + 1, second_);
 
-                iter_ = token_.insert (new_range_);
-                end_ = token_._ranges.end ();
+                iter_ = token_.insert(new_range_);
+                end_ = token_._ranges.end();
             }
         }
         else if (range_.second < iter_->second)
@@ -411,8 +411,8 @@ private:
         }
         else
         {
-            iter_ = token_._ranges.erase (iter_);
-            end_ = token_._ranges.end ();
+            iter_ = token_._ranges.erase(iter_);
+            end_ = token_._ranges.end();
         }
     }
 };
