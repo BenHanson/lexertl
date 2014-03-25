@@ -1,5 +1,5 @@
 // dot.hpp
-// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
 // Copyright (c) 2013 Autodesk, Inc. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -176,8 +176,10 @@ protected:
             }
             else if (state_._end_state)
             {
-                stream_ << "    " << name << " [shape = doublecircle, xlabel=\"id ="
-                        << static_cast<std::size_t>(state_._id) << "\"];" << std::endl;
+                stream_ << "    " << name <<
+                    " [shape = doublecircle, xlabel=\"id =" <<
+                    static_cast<std::size_t>(state_._id) << "\"];" <<
+                    std::endl;
             }
             else {
                 stream_ << "    " << name << " [shape = circle];" << std::endl;
@@ -198,7 +200,8 @@ protected:
             for (; iter_ != end_; ++iter_)
             {
                 const string dst_name = node_name(dfa_id_, iter_->first);
-                stream_ << "    " << src_name << " -> " << dst_name << " [label = \"";
+                stream_ << "    " << src_name << " -> " << dst_name <<
+                " [label = \"";
 
                 string_token token_ = iter_->second;
 

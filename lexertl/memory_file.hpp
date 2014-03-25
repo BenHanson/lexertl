@@ -1,6 +1,7 @@
 // memory_file.hpp
-// Copyright (c) 2013 Ben Hanson (http://www.benhanson.net/)
-// Inspired by http://en.wikibooks.org/wiki/Optimizing_C%2B%2B/General_optimization_techniques/Input/Output#Memory-mapped_file
+// Copyright (c) 2014 Ben Hanson (http://www.benhanson.net/)
+// Inspired by http://en.wikibooks.org/wiki/Optimizing_C%2B%2B/
+// General_optimization_techniques/Input/Output#Memory-mapped_file
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -115,7 +116,7 @@ private:
     // No copy construction.
     basic_memory_file(const basic_memory_file &);
     // No assignment.
-	basic_memory_file &operator =(const basic_memory_file &);
+    basic_memory_file &operator =(const basic_memory_file &);
 };
 
 typedef basic_memory_file<char> memory_file;

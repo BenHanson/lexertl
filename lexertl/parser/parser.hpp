@@ -1,5 +1,5 @@
 // parser.hpp
-// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -63,19 +63,19 @@ public:
     typedef typename node::node_ptr_vector node_ptr_vector;
     typedef std::basic_string<rules_char_type> string;
     typedef basic_string_token<char_type> string_token;
-    typedef std::map<string, const node *> macro_map;
     typedef basic_selection_node<id_type> selection_node;
     typedef basic_sequence_node<id_type> sequence_node;
     typedef std::map<string_token, std::size_t> charset_map;
     typedef std::pair<string_token, std::size_t> charset_pair;
     typedef bool_<sm_traits::compressed> compressed;
+    typedef basic_re_token<rules_char_type, input_char_type> token;
+    typedef std::deque<token> token_deque;
 
     basic_parser(const std::locale &locale_,
-        node_ptr_vector &node_ptr_vector_, const macro_map &macro_map_,
+        node_ptr_vector &node_ptr_vector_,
         charset_map &charset_map_, const id_type eoi_) :
         _locale(locale_),
         _node_ptr_vector(node_ptr_vector_),
-        _macro_map(macro_map_),
         _charset_map(charset_map_),
         _eoi(eoi_),
         _token_stack(),
@@ -83,23 +83,24 @@ public:
     {
     }
 
-    node *parse(const rules_char_type *start_,
-        const rules_char_type * const end_, const id_type id_,
+    node *parse(const token_deque &regex_, const id_type id_,
         const id_type user_id_, const id_type next_dfa_,
         const id_type push_dfa_, const bool pop_dfa_,
-        const std::size_t flags_, id_type &nl_id_, const bool seen_bol_,
-        const bool macro_)
+        const std::size_t flags_, id_type &nl_id_, const bool seen_bol_)
     {
+        typename token_deque::const_iterator iter_ = regex_.begin();
+        typename token_deque::const_iterator end_ = regex_.end();
         node *root_ = 0;
-        state state_(start_, end_, id_, flags_, _locale, macro_);
         token *lhs_token_ = 0;
-        std::auto_ptr<token> rhs_token_(new token);
+        // There cannot be less than 2 tokens
+        std::auto_ptr<token> rhs_token_(new token(*iter_++));
         char action_ = 0;
 
         _token_stack->push(static_cast<token *>(0));
         _token_stack->top() = rhs_token_.release();
-        rhs_token_.reset(new token);
-        tokeniser::next(_token_stack->top(), state_, rhs_token_.get());
+        rhs_token_.reset(new token(*iter_));
+
+        if (iter_ + 1 != end_) ++iter_;
 
         do
         {
@@ -112,12 +113,13 @@ public:
                 case '=':
                     _token_stack->push(static_cast<token *>(0));
                     _token_stack->top() = rhs_token_.release();
-                    rhs_token_.reset(new token);
-                    tokeniser::next(_token_stack->top(), state_,
-                        rhs_token_.get());
+                    rhs_token_.reset(new token(*iter_));
+
+                    if (iter_ + 1 != end_) ++iter_;
+
                     break;
                 case '>':
-                    reduce(state_);
+                    reduce(nl_id_);
                     break;
                 default:
                 {
@@ -126,9 +128,7 @@ public:
                     ss_ << "A syntax error occurred: '" <<
                         lhs_token_->precedence_string() <<
                         "' against '" << rhs_token_->precedence_string() <<
-                        "' preceding index " << state_.index() <<
-                        " in rule id " <<
-                        state_._id << '.';
+                        " in rule id " << id_ << '.';
                     throw runtime_error(ss_.str());
                     break;
                 }
@@ -140,7 +140,7 @@ public:
             std::ostringstream ss_;
 
             ss_ << "Empty rules are not allowed in rule id " <<
-                state_._id << '.';
+                id_ << '.';
             throw runtime_error(ss_.str());
         }
 
@@ -149,34 +149,20 @@ public:
         node *lhs_node_ = _tree_node_stack.top();
 
         _tree_node_stack.pop();
+        _node_ptr_vector->push_back(static_cast<end_node *>(0));
 
-        if (macro_)
-        {
-            // Macros have no end state...
-            root_ = lhs_node_;
-        }
-        else
-        {
-            _node_ptr_vector->push_back(static_cast<end_node *>(0));
+        node *rhs_node_ = new end_node(id_, user_id_, next_dfa_,
+            push_dfa_, pop_dfa_);
 
-            node *rhs_node_ = new end_node(id_, user_id_, next_dfa_,
-                push_dfa_, pop_dfa_);
-
-            _node_ptr_vector->back() = rhs_node_;
-            _node_ptr_vector->push_back(static_cast<sequence_node *>(0));
-            _node_ptr_vector->back() = new sequence_node
-                (lhs_node_, rhs_node_);
-            root_ = _node_ptr_vector->back();
-        }
+        _node_ptr_vector->back() = rhs_node_;
+        _node_ptr_vector->push_back(static_cast<sequence_node *>(0));
+        _node_ptr_vector->back() = new sequence_node
+            (lhs_node_, rhs_node_);
+        root_ = _node_ptr_vector->back();
 
         if (seen_bol_)
         {
             fixup_bol(root_);
-        }
-
-        if (state_._nl_id != static_cast<id_type>(~0))
-        {
-            nl_id_ = state_._nl_id;
         }
 
         if ((flags_ & match_zero_len) == 0)
@@ -198,7 +184,7 @@ public:
                     ss_ << "Rules that match zero characters are not allowed "
                         "as this can cause an infinite loop in user code. The "
                         "match_zero_len flag overrides this check. Rule id " <<
-                        state_._id << '.';
+                        id_ << '.';
                     throw runtime_error(ss_.str());
                 }
             }
@@ -219,8 +205,6 @@ public:
 
 private:
     typedef typename input_string_token::range input_range;
-    typedef typename tokeniser::state state;
-    typedef basic_re_token<rules_char_type, input_char_type> token;
     typedef typename string_token::range range;
     typedef ptr_vector<string_token> string_token_vector;
     typedef ptr_stack<token> token_stack;
@@ -228,7 +212,6 @@ private:
 
     const std::locale &_locale;
     node_ptr_vector &_node_ptr_vector;
-    const macro_map &_macro_map;
     charset_map &_charset_map;
     id_type _eoi;
     token_stack _token_stack;
@@ -250,7 +233,7 @@ private:
         }
     };
 
-    void reduce(state &state_)
+    void reduce(id_type &nl_id_)
     {
         token *lhs_ = 0;
         token *rhs_ = 0;
@@ -302,13 +285,10 @@ private:
             bol(handle_);
             break;
         case EOL:
-            eol(handle_, state_);
+            eol(handle_, nl_id_);
             break;
         case CHARSET:
             charset(handle_, compressed());
-            break;
-        case MACRO:
-            macro(handle_, state_);
             break;
         case OPENPAREN:
             openparen(handle_);
@@ -455,9 +435,9 @@ private:
     }
 
 #ifndef NDEBUG
-    void eol(token_stack &handle_, state &state_)
+    void eol(token_stack &handle_, id_type &nl_id_)
 #else
-    void eol(token_stack &, state &state_)
+    void eol(token_stack &, id_type &nl_id_)
 #endif
     {
         // Done in two parts for VC6.
@@ -465,7 +445,14 @@ private:
 
         assert(handle_->top()->_type == EOL &&
             handle_->size() == 1);
-        state_._nl_id = lookup(nl_);
+
+        const id_type temp_nl_id_ = lookup(nl_);
+
+        if (temp_nl_id_ != static_cast<id_type>(~0))
+        {
+            nl_id_ = temp_nl_id_;
+        }
+
         // store charset
         _node_ptr_vector->push_back(static_cast<leaf_node *>(0));
         _node_ptr_vector->back() = new leaf_node(eol_token(), true);
@@ -803,38 +790,6 @@ private:
         }
 
         return static_cast<id_type>(id_);
-    }
-
-    void macro(token_stack &handle_, const state &state_)
-    {
-        const token *top_ = handle_->top();
-
-        assert(top_->_type == MACRO && handle_->size() == 1);
-
-        typename macro_map::const_iterator iter_ =
-            _macro_map.find(top_->_extra);
-
-        if (iter_ == _macro_map.end())
-        {
-            const rules_char_type *name_ = top_->_extra.c_str();
-            std::basic_stringstream<input_char_type> ss_;
-            std::ostringstream os_;
-
-            os_ << "Unknown MACRO name '";
-
-            while (*name_)
-            {
-                // Safe to simply cast to char.
-                os_ << static_cast<char>(*name_++);
-            }
-
-            os_ << "' in rule id " << state_._id << '.';
-            throw runtime_error(os_.str());
-        }
-
-        _tree_node_stack.push(iter_->second->copy(_node_ptr_vector));
-        _token_stack->push(static_cast<token *>(0));
-        _token_stack->top() = new token(REPEAT);
     }
 
     void openparen(token_stack &handle_)

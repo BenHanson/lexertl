@@ -9,11 +9,11 @@ void gen_calc(lexertl::state_machine &sm_)
 {
     lexertl::rules rules_;
 
-    rules_.add_state("VALUE");
-    rules_.add_state("OPERATOR");
-    rules_.add_state("SUB_INITIAL");
-    rules_.add_state("SUB_VALUE");
-    rules_.add_state("SUB_OPERATOR");
+    rules_.push_state("VALUE");
+    rules_.push_state("OPERATOR");
+    rules_.push_state("SUB_INITIAL");
+    rules_.push_state("SUB_VALUE");
+    rules_.push_state("SUB_OPERATOR");
 
 //    rules_.add("INITIAL", "[a-z]", "INITIAL");
     rules_.add("INITIAL", "-", eNegate, "VALUE", 100);
@@ -36,7 +36,7 @@ void gen_calc(lexertl::state_machine &sm_)
 //    lexertl::table_based_cpp::generate_cpp("lookup", sm_, false, std::cout);
 }
 
-void reduce (std::stack<int> &operands_,
+void reduce(std::stack<int> &operands_,
     std::stack<char> &ops_)
 {
     if (operands_.empty() || ops_.empty()) return;
@@ -54,31 +54,31 @@ void reduce (std::stack<int> &operands_,
         ops_.pop();
         rhs_ = operands_.top();
         operands_.pop();
-        operands_.top () += rhs_;
+        operands_.top() += rhs_;
         break;
     case '-':
         ops_.pop();
         rhs_ = operands_.top();
         operands_.pop();
-        operands_.top () -= rhs_;
+        operands_.top() -= rhs_;
         break;
     case '*':
         ops_.pop();
         rhs_ = operands_.top();
         operands_.pop();
-        operands_.top () *= rhs_;
+        operands_.top() *= rhs_;
         break;
     case '/':
         ops_.pop();
         rhs_ = operands_.top();
         operands_.pop();
-        operands_.top () /= rhs_;
+        operands_.top() /= rhs_;
         break;
     case '%':
         ops_.pop();
         rhs_ = operands_.top();
         operands_.pop();
-        operands_.top () %= rhs_;
+        operands_.top() %= rhs_;
         break;
     case '(':
         break;
@@ -87,8 +87,8 @@ void reduce (std::stack<int> &operands_,
 
         while (!ops_.empty() && op_ != '(')
         {
-            op_ = ops_.top ();
-            reduce (operands_, ops_);
+            op_ = ops_.top();
+            reduce(operands_, ops_);
         }
 
         if (op_ == '(') ops_.pop();
@@ -108,8 +108,8 @@ void calc(const std::string &input_,
 
     do
     {
-        lexertl::lookup (sm_, results_);
-//        lookup (results_);
+        lexertl::lookup(sm_, results_);
+//        lookup(results_);
 
         if (results_.id == results_.npos())
         {

@@ -1,5 +1,5 @@
 // tokeniser.hpp
-// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -29,13 +29,13 @@ public:
     typedef typename tokeniser_helper::state state;
     typedef basic_string_token<char_type> string_token;
 
-    static void next(re_token *lhs_, state &state_, re_token *token_)
+    static void next(re_token &lhs_, state &state_, re_token &token_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = state_.next(ch_);
         bool skipped_ = false;
 
-        token_->clear();
+        token_.clear();
 
         do
         {
@@ -74,22 +74,22 @@ public:
                 throw runtime_error(ss_.str());
             }
 
-            token_->_type = END;
+            token_._type = END;
         }
         else
         {
             if (ch_ == '\\')
             {
                 // Even if we are in a string, respect escape sequences...
-                token_->_type = CHARSET;
-                escape(state_, token_->_str);
+                token_._type = CHARSET;
+                escape(state_, token_._str);
             }
             else if (state_._in_string)
             {
                 // All other meta characters lose their special meaning
                 // inside a string.
-                token_->_type = CHARSET;
-                token_->_str.insert(typename string_token::range(ch_, ch_));
+                token_._type = CHARSET;
+                token_._str.insert(typename string_token::range(ch_, ch_));
             }
             else
             {
@@ -98,7 +98,7 @@ public:
                 switch (ch_)
                 {
                     case '(':
-                        token_->_type = OPENPAREN;
+                        token_._type = OPENPAREN;
                         ++state_._paren_count;
                         read_options(state_);
                         break;
@@ -115,7 +115,7 @@ public:
                             throw runtime_error(ss_.str());
                         }
 
-                        token_->_type = CLOSEPAREN;
+                        token_._type = CLOSEPAREN;
 
                         if (!state_._flags_stack.empty())
                         {
@@ -127,36 +127,36 @@ public:
                     case '?':
                         if (!state_.eos() && *state_._curr == '?')
                         {
-                            token_->_type = AOPT;
+                            token_._type = AOPT;
                             state_.increment();
                         }
                         else
                         {
-                            token_->_type = OPT;
+                            token_._type = OPT;
                         }
 
                         break;
                     case '*':
                         if (!state_.eos() && *state_._curr == '?')
                         {
-                            token_->_type = AZEROORMORE;
+                            token_._type = AZEROORMORE;
                             state_.increment();
                         }
                         else
                         {
-                            token_->_type = ZEROORMORE;
+                            token_._type = ZEROORMORE;
                         }
 
                         break;
                     case '+':
                         if (!state_.eos() && *state_._curr == '?')
                         {
-                            token_->_type = AONEORMORE;
+                            token_._type = AONEORMORE;
                             state_.increment();
                         }
                         else
                         {
-                            token_->_type = ONEORMORE;
+                            token_._type = ONEORMORE;
                         }
 
                         break;
@@ -164,17 +164,17 @@ public:
                         open_curly(lhs_, state_, token_);
                         break;
                     case '|':
-                        token_->_type = OR;
+                        token_._type = OR;
                         break;
                     case '^':
                         if (!state_._macro && state_._curr - 1 == state_._start)
                         {
-                            token_->_type = BOL;
+                            token_._type = BOL;
                         }
                         else
                         {
-                            token_->_type = CHARSET;
-                            token_->_str.insert(typename string_token::range
+                            token_._type = CHARSET;
+                            token_._str.insert(typename string_token::range
                                 (ch_, ch_));
                         }
 
@@ -182,33 +182,33 @@ public:
                     case '$':
                         if (!state_._macro && state_._curr == state_._end)
                         {
-                            token_->_type = EOL;
+                            token_._type = EOL;
                         }
                         else
                         {
-                            token_->_type = CHARSET;
-                            token_->_str.insert(typename string_token::range
+                            token_._type = CHARSET;
+                            token_._str.insert(typename string_token::range
                                 (ch_, ch_));
                         }
 
                         break;
                     case '.':
                     {
-                        token_->_type = CHARSET;
+                        token_._type = CHARSET;
 
                         if (state_._flags & dot_not_newline)
                         {
-                            token_->_str.insert(typename string_token::range
+                            token_._str.insert(typename string_token::range
                                 ('\n', '\n'));
                         }
 
-                        token_->_str.negate();
+                        token_._str.negate();
                         break;
                     }
                     case '[':
                     {
-                        token_->_type = CHARSET;
-                        tokeniser_helper::charset(state_, token_->_str);
+                        token_._type = CHARSET;
+                        tokeniser_helper::charset(state_, token_._str);
                         break;
                     }
                     case '/':
@@ -221,26 +221,26 @@ public:
                         break;
                     }
                     default:
-                        token_->_type = CHARSET;
+                        token_._type = CHARSET;
 
                         if (state_._flags & icase)
                         {
                             typename string_token::range range_(ch_, ch_);
                             string_token folded_;
 
-                            token_->_str.insert(range_);
+                            token_._str.insert(range_);
                             tokeniser_helper::fold(range_, state_._locale,
                                 folded_, typename tokeniser_helper::template
                                 size<sizeof(char_type)>());
 
                             if (!folded_.empty())
                             {
-                                token_->_str.insert(folded_);
+                                token_._str.insert(folded_);
                             }
                         }
                         else
                         {
-                            token_->_str.insert(typename string_token::range
+                            token_._str.insert(typename string_token::range
                                 (ch_, ch_));
                         }
 
@@ -451,8 +451,8 @@ private:
         }
     }
 
-    static void open_curly(re_token *lhs_, state &state_,
-        re_token *token_)
+    static void open_curly(re_token &lhs_, state &state_,
+        re_token &token_)
     {
         if (state_.eos())
         {
@@ -463,13 +463,41 @@ private:
                 state_._id << '.';
             throw runtime_error(ss_.str());
         }
-        else if (*state_._curr == '-')
+        else if (*state_._curr == '-' || *state_._curr == '+')
         {
-            charset_difference(lhs_, state_, token_);
-        }
-        else if (*state_._curr == '+')
-        {
-            charset_union(lhs_, state_, token_);
+            rules_char_type ch_ = 0;
+
+            if (lhs_._type != CHARSET)
+            {
+                std::ostringstream ss_;
+
+                ss_ << "CHARSET must precede {-} at index " <<
+                    state_.index() - 1 << " in rule id " << state_._id << '.';
+                throw runtime_error(ss_.str());
+            }
+
+            state_.next(ch_);
+            token_._type = DIFF;
+            token_._extra = ch_;
+
+            if (state_.next(ch_))
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (missing '}') in rule id " <<
+                    state_._id << '.';
+                throw runtime_error(ss_.str());
+            }
+
+            if (ch_ != '}')
+            {
+                std::ostringstream ss_;
+
+                ss_ << "Missing '}' at index " << state_.index() - 1 <<
+                    " in rule id " << state_._id << '.';
+                throw runtime_error(ss_.str());
+            }
         }
         else if (*state_._curr >= '0' && *state_._curr <= '9')
         {
@@ -479,120 +507,6 @@ private:
         {
             macro(state_, token_);
         }
-    }
-
-    static void charset_difference(re_token *lhs_, state &state_,
-        re_token *token_)
-    {
-        rules_char_type ch_ = 0;
-
-        if (lhs_->_type != CHARSET)
-        {
-            std::ostringstream ss_;
-
-            ss_ << "CHARSET must precede {-} at index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        state_.next(ch_);
-
-        if (state_.next(ch_))
-        {
-            std::ostringstream ss_;
-
-            // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}') in rule id " <<
-                state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        if (ch_ != '}')
-        {
-            std::ostringstream ss_;
-
-            ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        re_token rhs_;
-
-        next(lhs_, state_, &rhs_);
-
-        if (rhs_._type != CHARSET)
-        {
-            std::ostringstream ss_;
-
-            ss_ << "CHARSET must follow {-} at index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        lhs_->_str.remove(rhs_._str);
-
-        if (lhs_->_str.empty())
-        {
-            std::ostringstream ss_;
-
-            ss_ << "Empty charset created by {-} at index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        next(lhs_, state_, token_);
-    }
-
-    static void charset_union(re_token *lhs_, state &state_,
-        re_token *token_)
-    {
-        rules_char_type ch_ = 0;
-
-        if (lhs_->_type != CHARSET)
-        {
-            std::ostringstream ss_;
-
-            ss_ << "CHARSET must precede {+} at index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        state_.next(ch_);
-
-        if (state_.next(ch_))
-        {
-            std::ostringstream ss_;
-
-            // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}') in rule id " <<
-                state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        if (ch_ != '}')
-        {
-            std::ostringstream ss_;
-
-            ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        re_token rhs_;
-
-        next(lhs_, state_, &rhs_);
-
-        if (rhs_._type != CHARSET)
-        {
-            std::ostringstream ss_;
-
-            ss_ << "CHARSET must follow {+} at index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
-            throw runtime_error(ss_.str());
-        }
-
-        lhs_->_str.insert(rhs_._str);
-        next(lhs_, state_, token_);
     }
 
     // SYNTAX:
@@ -605,7 +519,7 @@ private:
     //   {1,} = +
     //   {min,max} where min == max - {min}
     //   {min,max} where max < min - INVALID (throw exception)
-    static void repeat_n(state &state_, re_token *token_)
+    static void repeat_n(state &state_, re_token &token_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = state_.next(ch_);
@@ -616,7 +530,7 @@ private:
         {
             min_ *= 10;
             min_ += ch_ - '0';
-            token_->_extra += ch_;
+            token_._extra += ch_;
             eos_ = state_.next(ch_);
         }
 
@@ -635,7 +549,7 @@ private:
 
         if (ch_ == ',')
         {
-            token_->_extra += ch_;
+            token_._extra += ch_;
             eos_ = state_.next(ch_);
 
             if (eos_)
@@ -653,13 +567,13 @@ private:
                 // Small optimisation: Check for '*' equivalency.
                 if (min_ == 0)
                 {
-                    token_->_type = ZEROORMORE;
+                    token_._type = ZEROORMORE;
                     repeatn_ = false;
                 }
                 // Small optimisation: Check for '+' equivalency.
                 else if (min_ == 1)
                 {
-                    token_->_type = ONEORMORE;
+                    token_._type = ONEORMORE;
                     repeatn_ = false;
                 }
             }
@@ -680,7 +594,7 @@ private:
                 {
                     max_ *= 10;
                     max_ += ch_ - '0';
-                    token_->_extra += ch_;
+                    token_._extra += ch_;
                     eos_ = state_.next(ch_);
                 } while (!eos_ && ch_ >= '0' && ch_ <= '9');
 
@@ -697,13 +611,13 @@ private:
                 // Small optimisation: Check for '?' equivalency.
                 if (min_ == 0 && max_ == 1)
                 {
-                    token_->_type = OPT;
+                    token_._type = OPT;
                     repeatn_ = false;
                 }
                 // Small optimisation: if min == max, then min.
                 else if (min_ == max_)
                 {
-                    token_->_extra.erase(token_->_extra.find(','));
+                    token_._extra.erase(token_._extra.find(','));
                     min_max_ = false;
                     max_ = 0;
                 }
@@ -744,41 +658,41 @@ private:
 
             if (!state_.eos() && *state_._curr == '?')
             {
-                token_->_type = AREPEATN;
+                token_._type = AREPEATN;
                 state_.increment();
             }
             else
             {
-                token_->_type = REPEATN;
+                token_._type = REPEATN;
             }
         }
-        else if (token_->_type == ZEROORMORE)
+        else if (token_._type == ZEROORMORE)
         {
             if (!state_.eos() && *state_._curr == '?')
             {
-                token_->_type = AZEROORMORE;
+                token_._type = AZEROORMORE;
                 state_.increment();
             }
         }
-        else if (token_->_type == ONEORMORE)
+        else if (token_._type == ONEORMORE)
         {
             if (!state_.eos() && *state_._curr == '?')
             {
-                token_->_type = AONEORMORE;
+                token_._type = AONEORMORE;
                 state_.increment();
             }
         }
-        else if (token_->_type == OPT)
+        else if (token_._type == OPT)
         {
             if (!state_.eos() && *state_._curr == '?')
             {
-                token_->_type = AOPT;
+                token_._type = AOPT;
                 state_.increment();
             }
         }
     }
 
-    static void macro(state &state_, re_token *token_)
+    static void macro(state &state_, re_token &token_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = false;
@@ -797,7 +711,7 @@ private:
 
         do
         {
-            token_->_extra += ch_;
+            token_._extra += ch_;
             eos_ = state_.next(ch_);
 
             if (eos_)
@@ -821,7 +735,7 @@ private:
             throw runtime_error(ss_.str());
         }
 
-        token_->_type = MACRO;
+        token_._type = MACRO;
     }
 };
 }

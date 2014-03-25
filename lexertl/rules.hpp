@@ -1,5 +1,5 @@
 // rules.hpp
-// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -9,9 +9,9 @@
 #include "compile_assert.hpp"
 #include <deque>
 #include "enums.hpp"
-#include "internals.hpp"
 #include <locale>
 #include <map>
+#include "parser/tokeniser/re_tokeniser.hpp"
 #include "runtime_error.hpp"
 #include <set>
 #include "size_t.hpp"
@@ -21,7 +21,8 @@
 
 namespace lexertl
 {
-template<typename ch_type, typename id_ty = std::size_t>
+template<typename rules_char_type, typename ch_type,
+    typename id_ty = std::size_t>
 class basic_rules
 {
 public:
@@ -31,14 +32,22 @@ public:
     typedef id_ty id_type;
     typedef std::vector<id_type> id_vector;
     typedef std::deque<id_vector> id_vector_deque;
-    typedef std::basic_string<char_type> string;
+    typedef detail::basic_re_tokeniser_state<rules_char_type, id_type> re_state;
+    typedef std::basic_string<rules_char_type> string;
+    typedef basic_string_token<char_type> string_token;
     typedef std::deque<string> string_deque;
-    typedef std::deque<string_deque> string_deque_deque;
     typedef std::set<string> string_set;
     typedef std::pair<string, string> string_pair;
-    typedef std::deque<string_pair> string_pair_deque;
     typedef std::map<string, id_type> string_id_type_map;
     typedef std::pair<string, id_type> string_id_type_pair;
+    typedef detail::basic_re_token<rules_char_type, char_type> token;
+    typedef std::deque<token> token_deque;
+    typedef std::deque<token_deque> token_deque_deque;
+    typedef std::deque<token_deque_deque> token_deque_deque_deque;
+    typedef std::map<string, token_deque> macro_map;
+    typedef std::pair<string, token_deque> macro_pair;
+    typedef detail::basic_re_tokeniser
+        <rules_char_type, char_type, id_type> tokeniser;
 
     // If you get a compile error here you have
     // failed to define an unsigned id type.
@@ -48,8 +57,7 @@ public:
     basic_rules(const std::size_t flags_ = dot_not_newline) :
         _valid_id_type(),
         _statemap(),
-        _macrodeque(),
-        _macroset(),
+        _macro_map(),
         _regexes(),
         _features(),
         _ids(),
@@ -62,14 +70,13 @@ public:
         _lexer_state_names(),
         _eoi(0)
     {
-        add_state(initial());
+        push_state(initial());
     }
 
     void clear()
     {
         _statemap.clear();
-        _macrodeque.clear();
-        _macroset.clear();
+        _macro_map.clear();
         _regexes.clear();
         _features.clear();
         _ids.clear();
@@ -81,7 +88,7 @@ public:
         _locale = std::locale();
         _lexer_state_names.clear();
         _eoi = 0;
-        add_state(initial());
+        push_state(initial());
     }
 
     void clear(const id_type dfa_)
@@ -136,7 +143,7 @@ public:
         return _locale;
     }
 
-    const char_type *state(const id_type index_) const
+    const rules_char_type *state(const id_type index_) const
     {
         if (index_ == 0)
         {
@@ -157,7 +164,7 @@ public:
         }
     }
 
-    id_type state(const char_type *name_) const
+    id_type state(const rules_char_type *name_) const
     {
         typename string_id_type_map::const_iterator iter_ =
             _statemap.find(name_);
@@ -172,14 +179,14 @@ public:
         }
     }
 
-    id_type add_state(const char_type *name_)
+    id_type push_state(const rules_char_type *name_)
     {
         validate(name_);
 
         if (_statemap.insert(string_id_type_pair(name_,
             _statemap.size())).second)
         {
-            _regexes.push_back(string_deque());
+            _regexes.push_back(token_deque_deque());
             _features.push_back(0);
             _ids.push_back(id_vector());
             _user_ids.push_back(id_vector());
@@ -208,31 +215,35 @@ public:
         return static_cast<id_type>(_lexer_state_names.size());
     }
 
-    void add_macro(const char_type *name_, const char_type *regex_)
+    void insert_macro(const rules_char_type *name_,
+        const rules_char_type *regex_)
     {
-        add_macro(name_, string(regex_));
+        insert_macro(name_, string(regex_));
     }
 
-    void add_macro(const char_type *name_, const char_type *regex_start_,
-        const char_type *regex_end_)
+    void insert_macro(const rules_char_type *name_,
+        const rules_char_type *regex_start_,
+        const rules_char_type *regex_end_)
     {
-        add_macro(name_, string(regex_start_, regex_end_));
+        insert_macro(name_, string(regex_start_, regex_end_));
     }
 
-    void add_macro(const char_type *name_, const string &regex_)
+    void insert_macro(const rules_char_type *name_, const string &regex_)
     {
         validate(name_);
 
-        typename string_set::const_iterator iter_ = _macroset.find(name_);
+        typename macro_map::const_iterator iter_ = _macro_map.find(name_);
 
-        if (iter_ == _macroset.end())
+        if (iter_ == _macro_map.end())
         {
-            _macrodeque.push_back(string_pair(name_, regex_));
-            _macroset.insert(name_);
+            std::pair<typename macro_map::iterator, bool> pair_ =
+                _macro_map.insert(macro_pair(name_, token_deque()));
+
+            tokenise(regex_, pair_.first->second, npos(), name_);
         }
         else
         {
-            std::basic_stringstream<char_type> ss_;
+            std::basic_stringstream<rules_char_type> ss_;
             std::ostringstream os_;
 
             os_ << "Attempt to redefine MACRO '";
@@ -248,61 +259,26 @@ public:
         }
     }
 
-    void add_macros(const basic_rules &rules_)
-    {
-        const string_pair_deque &macros_ = rules_.macrodeque();
-        typename string_pair_deque::const_iterator macro_iter_ =
-            macros_.begin();
-        typename string_pair_deque::const_iterator macro_end_ =
-            macros_.end();
-
-        for (; macro_iter_ != macro_end_; ++macro_iter_)
-        {
-            add_macro(macro_iter_->first.c_str(),
-                macro_iter_->second.c_str());
-        }
-    }
-
-    void merge_macros(const basic_rules &rules_)
-    {
-        const string_pair_deque &macros_ = rules_.macrodeque();
-        typename string_pair_deque::const_iterator macro_iter_ =
-            macros_.begin();
-        typename string_pair_deque::const_iterator macro_end_ =
-            macros_.end();
-        typename string_set::const_iterator macro_dest_iter_;
-        typename string_set::const_iterator macro_dest_end_ = _macroset.end();
-
-        for (; macro_iter_ != macro_end_; ++macro_iter_)
-        {
-            macro_dest_iter_ = _macroset.find(macro_iter_->first);
-
-            if (macro_dest_iter_ == macro_dest_end_)
-            {
-                add_macro(macro_iter_->first.c_str(),
-                    macro_iter_->second.c_str());
-            }
-        }
-    }
-
     // Add rule to INITIAL
-    void add(const char_type *regex_, const id_type id_,
+    void push(const rules_char_type *regex_, const id_type id_,
         const id_type user_id_ = npos())
     {
-        add(string(regex_), id_, user_id_);
+        push(string(regex_), id_, user_id_);
     }
 
-    void add(const char_type *regex_start_, const char_type *regex_end_,
+    void push(const rules_char_type *regex_start_,
+        const rules_char_type *regex_end_,
         const id_type id_, const id_type user_id_ = npos())
     {
-        add(string(regex_start_, regex_end_), id_, user_id_);
+        push(string(regex_start_, regex_end_), id_, user_id_);
     }
 
-    void add(const string &regex_, const id_type id_,
+    void push(const string &regex_, const id_type id_,
         const id_type user_id_ = npos())
     {
         check_for_invalid_id(id_);
-        _regexes.front().push_back(regex_);
+        _regexes.front().push_back(token_deque());
+        tokenise(regex_, _regexes.front().back(), id_, nullptr);
 
         if (regex_[0] == '^')
         {
@@ -331,46 +307,47 @@ public:
     }
 
     // Add rule with no id
-    void add(const char_type *curr_dfa_,
-        const char_type *regex_, const char_type *new_dfa_)
+    void push(const rules_char_type *curr_dfa_,
+        const rules_char_type *regex_, const rules_char_type *new_dfa_)
     {
-        add(curr_dfa_, string(regex_), new_dfa_);
+        push(curr_dfa_, string(regex_), new_dfa_);
     }
 
-    void add(const char_type *curr_dfa_,
-        const char_type *regex_start_, const char_type *regex_end_,
-        const char_type *new_dfa_)
+    void push(const rules_char_type *curr_dfa_,
+        const rules_char_type *regex_start_, const rules_char_type *regex_end_,
+        const rules_char_type *new_dfa_)
     {
-        add(curr_dfa_, string(regex_start_, regex_end_), new_dfa_);
+        push(curr_dfa_, string(regex_start_, regex_end_), new_dfa_);
     }
 
-    void add(const char_type *curr_dfa_, const string &regex_,
-        const char_type *new_dfa_)
+    void push(const rules_char_type *curr_dfa_, const string &regex_,
+        const rules_char_type *new_dfa_)
     {
-        add(curr_dfa_, regex_, _eoi, new_dfa_, false);
+        push(curr_dfa_, regex_, _eoi, new_dfa_, false);
     }
 
     // Add rule with id
-    void add(const char_type *curr_dfa_,
-        const char_type *regex_, const id_type id_,
-        const char_type *new_dfa_, const id_type user_id_ = npos())
+    void push(const rules_char_type *curr_dfa_,
+        const rules_char_type *regex_, const id_type id_,
+        const rules_char_type *new_dfa_, const id_type user_id_ = npos())
     {
-        add(curr_dfa_, string(regex_), id_, new_dfa_, user_id_);
+        push(curr_dfa_, string(regex_), id_, new_dfa_, user_id_);
     }
 
-    void add(const char_type *curr_dfa_, const char_type *regex_start_,
-        const char_type *regex_end_, const id_type id_,
-        const char_type *new_dfa_, const id_type user_id_ = npos())
+    void push(const rules_char_type *curr_dfa_,
+        const rules_char_type *regex_start_,
+        const rules_char_type *regex_end_, const id_type id_,
+        const rules_char_type *new_dfa_, const id_type user_id_ = npos())
     {
-        add(curr_dfa_, string(regex_start_, regex_end_),
+        push(curr_dfa_, string(regex_start_, regex_end_),
             id_, new_dfa_, user_id_);
     }
 
-    void add(const char_type *curr_dfa_, const string &regex_,
-        const id_type id_, const char_type *new_dfa_,
+    void push(const rules_char_type *curr_dfa_, const string &regex_,
+        const id_type id_, const rules_char_type *new_dfa_,
         const id_type user_id_ = npos())
     {
-        add(curr_dfa_, regex_, id_, new_dfa_, true, user_id_);
+        push(curr_dfa_, regex_, id_, new_dfa_, true, user_id_);
     }
 
     const string_id_type_map &statemap() const
@@ -378,12 +355,7 @@ public:
         return _statemap;
     }
 
-    const string_pair_deque &macrodeque() const
-    {
-        return _macrodeque;
-    }
-
-    const string_deque_deque &regexes() const
+    const token_deque_deque_deque &regexes() const
     {
         return _regexes;
     }
@@ -420,8 +392,10 @@ public:
 
     bool empty() const
     {
-        typename string_deque_deque::const_iterator iter_ = _regexes.begin();
-        typename string_deque_deque::const_iterator end_ = _regexes.end();
+        typename token_deque_deque_deque::const_iterator iter_ =
+            _regexes.begin();
+        typename token_deque_deque_deque::const_iterator end_ =
+            _regexes.end();
         bool empty_ = true;
 
         for (; iter_ != end_; ++iter_)
@@ -436,24 +410,24 @@ public:
         return empty_;
     }
 
-    static const char_type *initial()
+    static const rules_char_type *initial()
     {
-        static const char_type initial_[] =
+        static const rules_char_type initial_[] =
             {'I', 'N', 'I', 'T', 'I', 'A', 'L', 0};
 
         return initial_;
     }
 
-    static const char_type *dot()
+    static const rules_char_type *dot()
     {
-        static const char_type dot_[] = {'.', 0};
+        static const rules_char_type dot_[] = {'.', 0};
 
         return dot_;
     }
 
-    static const char_type *all_states()
+    static const rules_char_type *all_states()
     {
-        static const char_type star_[] = {'*', 0};
+        static const rules_char_type star_[] = {'*', 0};
 
         return star_;
     }
@@ -465,9 +439,8 @@ public:
 
 private:
     string_id_type_map _statemap;
-    string_pair_deque _macrodeque;
-    string_set _macroset;
-    string_deque_deque _regexes;
+    macro_map _macro_map;
+    token_deque_deque_deque _regexes;
     id_vector _features;
     id_vector_deque _ids;
     id_vector_deque _user_ids;
@@ -479,14 +452,255 @@ private:
     string_deque _lexer_state_names;
     id_type _eoi;
 
-    void add(const char_type *curr_dfa_, const string &regex_,
-        const id_type id_, const char_type *new_dfa_,
+    void tokenise(const string &regex_, token_deque &tokens_,
+        const id_type id_, const rules_char_type *name_)
+    {
+        re_state state_(regex_.c_str(), regex_.c_str() + regex_.size(), id_,
+            _flags, _locale, name_ != nullptr);
+        string macro_;
+        rules_char_type diff_ = 0;
+
+        tokens_.push_back(token());
+
+        do
+        {
+            token *lhs_ = &tokens_.back();
+            token rhs_;
+
+            tokeniser::next(*lhs_, state_, rhs_);
+
+            if (rhs_._type != detail::DIFF &&
+                lhs_->precedence(rhs_._type) == ' ')
+            {
+                std::ostringstream ss_;
+
+                ss_ << "A syntax error occurred: '" <<
+                    lhs_->precedence_string() <<
+                    "' against '" << rhs_.precedence_string() <<
+                    "' preceding index " << state_.index() <<
+                    " in ";
+
+                if (name_ != nullptr)
+                {
+                    ss_ << "macro " << name_;
+                }
+                else
+                {
+                    ss_ << "rule id " << state_._id;
+                }
+
+                ss_ << '.';
+                throw runtime_error(ss_.str());
+            }
+
+            if (rhs_._type == detail::MACRO)
+            {
+                typename macro_map::const_iterator iter_ =
+                    _macro_map.find(rhs_._extra);
+
+                macro_ = rhs_._extra;
+
+                if (iter_ == _macro_map.end())
+                {
+                    const rules_char_type *name_ = rhs_._extra.c_str();
+                    std::basic_stringstream<rules_char_type> ss_;
+                    std::ostringstream os_;
+
+                    os_ << "Unknown MACRO name '";
+
+                    while (*name_)
+                    {
+                        // Safe to simply cast to char.
+                        os_ << static_cast<char>(*name_++);
+                    }
+
+                    os_ << "'.";
+                    throw runtime_error(os_.str());
+                }
+                else
+                {
+                    const bool multiple_ = iter_->second.size() > 3;
+
+                    if (diff_)
+                    {
+                        if (multiple_)
+                        {
+                            std::ostringstream ss_;
+
+                            ss_ << "Single CHARSET must follow {-} or {+} at index " <<
+                                state_.index() - 1 << " in ";
+
+                            if (name_ != nullptr)
+                            {
+                                ss_ << "macro " << name_;
+                            }
+                            else
+                            {
+                                ss_ << "rule id " << state_._id;
+                            }
+
+                            ss_ << '.';
+                            throw runtime_error(ss_.str());
+                        }
+                        else
+                        {
+                            rhs_ = iter_->second[1];
+                        }
+                    }
+
+                    // Any macro with more than one charset (or quantifiers)
+                    // requires bracketing.
+                    if (multiple_)
+                    {
+                        token open_;
+
+                        open_._type = detail::OPENPAREN;
+                        open_._str.insert('(');
+                    }
+
+                    // Don't need to store token if it is diff.
+                    if (!diff_)
+                    {
+                        // Don't insert BEGIN or END tokens
+                        tokens_.insert(tokens_.end(), iter_->second.begin() + 1,
+                            iter_->second.end() - 1);
+                        lhs_ = &tokens_.back();
+                    }
+
+                    if (multiple_)
+                    {
+                        token close_;
+
+                        close_._type = detail::CLOSEPAREN;
+                        close_._str.insert(')');
+                    }
+                }
+            }
+            else if (rhs_._type == detail::DIFF)
+            {
+                if (!macro_.empty())
+                {
+                    typename macro_map::const_iterator iter_ =
+                        _macro_map.find(macro_);
+
+                    if (iter_->second.size() > 3)
+                    {
+                        std::ostringstream ss_;
+
+                        ss_ << "Single CHARSET must precede {-} or {+} at index " <<
+                            state_.index() - 1 << " in ";
+
+                        if (name_ != nullptr)
+                        {
+                            ss_ << "macro " << name_;
+                        }
+                        else
+                        {
+                            ss_ << "rule id " << state_._id;
+                        }
+
+                        ss_ << '.';
+                        throw runtime_error(ss_.str());
+                    }
+                }
+
+                diff_ = rhs_._extra[0];
+                macro_.clear();
+                continue;
+            }
+            else if (!diff_)
+            {
+                tokens_.push_back(rhs_);
+                lhs_ = &tokens_.back();
+                macro_.clear();
+            }
+
+            // diff_ may have been set by previous conditional.
+            if (diff_)
+            {
+                if (rhs_._type != detail::CHARSET)
+                {
+                    std::ostringstream ss_;
+
+                    ss_ << "CHARSET must follow {-} or {+} at index " <<
+                        state_.index() - 1 << " in ";
+
+                    if (name_ != nullptr)
+                    {
+                        ss_ << "macro " << name_;
+                    }
+                    else
+                    {
+                        ss_ << "rule id " << state_._id;
+                    }
+
+                    ss_ << '.';
+                    throw runtime_error(ss_.str());
+                }
+
+                switch (diff_)
+                {
+                    case '-':
+                        lhs_->_str.remove(rhs_._str);
+
+                        if (lhs_->_str.empty())
+                        {
+                            std::ostringstream ss_;
+
+                            ss_ << "Empty charset created by {-} at index " <<
+                                state_.index() - 1 << " in ";
+
+                            if (name_ != nullptr)
+                            {
+                                ss_ << "macro " << name_;
+                            }
+                            else
+                            {
+                                ss_ << "rule id " << state_._id;
+                            }
+
+                            ss_ << '.';
+                            throw runtime_error(ss_.str());
+                        }
+
+                        break;
+                    case '+':
+                        lhs_->_str.insert(rhs_._str);
+                        break;
+                }
+
+                diff_ = 0;
+            }
+        } while (tokens_.back()._type != detail::END);
+
+        if (tokens_.size() == 2)
+        {
+            std::ostringstream ss_;
+
+            ss_ << "Empty regex in ";
+
+            if (name_ != nullptr)
+            {
+                ss_ << "macro " << name_;
+            }
+            else
+            {
+                ss_ << "rule id " << state_._id;
+            }
+
+            ss_ << " is not allowed.";
+            throw runtime_error(ss_.str());
+        }
+    }
+
+    void push(const rules_char_type *curr_dfa_, const string &regex_,
+        const id_type id_, const rules_char_type *new_dfa_,
         const bool check_, const id_type user_id_ = npos())
     {
         const bool star_ = *curr_dfa_ == '*' && *(curr_dfa_ + 1) == 0;
         const bool dot_ = *new_dfa_ == '.' && *(new_dfa_ + 1) == 0;
         const bool push_ = *new_dfa_ == '>';
-        const char_type *push_dfa_ = 0;
+        const rules_char_type *push_dfa_ = 0;
         const bool pop_ = *new_dfa_ == '<';
 
         if (push_ || pop_)
@@ -501,7 +715,7 @@ private:
 
         if (!dot_ && !pop_)
         {
-            const char_type *temp_ = new_dfa_;
+            const rules_char_type *temp_ = new_dfa_;
 
             while (*temp_ && *temp_ != ':')
             {
@@ -538,7 +752,7 @@ private:
 
             if (iter_ == end_)
             {
-                std::basic_stringstream<char_type> ss_;
+                std::basic_stringstream<rules_char_type> ss_;
                 std::ostringstream os_;
 
                 os_ << "Unknown state name '";
@@ -561,7 +775,7 @@ private:
 
                 if (iter_ == end_)
                 {
-                    std::basic_stringstream<char_type> ss_;
+                    std::basic_stringstream<rules_char_type> ss_;
                     std::ostringstream os_;
 
                     os_ << "Unknown state name '";
@@ -591,7 +805,7 @@ private:
         }
         else
         {
-            const char_type *start_ = curr_dfa_;
+            const rules_char_type *start_ = curr_dfa_;
             string next_dfa_;
 
             while (*curr_dfa_)
@@ -614,7 +828,7 @@ private:
 
                 if (iter_ == end_)
                 {
-                    std::basic_stringstream<char_type> ss_;
+                    std::basic_stringstream<rules_char_type> ss_;
                     std::ostringstream os_;
 
                     os_ << "Unknown state name '";
@@ -639,7 +853,8 @@ private:
         {
             const id_type curr_ = next_dfas_[i_];
 
-            _regexes[curr_].push_back(regex_);
+            _regexes[curr_].push_back(token_deque());
+            tokenise(regex_, _regexes[curr_].back(), id_, nullptr);
 
             if (regex_[0] == '^')
             {
@@ -674,14 +889,15 @@ private:
         }
     }
 
-    void validate(const char_type *name_, const char_type *end_ = 0) const
+    void validate(const rules_char_type *name_,
+        const rules_char_type *end_ = 0) const
     {
-        const char_type *start_ = name_;
+        const rules_char_type *start_ = name_;
 
         if (*name_ != '_' && !(*name_ >= 'A' && *name_ <= 'Z') &&
             !(*name_ >= 'a' && *name_ <= 'z'))
         {
-            std::basic_stringstream<char_type> ss_;
+            std::basic_stringstream<rules_char_type> ss_;
             std::ostringstream os_;
 
             os_ << "Invalid name '";
@@ -707,7 +923,7 @@ private:
                 !(*name_ >= 'a' && *name_ <= 'z') &&
                 !(*name_ >= '0' && *name_ <= '9'))
             {
-                std::basic_stringstream<char_type> ss_;
+                std::basic_stringstream<rules_char_type> ss_;
                 std::ostringstream os_;
 
                 os_ << "Invalid name '";
@@ -736,14 +952,14 @@ private:
 
         if (id_ == npos())
         {
-            throw runtime_error("id npos is reserved for the "
+            throw runtime_error("The id npos is reserved for the "
                 "UNKNOWN token.");
         }
     }
 };
 
-typedef basic_rules<char> rules;
-typedef basic_rules<wchar_t> wrules;
+typedef basic_rules<char, char> rules;
+typedef basic_rules<wchar_t, wchar_t> wrules;
 }
 
 #endif

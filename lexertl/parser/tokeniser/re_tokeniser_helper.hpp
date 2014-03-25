@@ -1,5 +1,5 @@
 // tokeniser_helper.hpp
-// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -399,8 +399,8 @@ public:
                 out_.insert(typename string_token::range(ptr_->to.first,
                     ptr_->to.first + (range_.second - ptr_->from.first)));
             }
-			// Either range fully encompasses from range or not at all.
-			else if (ptr_->from.first >= range_.first &&
+            // Either range fully encompasses from range or not at all.
+            else if (ptr_->from.first >= range_.first &&
                 ptr_->from.first <= range_.second)
             {
                 out_.insert(typename string_token::range(ptr_->to.first,
@@ -2381,7 +2381,7 @@ private:
         // and we want to ignore signedness.
         typename char_traits::index_type start_ =
             static_cast<typename char_traits::index_type>(prev_);
-		typename char_traits::index_type end_ =
+        typename char_traits::index_type end_ =
             static_cast<typename char_traits::index_type>(curr_);
 
         // Semanic check

@@ -362,27 +362,27 @@ void build_sm(lexertl::state_machine &sm_)
 {
     lexertl::rules rules_;
 
-    rules_.add_state("DISPNAME");
-    rules_.add_state("BLOCK");
-    rules_.add_state("PROP_METHODS");
+    rules_.push_state("DISPNAME");
+    rules_.push_state("BLOCK");
+    rules_.push_state("PROP_METHODS");
 
-    rules_.add_state("PROP_START_ID");
-    rules_.add_state("PROP_ID");
-    rules_.add_state("PROP_END_ID");
-    rules_.add_state("PROP_TYPE");
-    rules_.add_state("PROP_NAME");
-    rules_.add_state("PROP_PAREN");
+    rules_.push_state("PROP_START_ID");
+    rules_.push_state("PROP_ID");
+    rules_.push_state("PROP_END_ID");
+    rules_.push_state("PROP_TYPE");
+    rules_.push_state("PROP_NAME");
+    rules_.push_state("PROP_PAREN");
 
-    rules_.add_state("METHOD_START_ID");
-    rules_.add_state("METHOD_ID");
-    rules_.add_state("METHOD_END_ID");
-    rules_.add_state("METHOD_TYPE");
-    rules_.add_state("METHOD_NAME");
-    rules_.add_state("METHOD_PARAMS");
+    rules_.push_state("METHOD_START_ID");
+    rules_.push_state("METHOD_ID");
+    rules_.push_state("METHOD_END_ID");
+    rules_.push_state("METHOD_TYPE");
+    rules_.push_state("METHOD_NAME");
+    rules_.push_state("METHOD_PARAMS");
 
-    rules_.add_state("PARAM_TYPE");
-    rules_.add_state("PARAM_NAME");
-    rules_.add_state("END_PARAM_NAME");
+    rules_.push_state("PARAM_TYPE");
+    rules_.push_state("PARAM_NAME");
+    rules_.push_state("END_PARAM_NAME");
 
     rules_.add("INITIAL", "dispinterface", sm_.skip(), "DISPNAME");
     rules_.add("DISPNAME", "[_a-zA-Z]+", eDispName, "BLOCK");
@@ -411,7 +411,7 @@ void build_sm(lexertl::state_machine &sm_)
     rules_.add("PARAM_TYPE,END_PARAM_NAME", "\\);", eEntry, "METHOD_START_ID");
 
     rules_.add("*", "\\s+", sm_.skip(), ".");
-    lexertl::generator::build (rules_, sm_);
+    lexertl::generator::build(rules_, sm_);
 }
 
 void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
@@ -421,7 +421,7 @@ void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
 
     do
     {
-        lexertl::lookup (sm_, results_);
+        lexertl::lookup(sm_, results_);
 
         switch (results_.id)
         {
@@ -479,9 +479,9 @@ void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
 int main(int /*argc*/, char** /*argv[]*/)
 {
     lexertl::state_machine sm_;
-    lexertl::memory_file if_ ("Corebridge.txt");
-    const char *start_ = if_.data ();
-    const char *end_ = start_ + if_.size ();
+    lexertl::memory_file if_("Corebridge.txt");
+    const char *start_ = if_.data();
+    const char *end_ = start_ + if_.size();
     lexertl::cmatch results_(start_, end_);
     std::string header_;
     std::string source_;

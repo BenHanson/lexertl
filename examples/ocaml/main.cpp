@@ -1,7 +1,7 @@
 #include "../../lexertl/generator.hpp"
 #include "../../lexertl/lookup.hpp"
 
-int main (int /*argc*/, char ** /*argv*/)
+int main(int /*argc*/, char ** /*argv*/)
 {
     lexertl::rules rules_;
     lexertl::state_machine sm_;
@@ -12,16 +12,16 @@ int main (int /*argc*/, char ** /*argv*/)
         "Float", "Char", "String", "Label", "Optional Label",
         "Infix Symbol", "Prefix Symbol", "Operator Char",
         "Line Number Directive", "Comment"};
-    std::string input_("(*** Get the time since (*nested*) the program started. ***)\n"
+    std::string input_("(*** Get the time since(*nested*) the program started. ***)\n"
         "let time =\n"
         "let t = Unix.gettimeofday() in\n"
-        "fun () -> Unix.gettimeofday() -");
+        "fun() -> Unix.gettimeofday() -");
     lexertl::srmatch results_(input_.begin(), input_.end());
 
-    rules_.add_state("COMMENT");
-    rules_.add_macro("ESCAPE_SEQUENCE",
+    rules_.push_state("COMMENT");
+    rules_.insert_macro("ESCAPE_SEQUENCE",
         "([\\\"'ntbr]|[0-9]{3}|x[0-9A-Fa-f]{2})");
-    rules_.add_macro("OPERATOR_CHAR",
+    rules_.insert_macro("OPERATOR_CHAR",
         "[-!$%&*+./:<=>?@^|~]");
     rules_.add("[A-Za-z_][A-Za-z_0-9']*", eIdentifier);
     rules_.add("-?([0-9][0-9+]*|"
@@ -44,7 +44,7 @@ int main (int /*argc*/, char ** /*argv*/)
 
     do
     {
-       lexertl::lookup (sm_, results_);
+       lexertl::lookup(sm_, results_);
        std::cout << "Id: ";
 
        if (results_.id != results_.npos())
@@ -57,7 +57,7 @@ int main (int /*argc*/, char ** /*argv*/)
        }
 
        std::cout << ", Token: '" <<
-            std::string (results_.start, results_.end) <<
+            std::string(results_.start, results_.end) <<
             '\'' << std::endl;
     } while (results_.id != 0);
 

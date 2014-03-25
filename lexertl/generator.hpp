@@ -1,5 +1,5 @@
 // generator.hpp
-// Copyright (c) 2005-2013 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -89,16 +89,15 @@ public:
         node_ptr_vector &node_ptr_vector_, charset_map &charset_map_,
         id_type &nl_id_)
     {
-        typename parser::macro_map macro_map_;
-        parser parser_(rules_.locale(), node_ptr_vector_, macro_map_,
-            charset_map_, rules_.eoi());
-        const typename rules::string_deque_deque &regexes_ =
+        parser parser_(rules_.locale(), node_ptr_vector_, charset_map_,
+            rules_.eoi());
+        const typename rules::token_deque_deque_deque &regexes_ =
             rules_.regexes();
-        typename rules::string_deque::const_iterator regex_iter_ =
+        typename rules::token_deque_deque::const_iterator regex_iter_ =
             regexes_[dfa_].begin();
-        typename rules::string_deque::const_iterator regex_iter_end_ =
+        typename rules::token_deque_deque::const_iterator regex_iter_end_ =
             regexes_[dfa_].end();
-        const typename rules::string &regex_ = *regex_iter_;
+        const typename rules::token_deque &regex_ = *regex_iter_;
         const typename rules::id_vector_deque &ids_ = rules_.ids();
         const typename rules::id_vector_deque &user_ids_ =
             rules_.user_ids();
@@ -119,14 +118,9 @@ public:
         const bool seen_bol_ = (rules_.features()[dfa_] & bol_bit) != 0;
         node *root_ = 0;
 
-        // Macros have a different context per lexer state
-        // as equivsets (generally) differ.
-        build_macros(rules_, macro_map_, node_ptr_vector_, charset_map_,
-            nl_id_);
-        root_ = parser_.parse(regex_.c_str(),
-            regex_.c_str() + regex_.size(), *id_iter_, *user_id_iter_,
+        root_ = parser_.parse(regex_, *id_iter_, *user_id_iter_,
             *next_dfa_iter_, *push_dfa_iter_, *pop_dfa_iter_,
-            rules_.flags(), nl_id_, seen_bol_, false);
+            rules_.flags(), nl_id_, seen_bol_);
         ++regex_iter_;
         ++id_iter_;
         ++user_id_iter_;
@@ -138,12 +132,11 @@ public:
         while (regex_iter_ != regex_iter_end_)
         {
             // Re-declare var, otherwise we perform an assignment..!
-            const typename rules::string &regex_ = *regex_iter_;
-            node *rhs_ = parser_.parse(regex_.c_str(),
-                regex_.c_str() + regex_.size(), *id_iter_, *user_id_iter_,
+            const typename rules::token_deque &regex_ = *regex_iter_;
+            node *rhs_ = parser_.parse(regex_, *id_iter_, *user_id_iter_,
                 *next_dfa_iter_, *push_dfa_iter_, *pop_dfa_iter_,
                 rules_.flags(), nl_id_,
-                (rules_.features()[dfa_] & bol_bit) != 0, false);
+                (rules_.features()[dfa_] & bol_bit) != 0);
 
             node_ptr_vector_->push_back
                 (static_cast<selection_node *>(0));
@@ -177,42 +170,13 @@ protected:
     typedef std::vector<index_set> index_set_vector;
     typedef bool_<sm_traits::is_dfa> is_dfa;
     typedef bool_<sm_traits::lookup> lookup;
-    typedef typename parser::macro_map macro_map;
-    typedef typename macro_map::iterator macro_iter;
-    typedef std::pair<macro_iter, bool> macro_iter_pair;
     typedef std::set<const node *> node_set;
     typedef detail::ptr_vector<node_set> node_set_vector;
     typedef typename node::node_vector node_vector;
     typedef detail::ptr_vector<node_vector> node_vector_vector;
-    typedef std::pair<typename rules::string, const node *> macro_pair;
     typedef typename parser::selection_node selection_node;
     typedef typename std::vector<std::size_t> size_t_vector;
     typedef typename parser::string_token string_token;
-
-    static void build_macros(const rules &rules_,
-        macro_map &macro_map_, node_ptr_vector &node_ptr_vector_,
-        charset_map &charset_map_, id_type &nl_id_)
-    {
-        const typename rules::string_pair_deque &macrodeque_ =
-            rules_.macrodeque();
-
-        for (typename rules::string_pair_deque::const_iterator iter_ =
-            macrodeque_.begin(), end_ = macrodeque_.end();
-            iter_ != end_; ++iter_)
-        {
-            const typename rules::string &name_ = iter_->first;
-            const typename rules::string &regex_ = iter_->second;
-            parser parser_(rules_.locale(), node_ptr_vector_, macro_map_,
-                charset_map_, rules_.eoi());
-            node *node_ = parser_.parse(regex_.c_str(),
-                regex_.c_str() + regex_.size(), 0, 0, 0, false, false,
-                rules_.flags(), nl_id_, false, true);
-            macro_iter_pair map_iter_ = macro_map_.insert(macro_pair(name_,
-                static_cast<const node *>(0)));
-
-            map_iter_.first->second = node_;
-        }
-    }
 
     static void build_dfa(const charset_map &charset_map_, const node *root_,
         internals &internals_, sm &sm_, const id_type dfa_index_,
