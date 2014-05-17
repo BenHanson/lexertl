@@ -67,8 +67,7 @@ public:
         _pops(),
         _flags(flags_),
         _locale(),
-        _lexer_state_names(),
-        _eoi(0)
+        _lexer_state_names()
     {
         push_state(initial());
     }
@@ -87,7 +86,6 @@ public:
         _flags = dot_not_newline;
         _locale = std::locale();
         _lexer_state_names.clear();
-        _eoi = 0;
         push_state(initial());
     }
 
@@ -120,14 +118,14 @@ public:
         return static_cast<id_type>(~1);
     }
 
-    void eoi(const id_type eoi_)
-    {
-        _eoi = eoi_;
-    }
-
     id_type eoi() const
     {
-        return _eoi;
+        return 0;
+    }
+
+    static id_type npos()
+    {
+        return static_cast<id_type>(~0);
     }
 
     std::locale imbue(const std::locale &locale_)
@@ -243,19 +241,18 @@ public:
         }
         else
         {
-            std::basic_stringstream<rules_char_type> ss_;
-            std::ostringstream os_;
+            std::ostringstream ss_;
 
-            os_ << "Attempt to redefine MACRO '";
+            ss_ << "Attempt to redefine MACRO '";
 
             while (*name_)
             {
                 // Safe to simply cast to char.
-                os_ << static_cast<char>(*name_++);
+                ss_ << static_cast<char>(*name_++);
             }
 
-            os_ << "'.";
-            throw runtime_error(os_.str());
+            ss_ << "'.";
+            throw runtime_error(ss_.str());
         }
     }
 
@@ -278,7 +275,7 @@ public:
     {
         check_for_invalid_id(id_);
         _regexes.front().push_back(token_deque());
-        tokenise(regex_, _regexes.front().back(), id_, nullptr);
+        tokenise(regex_, _regexes.front().back(), id_, 0);
 
         if (regex_[0] == '^')
         {
@@ -323,7 +320,7 @@ public:
     void push(const rules_char_type *curr_dfa_, const string &regex_,
         const rules_char_type *new_dfa_)
     {
-        push(curr_dfa_, regex_, _eoi, new_dfa_, false);
+        push(curr_dfa_, regex_, eoi(), new_dfa_, false);
     }
 
     // Add rule with id
@@ -432,11 +429,6 @@ public:
         return star_;
     }
 
-    static id_type npos()
-    {
-        return static_cast<id_type>(~0);
-    }
-
 private:
     string_id_type_map _statemap;
     macro_map _macro_map;
@@ -450,13 +442,12 @@ private:
     std::size_t _flags;
     std::locale _locale;
     string_deque _lexer_state_names;
-    id_type _eoi;
 
     void tokenise(const string &regex_, token_deque &tokens_,
         const id_type id_, const rules_char_type *name_)
     {
         re_state state_(regex_.c_str(), regex_.c_str() + regex_.size(), id_,
-            _flags, _locale, name_ != nullptr);
+            _flags, _locale, name_ != 0);
         string macro_;
         rules_char_type diff_ = 0;
 
@@ -480,7 +471,7 @@ private:
                     "' preceding index " << state_.index() <<
                     " in ";
 
-                if (name_ != nullptr)
+                if (name_ != 0)
                 {
                     ss_ << "macro " << name_;
                 }
@@ -503,19 +494,18 @@ private:
                 if (iter_ == _macro_map.end())
                 {
                     const rules_char_type *name_ = rhs_._extra.c_str();
-                    std::basic_stringstream<rules_char_type> ss_;
-                    std::ostringstream os_;
+                    std::ostringstream ss_;
 
-                    os_ << "Unknown MACRO name '";
+                    ss_ << "Unknown MACRO name '";
 
                     while (*name_)
                     {
                         // Safe to simply cast to char.
-                        os_ << static_cast<char>(*name_++);
+                        ss_ << static_cast<char>(*name_++);
                     }
 
-                    os_ << "'.";
-                    throw runtime_error(os_.str());
+                    ss_ << "'.";
+                    throw runtime_error(ss_.str());
                 }
                 else
                 {
@@ -527,10 +517,10 @@ private:
                         {
                             std::ostringstream ss_;
 
-                            ss_ << "Single CHARSET must follow {-} or {+} at index " <<
-                                state_.index() - 1 << " in ";
+                            ss_ << "Single CHARSET must follow {-} or {+} at "
+                                "index " << state_.index() - 1 << " in ";
 
-                            if (name_ != nullptr)
+                            if (name_ != 0)
                             {
                                 ss_ << "macro " << name_;
                             }
@@ -587,10 +577,10 @@ private:
                     {
                         std::ostringstream ss_;
 
-                        ss_ << "Single CHARSET must precede {-} or {+} at index " <<
-                            state_.index() - 1 << " in ";
+                        ss_ << "Single CHARSET must precede {-} or {+} at "
+                            "index " << state_.index() - 1 << " in ";
 
-                        if (name_ != nullptr)
+                        if (name_ != 0)
                         {
                             ss_ << "macro " << name_;
                         }
@@ -625,7 +615,7 @@ private:
                     ss_ << "CHARSET must follow {-} or {+} at index " <<
                         state_.index() - 1 << " in ";
 
-                    if (name_ != nullptr)
+                    if (name_ != 0)
                     {
                         ss_ << "macro " << name_;
                     }
@@ -650,7 +640,7 @@ private:
                             ss_ << "Empty charset created by {-} at index " <<
                                 state_.index() - 1 << " in ";
 
-                            if (name_ != nullptr)
+                            if (name_ != 0)
                             {
                                 ss_ << "macro " << name_;
                             }
@@ -679,7 +669,7 @@ private:
 
             ss_ << "Empty regex in ";
 
-            if (name_ != nullptr)
+            if (name_ != 0)
             {
                 ss_ << "macro " << name_;
             }
@@ -752,19 +742,18 @@ private:
 
             if (iter_ == end_)
             {
-                std::basic_stringstream<rules_char_type> ss_;
-                std::ostringstream os_;
+                std::ostringstream ss_;
 
-                os_ << "Unknown state name '";
+                ss_ << "Unknown state name '";
 
                 while (*new_dfa_)
                 {
                     // Safe to simply cast to char.
-                    os_ << static_cast<char>(*new_dfa_++);
+                    ss_ << static_cast<char>(*new_dfa_++);
                 }
 
-                os_ << "'.";
-                throw runtime_error(os_.str());
+                ss_ << "'.";
+                throw runtime_error(ss_.str());
             }
 
             new_dfa_id_ = iter_->second;
@@ -775,19 +764,18 @@ private:
 
                 if (iter_ == end_)
                 {
-                    std::basic_stringstream<rules_char_type> ss_;
-                    std::ostringstream os_;
+                    std::ostringstream ss_;
 
-                    os_ << "Unknown state name '";
+                    ss_ << "Unknown state name '";
 
                     while (*push_dfa_)
                     {
                         // Safe to simply cast to char.
-                        os_ << static_cast<char>(*push_dfa_++);
+                        ss_ << static_cast<char>(*push_dfa_++);
                     }
 
-                    os_ << "'.";
-                    throw runtime_error(os_.str());
+                    ss_ << "'.";
+                    throw runtime_error(ss_.str());
                 }
 
                 push_dfa_id_ = iter_->second;
@@ -828,20 +816,19 @@ private:
 
                 if (iter_ == end_)
                 {
-                    std::basic_stringstream<rules_char_type> ss_;
-                    std::ostringstream os_;
+                    std::ostringstream ss_;
 
-                    os_ << "Unknown state name '";
+                    ss_ << "Unknown state name '";
                     curr_dfa_ = next_dfa_.c_str();
 
                     while (*curr_dfa_)
                     {
                         // Safe to simply cast to char.
-                        os_ << static_cast<char>(*curr_dfa_++);
+                        ss_ << static_cast<char>(*curr_dfa_++);
                     }
 
-                    os_ << "'.";
-                    throw runtime_error(os_.str());
+                    ss_ << "'.";
+                    throw runtime_error(ss_.str());
                 }
 
                 next_dfas_.push_back(iter_->second);
@@ -854,7 +841,7 @@ private:
             const id_type curr_ = next_dfas_[i_];
 
             _regexes[curr_].push_back(token_deque());
-            tokenise(regex_, _regexes[curr_].back(), id_, nullptr);
+            tokenise(regex_, _regexes[curr_].back(), id_, 0);
 
             if (regex_[0] == '^')
             {
@@ -897,19 +884,18 @@ private:
         if (*name_ != '_' && !(*name_ >= 'A' && *name_ <= 'Z') &&
             !(*name_ >= 'a' && *name_ <= 'z'))
         {
-            std::basic_stringstream<rules_char_type> ss_;
-            std::ostringstream os_;
+            std::ostringstream ss_;
 
-            os_ << "Invalid name '";
+            ss_ << "Invalid name '";
 
             while (*name_)
             {
                 // Safe to simply cast to char.
-                os_ << static_cast<char>(*name_++);
+                ss_ << static_cast<char>(*name_++);
             }
 
-            os_ << "'.";
-            throw runtime_error(os_.str());
+            ss_ << "'.";
+            throw runtime_error(ss_.str());
         }
         else if (*name_)
         {
@@ -923,20 +909,19 @@ private:
                 !(*name_ >= 'a' && *name_ <= 'z') &&
                 !(*name_ >= '0' && *name_ <= '9'))
             {
-                std::basic_stringstream<rules_char_type> ss_;
-                std::ostringstream os_;
+                std::ostringstream ss_;
 
-                os_ << "Invalid name '";
+                ss_ << "Invalid name '";
                 name_ = start_;
 
                 while (*name_)
                 {
                     // Safe to simply cast to char.
-                    os_ << static_cast<char>(*name_++);
+                    ss_ << static_cast<char>(*name_++);
                 }
 
-                os_ << "'.";
-                throw runtime_error(os_.str());
+                ss_ << "'.";
+                throw runtime_error(ss_.str());
             }
 
             ++name_;
@@ -945,7 +930,7 @@ private:
 
     void check_for_invalid_id(const id_type id_) const
     {
-        if (id_ == _eoi)
+        if (id_ == eoi())
         {
             throw runtime_error("Cannot resuse the id for eoi.");
         }
