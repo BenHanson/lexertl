@@ -21,7 +21,7 @@
 
 namespace lexertl
 {
-template<typename rules_char_type, typename ch_type,
+template<typename r_ch_type, typename ch_type,
     typename id_ty = std::size_t>
 class basic_rules
 {
@@ -29,6 +29,7 @@ public:
     typedef std::vector<bool> bool_vector;
     typedef std::deque<bool_vector> bool_vector_deque;
     typedef ch_type char_type;
+    typedef r_ch_type rules_char_type;
     typedef id_ty id_type;
     typedef std::vector<id_type> id_vector;
     typedef std::deque<id_vector> id_vector_deque;

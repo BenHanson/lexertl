@@ -384,33 +384,33 @@ void build_sm(lexertl::state_machine &sm_)
     rules_.push_state("PARAM_NAME");
     rules_.push_state("END_PARAM_NAME");
 
-    rules_.add("INITIAL", "dispinterface", sm_.skip(), "DISPNAME");
-    rules_.add("DISPNAME", "[_a-zA-Z]+", eDispName, "BLOCK");
-    rules_.add("BLOCK", ";", sm_.skip(), "INITIAL");
-    rules_.add("BLOCK", "\\{", sm_.skip(), "PROP_METHODS");
-    rules_.add("PROP_METHODS,METHOD_START_ID", "properties:", eProperties, "PROP_START_ID");
-    rules_.add("PROP_METHODS,PROP_START_ID", "methods:", eMethods, "METHOD_START_ID");
+    rules_.push("INITIAL", "dispinterface", sm_.skip(), "DISPNAME");
+    rules_.push("DISPNAME", "[_a-zA-Z]+", eDispName, "BLOCK");
+    rules_.push("BLOCK", ";", sm_.skip(), "INITIAL");
+    rules_.push("BLOCK", "\\{", sm_.skip(), "PROP_METHODS");
+    rules_.push("PROP_METHODS,METHOD_START_ID", "properties:", eProperties, "PROP_START_ID");
+    rules_.push("PROP_METHODS,PROP_START_ID", "methods:", eMethods, "METHOD_START_ID");
 
-    rules_.add("PROP_START_ID", "\\[id\\(", sm_.skip(), "PROP_ID");
-    rules_.add("PROP_ID", "[^)]+", eID, "PROP_END_ID");
-    rules_.add("PROP_END_ID", "\\)[^\\]]*]", sm_.skip(), "PROP_TYPE");
-    rules_.add("PROP_TYPE", "[_a-zA-Z]+", eType, "PROP_NAME");
-    rules_.add("PROP_NAME", "[a-zA-Z0-9]+", eName, "PROP_PAREN");
-    rules_.add("PROP_PAREN", ";", eEntry, "PROP_START_ID");
+    rules_.push("PROP_START_ID", "\\[id\\(", sm_.skip(), "PROP_ID");
+    rules_.push("PROP_ID", "[^)]+", eID, "PROP_END_ID");
+    rules_.push("PROP_END_ID", "\\)[^\\]]*]", sm_.skip(), "PROP_TYPE");
+    rules_.push("PROP_TYPE", "[_a-zA-Z]+", eType, "PROP_NAME");
+    rules_.push("PROP_NAME", "[a-zA-Z0-9]+", eName, "PROP_PAREN");
+    rules_.push("PROP_PAREN", ";", eEntry, "PROP_START_ID");
 
-    rules_.add("METHOD_START_ID", "\\[id\\(", sm_.skip(), "METHOD_ID");
-    rules_.add("METHOD_ID", "[^)]+", eID, "METHOD_END_ID");
-    rules_.add("METHOD_END_ID", "\\)[^\\]]*]", sm_.skip(), "METHOD_TYPE");
-    rules_.add("METHOD_TYPE", "[_a-zA-Z]+", eType, "METHOD_NAME");
-    rules_.add("METHOD_NAME", "[a-zA-Z0-9]+", eName, "METHOD_PARAMS");
-    rules_.add("METHOD_PARAMS", "\\(", sm_.skip(), "PARAM_TYPE");
+    rules_.push("METHOD_START_ID", "\\[id\\(", sm_.skip(), "METHOD_ID");
+    rules_.push("METHOD_ID", "[^)]+", eID, "METHOD_END_ID");
+    rules_.push("METHOD_END_ID", "\\)[^\\]]*]", sm_.skip(), "METHOD_TYPE");
+    rules_.push("METHOD_TYPE", "[_a-zA-Z]+", eType, "METHOD_NAME");
+    rules_.push("METHOD_NAME", "[a-zA-Z0-9]+", eName, "METHOD_PARAMS");
+    rules_.push("METHOD_PARAMS", "\\(", sm_.skip(), "PARAM_TYPE");
 
-    rules_.add("PARAM_TYPE", "[_a-zA-Z]+\\**", eParamType, "PARAM_NAME");
-    rules_.add("PARAM_NAME", "[_a-zA-Z]+", eParamName, "END_PARAM_NAME");
-    rules_.add("END_PARAM_NAME", ",", sm_.skip(), "PARAM_TYPE");
-    rules_.add("PARAM_TYPE,END_PARAM_NAME", "\\);", eEntry, "METHOD_START_ID");
+    rules_.push("PARAM_TYPE", "[_a-zA-Z]+\\**", eParamType, "PARAM_NAME");
+    rules_.push("PARAM_NAME", "[_a-zA-Z]+", eParamName, "END_PARAM_NAME");
+    rules_.push("END_PARAM_NAME", ",", sm_.skip(), "PARAM_TYPE");
+    rules_.push("PARAM_TYPE,END_PARAM_NAME", "\\);", eEntry, "METHOD_START_ID");
 
-    rules_.add("*", "\\s+", sm_.skip(), ".");
+    rules_.push("*", "\\s+", sm_.skip(), ".");
     lexertl::generator::build(rules_, sm_);
 }
 

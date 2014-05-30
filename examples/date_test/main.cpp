@@ -62,29 +62,29 @@ int main(int /*argc*/, char** /*argv*/)
     std::string month;
     std::string year;
 
-    rules_.add("LONG", "{day_of_the_week}", edow, ".");
-    rules_.add("LONG", "{month}", emonth, "DAY");
+    rules_.push("LONG", "{day_of_the_week}", edow, ".");
+    rules_.push("LONG", "{month}", emonth, "DAY");
 
-    rules_.add("LONG", "{nday}{day_ext}", eday, "DAY_FIRST");
-    rules_.add("DAY_FIRST", "{month}", emonth, "LONG");
-    rules_.add("DAY", "{nday}{day_ext}", eday, "LONG");
+    rules_.push("LONG", "{nday}{day_ext}", eday, "DAY_FIRST");
+    rules_.push("DAY_FIRST", "{month}", emonth, "LONG");
+    rules_.push("DAY", "{nday}{day_ext}", eday, "LONG");
 
-    rules_.add("LONG", "{nyear}{year_ext}", elong, ".");
+    rules_.push("LONG", "{nyear}{year_ext}", elong, ".");
 
-    rules_.add("SHORT", "{nday}", eday, "YEAR_LAST");
-    rules_.add("YEAR_LAST", "{nmonth}", emonth, "YLMONTH");
-    rules_.add("YLMONTH", "{nyear}", eyear, "SHORT");
+    rules_.push("SHORT", "{nday}", eday, "YEAR_LAST");
+    rules_.push("YEAR_LAST", "{nmonth}", emonth, "YLMONTH");
+    rules_.push("YLMONTH", "{nyear}", eyear, "SHORT");
 
-    rules_.add("SHORT", "{nyear}", eyear, "YEAR_FIRST");
-    rules_.add("YEAR_FIRST", "{nmonth}", emonth, "YFMONTH");
-    rules_.add("YFMONTH", "{nday}", eday, "SHORT");
+    rules_.push("SHORT", "{nyear}", eyear, "YEAR_FIRST");
+    rules_.push("YEAR_FIRST", "{nmonth}", emonth, "YFMONTH");
+    rules_.push("YFMONTH", "{nday}", eday, "SHORT");
 
-    rules_.add("SHORT", "\n", eshort, ".");
+    rules_.push("SHORT", "\n", eshort, ".");
 
-    rules_.add("INITIAL,SHORT,LONG", "long\n", results_.skip(), "LONG");
-    rules_.add("INITIAL,SHORT,LONG", "short\n", results_.skip(), "SHORT");
+    rules_.push("INITIAL,SHORT,LONG", "long\n", results_.skip(), "LONG");
+    rules_.push("INITIAL,SHORT,LONG", "short\n", results_.skip(), "SHORT");
 
-    rules_.add("*", "{skip}+|\n|.", results_.skip(), ".");
+    rules_.push("*", "{skip}+|\n|.", results_.skip(), ".");
 
     lexertl::generator::build(rules_, sm_);
 

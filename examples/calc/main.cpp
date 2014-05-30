@@ -15,21 +15,21 @@ void gen_calc(lexertl::state_machine &sm_)
     rules_.push_state("SUB_VALUE");
     rules_.push_state("SUB_OPERATOR");
 
-//    rules_.add("INITIAL", "[a-z]", "INITIAL");
-    rules_.add("INITIAL", "-", eNegate, "VALUE", 100);
-    rules_.add("INITIAL,VALUE", "\\d+", eValue, "OPERATOR", 101);
-    rules_.add("OPERATOR", "[-+*/%]", eOperator, "INITIAL", 102);
+//    rules_.push("INITIAL", "[a-z]", "INITIAL");
+    rules_.push("INITIAL", "-", eNegate, "VALUE", 100);
+    rules_.push("INITIAL,VALUE", "\\d+", eValue, "OPERATOR", 101);
+    rules_.push("OPERATOR", "[-+*/%]", eOperator, "INITIAL", 102);
 
-    rules_.add("INITIAL,VALUE", "\\(", eOpen, ">SUB_INITIAL:OPERATOR");
-    rules_.add("SUB_INITIAL,SUB_VALUE", "\\(", eOpen,
+    rules_.push("INITIAL,VALUE", "\\(", eOpen, ">SUB_INITIAL:OPERATOR");
+    rules_.push("SUB_INITIAL,SUB_VALUE", "\\(", eOpen,
         ">SUB_INITIAL:SUB_OPERATOR", 103);
 
-    rules_.add("SUB_INITIAL", "-", eNegate, "SUB_VALUE", 104);
-    rules_.add("SUB_INITIAL,SUB_VALUE", "\\d+", eValue, "SUB_OPERATOR", 105);
-    rules_.add("SUB_OPERATOR", "[-+*/%]", eOperator, "SUB_INITIAL", 106);
-    rules_.add("SUB_OPERATOR", "\\)", eClose, "<", 107);
+    rules_.push("SUB_INITIAL", "-", eNegate, "SUB_VALUE", 104);
+    rules_.push("SUB_INITIAL,SUB_VALUE", "\\d+", eValue, "SUB_OPERATOR", 105);
+    rules_.push("SUB_OPERATOR", "[-+*/%]", eOperator, "SUB_INITIAL", 106);
+    rules_.push("SUB_OPERATOR", "\\)", eClose, "<", 107);
 
-    rules_.add("*", "\\s+", sm_.skip(), ".", 108);
+    rules_.push("*", "\\s+", sm_.skip(), ".", 108);
 
     lexertl::generator::build(rules_, sm_);
 //    lexertl::debug::dump(sm_, std::cout);

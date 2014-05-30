@@ -26,7 +26,7 @@ class basic_generator
 {
 public:
     typedef typename rules::id_type id_type;
-    typedef typename rules::char_type rules_char_type;
+    typedef typename rules::rules_char_type rules_char_type;
     typedef typename sm::traits sm_traits;
     typedef detail::basic_parser<rules_char_type, sm_traits> parser;
     typedef typename parser::charset_map charset_map;

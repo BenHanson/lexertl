@@ -227,7 +227,7 @@ void test_unicode()
     i = *++u16iter_; // 0xd7ff
 
     // Not all compilers have char32_t, so use int for now
-    lexertl::rules rules_(lexertl::icase);
+    lexertl::basic_rules<char, int> rules_(lexertl::icase);
     lexertl::basic_state_machine<int> sm_;
     const int in_[] = {0x393, ' ', 0x393, 0x398, ' ', 0x398,
         '1', ' ', 'i', 'd', 0x41f, 0};
@@ -237,7 +237,7 @@ void test_unicode()
     lexertl::match_results<const int *> results_(iter_, end_);
 
     rules_.push("\\p{LC}[\\p{LC}0-9]*", 1);
-    lexertl::basic_generator<lexertl::rules,
+    lexertl::basic_generator<lexertl::basic_rules<char, int>,
         lexertl::basic_state_machine<int> >::build(rules_, sm_);
 
 #ifdef WIN32
@@ -276,6 +276,7 @@ void test_unicode()
 
 int main(int /*argc*/, char ** /*argv*/)
 {
-    lex_prop_list();
+	test_unicode();
+//    lex_prop_list();
     return 0;
 }

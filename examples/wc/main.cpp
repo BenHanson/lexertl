@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
 
     rules_.insert_macro("ws", "[ \t]");
     rules_.insert_macro("nonws", "[^ \t\n]");
-    rules_.add("{nonws}+", word);
-    rules_.add("{ws}+", ws);
-    rules_.add("\r|\n|\r\n", newline);
+    rules_.push("{nonws}+", word);
+    rules_.push("{ws}+", ws);
+    rules_.push("\r|\n|\r\n", newline);
     lexertl::generator::build(rules_, sm_);
 //    lexertl::debug::dump(sm_, std::cout);
 

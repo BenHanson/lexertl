@@ -12,7 +12,7 @@ int main()
 			utf_in_iter;
 		typedef lexertl::basic_utf8_out_iterator<utf_in_iter>
 			utf_out_iter;
-		lexertl::rules rules;
+		lexertl::basic_rules<char, char32_t> rules;
 		usm sm;
 		lexertl::memory_file file("C:\\json.txt");
 		const char *begin = file.data();
@@ -41,35 +41,35 @@ int main()
 		rules.push_state("ARR_COMMA");
 		rules.push_state("ARR_VALUE");
 
-		rules.add("INITIAL", "[{]", eOpenOb, ">OBJECT:END");
-		rules.add("INITIAL", "[[]", eOpenArr, ">ARRAY:END");
+		rules.push("INITIAL", "[{]", eOpenOb, ">OBJECT:END");
+		rules.push("INITIAL", "[[]", eOpenArr, ">ARRAY:END");
 
-		rules.add("OBJECT,OB_COMMA", "[}]", eCloseOb, "<");
-		rules.add("OBJECT,NAME", "{STRING}", eName, "COLON");
-		rules.add("COLON", ":", rules.skip(), "OB_VALUE");
+		rules.push("OBJECT,OB_COMMA", "[}]", eCloseOb, "<");
+		rules.push("OBJECT,NAME", "{STRING}", eName, "COLON");
+		rules.push("COLON", ":", rules.skip(), "OB_VALUE");
 
-		rules.add("OB_VALUE", "{STRING}", eString, "OB_COMMA");
-		rules.add("OB_VALUE", "{NUMBER}", eNumber, "OB_COMMA");
-		rules.add("OB_VALUE", "{BOOL}", eBoolean, "OB_COMMA");
-		rules.add("OB_VALUE", "{NULL}", eNull, "OB_COMMA");
-		rules.add("OB_VALUE", "[{]", eOpenOb, ">OBJECT:OB_COMMA");
-		rules.add("OB_VALUE", "[[]", eOpenArr, ">ARRAY:OB_COMMA");
+		rules.push("OB_VALUE", "{STRING}", eString, "OB_COMMA");
+		rules.push("OB_VALUE", "{NUMBER}", eNumber, "OB_COMMA");
+		rules.push("OB_VALUE", "{BOOL}", eBoolean, "OB_COMMA");
+		rules.push("OB_VALUE", "{NULL}", eNull, "OB_COMMA");
+		rules.push("OB_VALUE", "[{]", eOpenOb, ">OBJECT:OB_COMMA");
+		rules.push("OB_VALUE", "[[]", eOpenArr, ">ARRAY:OB_COMMA");
 
-		rules.add("OB_COMMA", ",", rules.skip(), "NAME");
+		rules.push("OB_COMMA", ",", rules.skip(), "NAME");
 
-		rules.add("ARRAY,ARR_COMMA", "\\]", eCloseArr, "<");
-		rules.add("ARRAY,ARR_VALUE", "{STRING}", eString, "ARR_COMMA");
-		rules.add("ARRAY,ARR_VALUE", "{NUMBER}", eNumber, "ARR_COMMA");
-		rules.add("ARRAY,ARR_VALUE", "{BOOL}", eBoolean, "ARR_COMMA");
-		rules.add("ARRAY,ARR_VALUE", "{NULL}", eNull, "ARR_COMMA");
-		rules.add("ARRAY,ARR_VALUE", "[{]", eOpenOb, ">OBJECT:ARR_COMMA");
-		rules.add("ARRAY,ARR_VALUE", "[[]", eOpenArr, ">ARRAY:ARR_COMMA");
+		rules.push("ARRAY,ARR_COMMA", "\\]", eCloseArr, "<");
+		rules.push("ARRAY,ARR_VALUE", "{STRING}", eString, "ARR_COMMA");
+		rules.push("ARRAY,ARR_VALUE", "{NUMBER}", eNumber, "ARR_COMMA");
+		rules.push("ARRAY,ARR_VALUE", "{BOOL}", eBoolean, "ARR_COMMA");
+		rules.push("ARRAY,ARR_VALUE", "{NULL}", eNull, "ARR_COMMA");
+		rules.push("ARRAY,ARR_VALUE", "[{]", eOpenOb, ">OBJECT:ARR_COMMA");
+		rules.push("ARRAY,ARR_VALUE", "[[]", eOpenArr, ">ARRAY:ARR_COMMA");
 
-		rules.add("ARR_COMMA", ",", rules.skip(), "ARR_VALUE");
+		rules.push("ARR_COMMA", ",", rules.skip(), "ARR_VALUE");
 
-		rules.add("*", "[ \t\r\n]+", rules.skip(), ".");
+		rules.push("*", "[ \t\r\n]+", rules.skip(), ".");
 
-		lexertl::basic_generator<lexertl::rules, usm>::build(rules, sm);
+		lexertl::basic_generator<lexertl::basic_rules<char, char32_t>, usm>::build(rules, sm);
 		// Read-ahead
 		lexertl::lookup(sm, results);
 
