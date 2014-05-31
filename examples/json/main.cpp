@@ -7,12 +7,13 @@ int main()
 {
 	try
 	{
+		typedef lexertl::basic_rules<char, char32_t> urules;
 		typedef lexertl::basic_state_machine<char32_t> usm;
 		typedef lexertl::basic_utf8_in_iterator<const char *, char32_t>
 			utf_in_iter;
 		typedef lexertl::basic_utf8_out_iterator<utf_in_iter>
 			utf_out_iter;
-		lexertl::basic_rules<char, char32_t> rules;
+		urules rules;
 		usm sm;
 		lexertl::memory_file file("C:\\json.txt");
 		const char *begin = file.data();
@@ -69,7 +70,7 @@ int main()
 
 		rules.push("*", "[ \t\r\n]+", rules.skip(), ".");
 
-		lexertl::basic_generator<lexertl::basic_rules<char, char32_t>, usm>::build(rules, sm);
+		lexertl::basic_generator<urules, usm>::build(rules, sm);
 		// Read-ahead
 		lexertl::lookup(sm, results);
 
