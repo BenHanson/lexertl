@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-#include "lexertl/rules.hpp"
+#include "../lexertl/rules.hpp"
 #include "vrml.h"
 
 void build_vrml (lexertl::rules &rules_)
@@ -80,7 +80,7 @@ void build_vrml (lexertl::rules &rules_)
 
 //        rules_.push("([+/-]?((([0-9]+(\\.?)|([0-9]*\\.[0-9]+))([eE][+\\-]?[0-9]+)?))"), 69);
 
-    rules_.push("([-+]?((([0-9]+[.]?|([0-9]*[.][0-9]+))([eE][-+]?[0-9]+)?))"), eFloat);
+    rules_.push("([-+]?((([0-9]+[.]?|([0-9]*[.][0-9]+))([eE][-+]?[0-9]+)?)))", eFloat);
     rules_.push("#[^\\n\\r]*[\\n\\r]", eComment);
     rules_.push("\"[^\"\\n\\r]*[\"\\n\\r]", eString);
     rules_.push("[a-zA-Z_][a-zA-Z0-9_]*", eID);

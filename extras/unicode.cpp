@@ -1,3 +1,8 @@
+#include "stdafx.h"
+
+#include <iostream>
+#include "../lexertl/string_token.hpp"
+
 void Letter_Uppercase()
 {
     std::size_t Lu[] = {0x0041,

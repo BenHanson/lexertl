@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "lexertl/rules.hpp"
+#include "../lexertl/rules.hpp"
 #include "sql.h"
 
 void build_sql (lexertl::rules &rules_)
@@ -26,7 +26,7 @@ void build_sql (lexertl::rules &rules_)
     rules_.push(">", eSQL_GT);
     rules_.push("!>", eSQL_NGT);
     rules_.push("\\(", eSQL_OPENPAREN);
-    rules_.push("\\"), eSQL_CLOSEPAREN);
+    rules_.push("\\)", eSQL_CLOSEPAREN);
     rules_.push(">>", eSQL_RIGHTSHIFT);
     rules_.push("<<", eSQL_LEFTSHIFT);
     rules_.push("\\|", eSQL_OR);

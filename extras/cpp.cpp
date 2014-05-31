@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #include "cpp.h"
-#include "lexertl/rules.hpp"
+#include "../lexertl/rules.hpp"
 
 #define BOOST_WAVE_SUPPORT_MS_EXTENSIONS 1
 #define BOOST_WAVE_SUPPORT_INCLUDE_NEXT 1
@@ -21,9 +21,9 @@ void build_cpp (lexertl::rules &rules_)
     rules_.insert_macro("BLANK", "[ \\t]");
     //#define CCOMMENT
     //    Q("/") Q("*") "[^*]*" Q("*") "+" "(" "[^/*][^*]*" Q("*") "+" ")*" Q("/")
-    rules_.insert_macro("CCOMMENT", "\\/\\*[^*]*\\*+([^/*][^*]*\\*+*\\/"));
+    rules_.insert_macro("CCOMMENT", "\\/\\*[^*]*\\*+([^/*][^*]*\\*+*\\/");
     //#define PPSPACE             "(" BLANK OR CCOMMENT ")*"
-    rules_.insert_macro("PPSPACE", "({BLANK}|{CCOMMENT}*"));
+    rules_.insert_macro("PPSPACE", "({BLANK}|{CCOMMENT})*");
     //#define OCTALDIGIT          "[0-7]"
     rules_.insert_macro("OCTALDIGIT", "[0-7]");
     //#define DIGIT               "[0-9]"
@@ -35,20 +35,20 @@ void build_cpp (lexertl::rules &rules_)
     //#define EXPSTART            "[eE]" "[-+]"
     rules_.insert_macro("EXPSTART", "[eE][-+]");
     //#define EXPONENT            "(" "[eE]" OPTSIGN "[0-9]+" ")"
-    rules_.insert_macro("EXPONENT", "([eE]{OPTSIGN}[0-9]+"));
+    rules_.insert_macro("EXPONENT", "([eE]{OPTSIGN}[0-9]+)");
     //#define NONDIGIT            "[a-zA-Z_]"
     rules_.insert_macro("NONDIGIT", "[a-zA-Z_]");
     //#define INTEGER
     //    "(" "(0x|0X)" HEXDIGIT "+" OR "0" OCTALDIGIT "*" OR "[1-9]" DIGIT "*" ")"
-    rules_.insert_macro("INTEGER", "((0x|0X{HEXDIGIT}+|0{OCTALDIGIT}*|[1-9]{DIGIT}*)"));
+    rules_.insert_macro("INTEGER", "((0x|0X{HEXDIGIT}+|0{OCTALDIGIT}*|[1-9]{DIGIT}*)");
     //#define INTEGER_SUFFIX      "(" "[uU][lL]?|[lL][uU]?" ")"
-    rules_.insert_macro("INTEGER_SUFFIX", "([uU][lL]?|[lL][uU]?"));
+    rules_.insert_macro("INTEGER_SUFFIX", "([uU][lL]?|[lL][uU]?)");
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
     //#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR
     //                            "(" "[lL][lL]" ")" "[uU]" "?" OR
     //                            "i64"
     //                        ")"
-    rules_.insert_macro("LONGINTEGER_SUFFIX", "([uU]([lL][lL]|([lL][lL])[uU]?|i64)"));
+    rules_.insert_macro("LONGINTEGER_SUFFIX", "([uU][lL][lL]|[lL][lL][uU]?|i64)");
 #else
     //#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR
     //                        "(" "[lL][lL]" ")" "[uU]" "?" ")"
@@ -56,11 +56,11 @@ void build_cpp (lexertl::rules &rules_)
 #endif
 
     //#define FLOAT_SUFFIX        "(" "[fF][lL]?|[lL][fF]?" ")"
-    rules_.insert_macro("FLOAT_SUFFIX", "([fF][lL]?|[lL][fF]?"));
+    rules_.insert_macro("FLOAT_SUFFIX", "([fF][lL]?|[lL][fF]?)");
     //#define CHAR_SPEC           "L?"
     rules_.insert_macro("CHAR_SPEC", "L?");
     //#define BACKSLASH           "(" Q("\\") OR TRI(Q("/")) ")"
-    rules_.insert_macro("BACKSLASH", "(\\\\|{TRI}\\/"));
+    rules_.insert_macro("BACKSLASH", "(\\\\|{TRI}\\/)");
     //#define ESCAPESEQ           BACKSLASH "("
     //                            "[abfnrtv?'\"]" OR
     //                            BACKSLASH OR
@@ -68,29 +68,29 @@ void build_cpp (lexertl::rules &rules_)
     //                            OCTALDIGIT OCTALDIGIT "?" OCTALDIGIT "?"
     //                        ")"
     rules_.insert_macro("ESCAPESEQ", "{BACKSLASH}([abfnrtv?'\"]|"
-        "{BACKSLASH}|x{HEXDIGIT}+|{OCTALDIGIT}{1,3}"));
+        "{BACKSLASH}|x{HEXDIGIT}+|{OCTALDIGIT}{1,3})");
     //#define HEXQUAD             HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
     rules_.insert_macro("HEXQUAD", "{HEXDIGIT}{4}");
     //#define UNIVERSALCHAR       BACKSLASH "("
     //                            "u" HEXQUAD OR
     //                            "U" HEXQUAD HEXQUAD
     //                        ")"
-    rules_.insert_macro("UNIVERSALCHAR", "{BACKSLASH}(u{HEXQUAD}|U{HEXQUAD}{2}"));
+    rules_.insert_macro("UNIVERSALCHAR", "{BACKSLASH}(u{HEXQUAD}|U{HEXQUAD}{2})");
     //#define POUNDDEF            "(" "#" OR TRI("=") OR Q("%:") ")"
-    rules_.insert_macro("POUNDDEF", "(#|{TRI}=|\\%:"));
+    rules_.insert_macro("POUNDDEF", "(#|{TRI}=|\\%:)");
     //#define NEWLINEDEF          "(" "\\n" OR "\\r" OR "\\r\\n" ")"
-    rules_.insert_macro("NEWLINEDEF", "(\\n|\\r|\\r\\n"));
+    rules_.insert_macro("NEWLINEDEF", "(\n|\r|\r\n)");
 
 #if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
     //#define INCLUDEDEF          "(include|include_next)"
-    rules_.insert_macro("INCLUDEDEF", "(include|include_next"));
+    rules_.insert_macro("INCLUDEDEF", "(include|include_next)");
 #else
     //#define INCLUDEDEF          "include"
     rules_.insert_macro("INCLUDEDEF", "include");
 #endif
 
     //#define PP_NUMBERDEF        Q(".") "?" DIGIT "(" DIGIT OR NONDIGIT OR EXPSTART OR Q(".") ")*"
-    rules_.insert_macro("PP_NUMBERDEF", "\\.?{DIGIT}({DIGIT}|{NONDIGIT}|{EXPSTART}|\\.*"));
+    rules_.insert_macro("PP_NUMBERDEF", "\\.?{DIGIT}({DIGIT}|{NONDIGIT}|{EXPSTART}|\\.)*");
 
     // C++ only token definitions
     //TOKEN_DATA(T_AND_ALT, "bitand"),
@@ -204,7 +204,7 @@ void build_cpp (lexertl::rules &rules_)
     //TOKEN_DATA(T_OROR, Q("|") Q("|")),
     rules_.push("\\|{2}", T_OROR);
     //TOKEN_DATA(T_OROR_TRIGRAPH, TRI("!") Q("|") OR Q("|") TRI("!") OR TRI("!") TRI("!")),
-    rules_.push("{TRI}!\\||\\|{TRI}!|({TRI}!{2}"), T_OROR_TRIGRAPH);
+    rules_.push("{TRI}!\\||\\|{TRI}!|({TRI}!){2}", T_OROR_TRIGRAPH);
     //TOKEN_DATA(T_PLUS, Q("+")),
     rules_.push("\\+", T_PLUS);
     //TOKEN_DATA(T_PLUSASSIGN, Q("+=")),
@@ -222,13 +222,13 @@ void build_cpp (lexertl::rules &rules_)
     //TOKEN_DATA(T_RIGHTBRACE_TRIGRAPH, TRI(">")),
     rules_.push("{TRI}>", T_RIGHTBRACE_TRIGRAPH);
     //TOKEN_DATA(T_RIGHTPAREN, Q(")")),
-    rules_.push("\\"), T_RIGHTPAREN);
+    rules_.push("\\)", T_RIGHTPAREN);
     //TOKEN_DATA(T_RIGHTBRACKET, Q("]")),
     rules_.push("\\]", T_RIGHTBRACKET);
     //TOKEN_DATA(T_RIGHTBRACKET_ALT, ":>"),
     rules_.push(":>", T_RIGHTBRACKET_ALT);
     //TOKEN_DATA(T_RIGHTBRACKET_TRIGRAPH, TRI(Q(")"))),
-    rules_.push("{TRI}\\"), T_RIGHTBRACKET_TRIGRAPH);
+    rules_.push("{TRI}\\)", T_RIGHTBRACKET_TRIGRAPH);
     //TOKEN_DATA(T_SEMICOLON, ";"),
     rules_.push(";", T_SEMICOLON);
     //TOKEN_DATA(T_SHIFTLEFT, "<<"),
@@ -452,11 +452,11 @@ void build_cpp (lexertl::rules &rules_)
     //    "(" DIGIT "*" Q(".") DIGIT "+" OR DIGIT "+" Q(".") ")"
     //    EXPONENT "?" FLOAT_SUFFIX "?" OR
     //    DIGIT "+" EXPONENT FLOAT_SUFFIX "?"),
-    rules_.push("({DIGIT}*\\.{DIGIT}+|{DIGIT}+\\.{EXPONENT}?{FLOAT_SUFFIX}?")
-        "|{DIGIT}+{EXPONENT}{FLOAT_SUFFIX}?",T_FLOATLIT);
+    rules_.push("({DIGIT}*\\.{DIGIT}+|{DIGIT}+\\.{EXPONENT}?{FLOAT_SUFFIX}?"
+        "|{DIGIT}+{EXPONENT}{FLOAT_SUFFIX}?)",T_FLOATLIT);
 #if BOOST_WAVE_USE_STRICT_LEXER != 0
     //TOKEN_DATA(T_IDENTIFIER, "([a-zA-Z_]" OR UNIVERSALCHAR ")([a-zA-Z0-9_]" OR UNIVERSALCHAR ")*"),
-    rules_.push("([a-zA-Z_]|{UNIVERSALCHAR}([a-zA-Z0-9_]|{UNIVERSALCHAR})*"), T_IDENTIFIER);
+    rules_.push("([a-zA-Z_]|{UNIVERSALCHAR}([a-zA-Z0-9_]|{UNIVERSALCHAR})*)", T_IDENTIFIER);
 #else
     //TOKEN_DATA(T_IDENTIFIER, "([a-zA-Z_$]" OR UNIVERSALCHAR ")([a-zA-Z0-9_$]" OR UNIVERSALCHAR ")*"),
     rules_.push("([a-zA-Z_$]|{UNIVERSALCHAR}([a-zA-Z0-9_$]|{UNIVERSALCHAR})*"), T_IDENTIFIER);
@@ -467,12 +467,12 @@ void build_cpp (lexertl::rules &rules_)
     rules_.push("\\/\\/[^\\n\\r]*{NEWLINEDEF}", T_CPPCOMMENT);
     //TOKEN_DATA(T_CHARLIT, CHAR_SPEC "'"
     //            "(" ESCAPESEQ OR "[^\\n\\r']" OR UNIVERSALCHAR ")+" "'"),
-    rules_.push("{CHAR_SPEC}'({ESCAPESEQ}|[^\\n\\r']|{UNIVERSALCHAR}+'"),
+    rules_.push("{CHAR_SPEC}'({ESCAPESEQ}|[^\\n\\r']|{UNIVERSALCHAR}+')",
         T_CHARLIT);
     //TOKEN_DATA(T_STRINGLIT, CHAR_SPEC Q("\"")
     //            "(" ESCAPESEQ OR "[^\\n\\r\"]" OR UNIVERSALCHAR ")*" Q("\"")),
     rules_.push("{CHAR_SPEC}\\\"({ESCAPESEQ}|[^\\n\\r\"]|"
-        "{UNIVERSALCHAR}*\\\""), T_STRINGLIT);
+        "{UNIVERSALCHAR}*\\\")", T_STRINGLIT);
     //TOKEN_DATA(T_SPACE, BLANK "+"),
     rules_.push("{BLANK}+", T_SPACE);
     //TOKEN_DATA(T_SPACE2, "[\\v\\f]+"),
@@ -486,7 +486,7 @@ void build_cpp (lexertl::rules &rules_)
     //TOKEN_DATA(T_POUND_POUND_ALT, Q("%:") Q("%:")),
     rules_.push("\\%:\\%:", T_POUND_POUND_ALT);
     //TOKEN_DATA(T_POUND_POUND_TRIGRAPH, TRI("=") TRI("=")),
-    rules_.push("({TRI}={2}"), T_POUND_POUND_TRIGRAPH);
+    rules_.push("({TRI}=){2}", T_POUND_POUND_TRIGRAPH);
     //TOKEN_DATA(T_POUND, "#"),
     rules_.push("#", T_POUND);
     //TOKEN_DATA(T_POUND_ALT, Q("%:")),
