@@ -63,6 +63,11 @@ struct match_results
         return string(start, end);
     }
 
+    string substr(const std::size_t soffset_, const std::size_t eoffset_) const
+    {
+        return string(start + soffset_, end - eoffset_);
+    }
+
     virtual void clear()
     {
         id  = 0;

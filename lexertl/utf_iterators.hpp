@@ -68,6 +68,24 @@ public:
         return temp_;
     }
 
+    basic_utf8_in_iterator operator +(const std::size_t index_) const
+    {
+        basic_utf8_in_iterator temp_ = *this;
+
+        temp_._it += index_;
+        temp_.next();
+        return temp_;
+    }
+
+    basic_utf8_in_iterator operator -(const std::size_t index_) const
+    {
+        basic_utf8_in_iterator temp_ = *this;
+
+        temp_._it -= index_;
+        temp_.next();
+        return temp_;
+    }
+
 private:
     char_iterator _it;
     char_type _char;
@@ -285,6 +303,24 @@ public:
 
         ++_it;
         next();
+        return temp_;
+    }
+
+    basic_utf16_in_iterator operator +(const std::size_t index_) const
+    {
+        basic_utf16_in_iterator temp_ = *this;
+
+        temp_._it += index_;
+        temp_.next();
+        return temp_;
+    }
+
+    basic_utf16_in_iterator operator -(const std::size_t index_) const
+    {
+        basic_utf16_in_iterator temp_ = *this;
+
+        temp_._it -= index_;
+        temp_.next();
         return temp_;
     }
 
