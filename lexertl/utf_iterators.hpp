@@ -68,20 +68,29 @@ public:
         return temp_;
     }
 
-    basic_utf8_in_iterator operator +(const std::size_t index_) const
+    basic_utf8_in_iterator operator +(const std::size_t count_) const
     {
         basic_utf8_in_iterator temp_ = *this;
 
-        temp_._it += index_;
-        temp_.next();
+        for (std::size_t i_ = 0; i_ < count_; ++i_)
+        {
+            ++temp_;
+        }
+
         return temp_;
     }
 
-    basic_utf8_in_iterator operator -(const std::size_t index_) const
+    basic_utf8_in_iterator operator -(const std::size_t count_) const
     {
         basic_utf8_in_iterator temp_ = *this;
 
-        temp_._it -= index_;
+        for (std::size_t i_ = 0; i_ < count_; ++i_)
+        {
+            --temp_._it;
+
+            while ((*temp_._it & 0xc0) == 0x80) --temp_._it;
+        }
+
         temp_.next();
         return temp_;
     }
@@ -306,20 +315,29 @@ public:
         return temp_;
     }
 
-    basic_utf16_in_iterator operator +(const std::size_t index_) const
+    basic_utf16_in_iterator operator +(const std::size_t count_) const
     {
         basic_utf16_in_iterator temp_ = *this;
 
-        temp_._it += index_;
-        temp_.next();
+        for (std::size_t i_ = 0; i_ < count_; ++i_)
+        {
+            ++temp_;
+        }
+
         return temp_;
     }
 
-    basic_utf16_in_iterator operator -(const std::size_t index_) const
+    basic_utf16_in_iterator operator -(const std::size_t count_) const
     {
         basic_utf16_in_iterator temp_ = *this;
 
-        temp_._it -= index_;
+        for (std::size_t i_ = 0; i_ < count_; ++i_)
+        {
+            --temp_._it;
+
+            if (*temp_._it >= 0xdc00 && *temp_._it <= 0xdfff) --temp_._it;
+        }
+
         temp_.next();
         return temp_;
     }

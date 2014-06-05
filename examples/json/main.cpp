@@ -76,10 +76,20 @@ int main()
 
 		while (results.id != eEOF)
 		{
-			std::cout << "Id: " << results.id << " token: " <<
-				std::string(utf_out_iter(results.start, results.end),
-				utf_out_iter(results.end, results.end)) <<
-				" state = " << results.state << '\n';
+			std::cout << "Id: " << results.id << " token: ";
+
+			if (results.id == eString)
+			{
+				std::cout << std::string(utf_out_iter(results.start + 1, results.end - 1),
+					utf_out_iter(results.end - 1, results.end - 1));
+			}
+			else
+			{
+				std::cout << std::string(utf_out_iter(results.start, results.end),
+					utf_out_iter(results.end, results.end));
+			}
+			
+			std::cout << " state = " << results.state << '\n';
 			lexertl::lookup(sm, results);
 		}
 
