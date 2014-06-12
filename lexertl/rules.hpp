@@ -547,6 +547,7 @@ private:
 
                         open_._type = detail::OPENPAREN;
                         open_._str.insert('(');
+                        tokens_.push_back(open_);
                     }
 
                     // Don't need to store token if it is diff.
@@ -564,6 +565,7 @@ private:
 
                         close_._type = detail::CLOSEPAREN;
                         close_._str.insert(')');
+                        tokens_.push_back(close_);
                     }
                 }
             }
