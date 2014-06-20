@@ -11,6 +11,7 @@
 #include "enums.hpp"
 #include <locale>
 #include <map>
+#include "narrow.hpp"
 #include "parser/tokeniser/re_tokeniser.hpp"
 #include "runtime_error.hpp"
 #include <set>
@@ -245,13 +246,7 @@ public:
             std::ostringstream ss_;
 
             ss_ << "Attempt to redefine MACRO '";
-
-            while (*name_)
-            {
-                // Safe to simply cast to char.
-                ss_ << static_cast<char>(*name_++);
-            }
-
+            narrow(name_, ss_);
             ss_ << "'.";
             throw runtime_error(ss_.str());
         }
@@ -459,7 +454,7 @@ private:
             token *lhs_ = &tokens_.back();
             token rhs_;
 
-            tokeniser::next(*lhs_, state_, rhs_);
+            tokeniser::next(*lhs_, state_, rhs_, name_);
 
             if (rhs_._type != detail::DIFF &&
                 lhs_->precedence(rhs_._type) == ' ')
@@ -498,13 +493,7 @@ private:
                     std::ostringstream ss_;
 
                     ss_ << "Unknown MACRO name '";
-
-                    while (*name_)
-                    {
-                        // Safe to simply cast to char.
-                        ss_ << static_cast<char>(*name_++);
-                    }
-
+                    narrow(name_, ss_);
                     ss_ << "'.";
                     throw runtime_error(ss_.str());
                 }
@@ -748,13 +737,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Unknown state name '";
-
-                while (*new_dfa_)
-                {
-                    // Safe to simply cast to char.
-                    ss_ << static_cast<char>(*new_dfa_++);
-                }
-
+                narrow(new_dfa_, ss_);
                 ss_ << "'.";
                 throw runtime_error(ss_.str());
             }
@@ -770,13 +753,7 @@ private:
                     std::ostringstream ss_;
 
                     ss_ << "Unknown state name '";
-
-                    while (*push_dfa_)
-                    {
-                        // Safe to simply cast to char.
-                        ss_ << static_cast<char>(*push_dfa_++);
-                    }
-
+                    narrow(push_dfa_, ss_);
                     ss_ << "'.";
                     throw runtime_error(ss_.str());
                 }
@@ -823,13 +800,7 @@ private:
 
                     ss_ << "Unknown state name '";
                     curr_dfa_ = next_dfa_.c_str();
-
-                    while (*curr_dfa_)
-                    {
-                        // Safe to simply cast to char.
-                        ss_ << static_cast<char>(*curr_dfa_++);
-                    }
-
+                    narrow(curr_dfa_, ss_);
                     ss_ << "'.";
                     throw runtime_error(ss_.str());
                 }
@@ -890,13 +861,7 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Invalid name '";
-
-            while (*name_)
-            {
-                // Safe to simply cast to char.
-                ss_ << static_cast<char>(*name_++);
-            }
-
+            narrow(name_, ss_);
             ss_ << "'.";
             throw runtime_error(ss_.str());
         }
@@ -916,13 +881,7 @@ private:
 
                 ss_ << "Invalid name '";
                 name_ = start_;
-
-                while (*name_)
-                {
-                    // Safe to simply cast to char.
-                    ss_ << static_cast<char>(*name_++);
-                }
-
+                narrow(name_, ss_);
                 ss_ << "'.";
                 throw runtime_error(ss_.str());
             }

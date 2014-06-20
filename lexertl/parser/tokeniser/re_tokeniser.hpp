@@ -7,6 +7,7 @@
 #define LEXERTL_RE_TOKENISER_HPP
 
 #include <cstring>
+#include "../../narrow.hpp"
 #include "re_token.hpp"
 #include "../../runtime_error.hpp"
 #include "../../size_t.hpp"
@@ -29,7 +30,8 @@ public:
     typedef typename tokeniser_helper::state state;
     typedef basic_string_token<char_type> string_token;
 
-    static void next(re_token &lhs_, state &state_, re_token &token_)
+    static void next(re_token &lhs_, state &state_, re_token &token_,
+        const rules_char_type *name_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = state_.next(ch_);
@@ -161,7 +163,7 @@ public:
 
                         break;
                     case '{':
-                        open_curly(lhs_, state_, token_);
+                        open_curly(lhs_, state_, token_, name_);
                         break;
                     case '|':
                         token_._type = OR;
@@ -452,7 +454,7 @@ private:
     }
 
     static void open_curly(re_token &lhs_, state &state_,
-        re_token &token_)
+        re_token &token_, const rules_char_type *name_)
     {
         if (state_.eos())
         {
@@ -505,7 +507,7 @@ private:
         }
         else
         {
-            macro(state_, token_);
+            macro(state_, token_, name_);
         }
     }
 
@@ -692,7 +694,8 @@ private:
         }
     }
 
-    static void macro(state &state_, re_token &token_)
+    static void macro(state &state_, re_token &token_,
+        const rules_char_type *name_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = false;
@@ -731,7 +734,19 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                " in rule id " << state_._id << '.';
+                " in ";
+
+            if (name_)
+            {
+                ss_ << "MACRO '";
+                narrow(name_, ss_);
+                ss_ << "'.";
+            }
+            else
+            {
+                ss_ << "rule id " << state_._id << '.';
+            }
+
             throw runtime_error(ss_.str());
         }
 
