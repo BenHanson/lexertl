@@ -49,8 +49,8 @@ public:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following '\\' in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following '\\' in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -81,8 +81,8 @@ public:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following '[' in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following '[' in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -97,8 +97,8 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex following '^' in rule id " <<
-                    state_._id << '.';
+                ss_ << "Unexpected end of regex following '^' in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
         }
@@ -119,7 +119,7 @@ public:
                 if (chset_)
                 {
                     char_state temp_state_(str_ + 1, str_ + str_len_,
-                        state_._id, state_._flags, state_._locale, false);
+                        state_._id, state_._flags, state_._locale, 0);
                     string_token temp_token_;
 
                     charset(temp_state_, temp_token_);
@@ -146,8 +146,8 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing ']') in rule id " <<
-                    state_._id << '.';
+                ss_ << "Unexpected end of regex (missing ']') in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -187,7 +187,8 @@ public:
             std::ostringstream ss_;
 
             ss_ << "Empty charsets not allowed preceding index " <<
-                state_.index() << " in rule id " << state_._id << '.';
+                state_.index() << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -549,7 +550,8 @@ private:
                     std::ostringstream ss_;
 
                     ss_ << "Unknown POSIX charset at index " <<
-                        state_.index() << " in rule id " << state_._id << '.';
+                        state_.index() << " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                     break;
                 }
@@ -561,7 +563,8 @@ private:
 
             // Pointless returning index if at end of string
             ss_ << "Unexpected end of regex (unterminated POSIX charset) " <<
-                "in rule id " << state_._id << '.';
+                "in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -645,7 +648,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in rule id " << state_._id << '.';
+                state_.index() << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -718,7 +722,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in rule id " << state_._id << '.';
+                state_.index() << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -757,7 +762,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in rule id " << state_._id << '.';
+                state_.index() << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -796,7 +802,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -835,7 +842,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -875,7 +883,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -980,7 +989,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -1019,7 +1029,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -1059,7 +1070,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -1114,7 +1126,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
     }
@@ -1127,7 +1140,7 @@ private:
         using namespace std;
 
         char_state temp_state_(str_ + 1, str_ + strlen(str_),
-            state_._id, state_._flags, state_._locale, false);
+            state_._id, state_._flags, state_._locale, 0);
         string_token temp_token_;
 
         charset(temp_state_, temp_token_);
@@ -1195,8 +1208,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\p in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following \\p in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -1205,7 +1218,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Syntax error following \\p at index " <<
-                state_.index() << " in rule id " << state_._id << '.';
+                state_.index() << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -1216,8 +1230,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\p{ in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following \\p{ in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -1232,7 +1246,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{C "
-                        "in rule id " << state_._id << '.';
+                        "in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1264,8 +1279,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{C at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1280,7 +1295,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{L "
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1318,8 +1334,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{L at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1334,7 +1350,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{M "
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1360,8 +1377,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{M at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1376,7 +1393,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{N "
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1402,8 +1420,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{N at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1418,7 +1436,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{P "
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1461,8 +1480,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{P at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1477,7 +1496,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{S "
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1507,8 +1527,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{S at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1523,7 +1543,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex following \\p{Z "
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -1549,8 +1570,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{Z at index " <<
-                            state_.index() << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -1561,7 +1582,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Syntax error following \\p{ at index " <<
-                    state_.index() << " in rule id " << state_._id << '.';
+                    state_.index() << " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
         }
@@ -1571,7 +1593,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Missing } at index " << state_.index() <<
-                " in rule id << " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2174,7 +2197,8 @@ private:
             ss_ << "Escape \\" << std::oct << oct_ <<
                 " is too big for the state machine char type "
                 "preceding index " << std::dec << state_.index() <<
-                " in rule " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2195,8 +2219,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\c in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following \\c in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
         else
@@ -2219,7 +2243,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Invalid control char at index " <<
-                    state_.index() - 1 << " in rule id " << state_._id << '.';
+                    state_.index() - 1 << " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
         }
@@ -2241,8 +2266,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\x in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following \\x in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2252,7 +2277,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Illegal char following \\x at index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
+                state_.index() - 1 << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2300,8 +2326,8 @@ private:
 
             ss_ << "Escape \\x" << std::hex << hex_ <<
                 " is too big for the state machine char type at index " <<
-                std::dec << state_.index() << " in rule id " <<
-                state_._id << '.';
+                std::dec << state_.index() << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2318,8 +2344,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Charset cannot form start of range preceding "
-                "index " << state_.index() - 1 << " in rule id " <<
-                state_._id << '.';
+                "index " << state_.index() - 1 << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2330,8 +2356,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following '-' in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex following '-' in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2346,7 +2372,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Charset cannot form end of range preceding index "
-                    << state_.index() << " in rule id " << state_._id << '.';
+                    << state_.index() << " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
         }
@@ -2355,8 +2382,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "POSIX char class cannot form end of range at "
-                "index " << state_.index() - 1 << " in rule id " <<
-                state_._id << '.';
+                "index " << state_.index() - 1 << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
         else
@@ -2372,8 +2399,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing ']') in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex (missing ']') in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -2390,7 +2417,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Invalid range in charset preceding index " <<
-                state_.index() - 1 << " in rule id " << state_._id << '.';
+                state_.index() - 1 << " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 

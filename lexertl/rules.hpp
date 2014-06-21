@@ -443,7 +443,7 @@ private:
         const id_type id_, const rules_char_type *name_)
     {
         re_state state_(regex_.c_str(), regex_.c_str() + regex_.size(), id_,
-            _flags, _locale, name_ != 0);
+            _flags, _locale, name_);
         string macro_;
         rules_char_type diff_ = 0;
 
@@ -454,7 +454,7 @@ private:
             token *lhs_ = &tokens_.back();
             token rhs_;
 
-            tokeniser::next(*lhs_, state_, rhs_, name_);
+            tokeniser::next(*lhs_, state_, rhs_);
 
             if (rhs_._type != detail::DIFF &&
                 lhs_->precedence(rhs_._type) == ' ')
@@ -469,7 +469,8 @@ private:
 
                 if (name_ != 0)
                 {
-                    ss_ << "macro " << name_;
+                    ss_ << "macro ";
+                    narrow(name_, ss_);
                 }
                 else
                 {
@@ -512,7 +513,8 @@ private:
 
                             if (name_ != 0)
                             {
-                                ss_ << "macro " << name_;
+                                ss_ << "macro ";
+                                narrow(name_, ss_);
                             }
                             else
                             {
@@ -574,7 +576,8 @@ private:
 
                         if (name_ != 0)
                         {
-                            ss_ << "macro " << name_;
+                            ss_ << "macro ";
+                            narrow(name_, ss_);
                         }
                         else
                         {
@@ -609,7 +612,8 @@ private:
 
                     if (name_ != 0)
                     {
-                        ss_ << "macro " << name_;
+                        ss_ << "macro ";
+                        narrow(name_, ss_);
                     }
                     else
                     {
@@ -634,7 +638,8 @@ private:
 
                             if (name_ != 0)
                             {
-                                ss_ << "macro " << name_;
+                                ss_ << "macro ";
+                                narrow(name_, ss_);
                             }
                             else
                             {
@@ -663,7 +668,8 @@ private:
 
             if (name_ != 0)
             {
-                ss_ << "macro " << name_;
+                ss_ << "macro ";
+                narrow(name_, ss_);
             }
             else
             {

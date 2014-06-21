@@ -9,6 +9,7 @@
 #include "../../char_traits.hpp"
 #include "../../enums.hpp"
 #include <locale>
+#include "../../narrow.hpp"
 #include "../../size_t.hpp"
 #include <stack>
 
@@ -29,14 +30,14 @@ struct basic_re_tokeniser_state
     std::size_t _flags;
     std::stack<std::size_t> _flags_stack;
     std::locale _locale;
-    bool _macro;
+    const char_type *_macro_name;
     long _paren_count;
     bool _in_string;
     id_type _nl_id;
 
     basic_re_tokeniser_state(const char_type *start_,
         const char_type * const end_, id_type id_, const std::size_t flags_,
-        const std::locale locale_, const bool macro_) :
+        const std::locale locale_, const char_type *macro_name_) :
         _start(start_),
         _end(end_),
         _curr(start_),
@@ -44,7 +45,7 @@ struct basic_re_tokeniser_state
         _flags(flags_),
         _flags_stack(),
         _locale(locale_),
-        _macro(macro_),
+        _macro_name(macro_name_),
         _paren_count(0),
         _in_string(false),
         _nl_id(static_cast<id_type>(~0))
@@ -72,7 +73,7 @@ struct basic_re_tokeniser_state
         _flags = rhs_._flags;
         _flags_stack = rhs_._flags_stack;
         _locale = rhs_._locale;
-        _macro = rhs_._macro;
+        _macro_name = rhs_._macro_name;
         _paren_count = rhs_._paren_count;
         _in_string = rhs_._in_string;
         _nl_id = rhs_._nl_id;
@@ -107,6 +108,20 @@ struct basic_re_tokeniser_state
     inline bool eos()
     {
         return _curr >= _end;
+    }
+
+    inline void error(std::ostringstream &ss_)
+    {
+        if (_macro_name)
+        {
+            ss_ << "MACRO '";
+            narrow(_macro_name, ss_);
+            ss_ << "'.";
+        }
+        else
+        {
+            ss_ << "rule id " << _id << '.';
+        }
     }
 };
 }

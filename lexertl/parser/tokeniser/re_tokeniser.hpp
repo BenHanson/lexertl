@@ -7,7 +7,6 @@
 #define LEXERTL_RE_TOKENISER_HPP
 
 #include <cstring>
-#include "../../narrow.hpp"
 #include "re_token.hpp"
 #include "../../runtime_error.hpp"
 #include "../../size_t.hpp"
@@ -30,8 +29,7 @@ public:
     typedef typename tokeniser_helper::state state;
     typedef basic_string_token<char_type> string_token;
 
-    static void next(re_token &lhs_, state &state_, re_token &token_,
-        const rules_char_type *name_)
+    static void next(re_token &lhs_, state &state_, re_token &token_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = state_.next(ch_);
@@ -61,8 +59,8 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '\"') in rule id " <<
-                    state_._id << '.';
+                ss_ << "Unexpected end of regex (missing '\"') in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -71,8 +69,8 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing ')') in rule id " <<
-                    state_._id << '.';
+                ss_ << "Unexpected end of regex (missing ')') in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -113,7 +111,8 @@ public:
 
                             ss_ << "Number of open parenthesis < 0 "
                                 "at index " << state_.index() - 1 <<
-                                " in rule id " << state_._id << '.';
+                                " in ";
+                            state_.error(ss_);
                             throw runtime_error(ss_.str());
                         }
 
@@ -163,13 +162,14 @@ public:
 
                         break;
                     case '{':
-                        open_curly(lhs_, state_, token_, name_);
+                        open_curly(lhs_, state_, token_);
                         break;
                     case '|':
                         token_._type = OR;
                         break;
                     case '^':
-                        if (!state_._macro && state_._curr - 1 == state_._start)
+                        if (!state_._macro_name &&
+                            state_._curr - 1 == state_._start)
                         {
                             token_._type = BOL;
                         }
@@ -182,7 +182,7 @@ public:
 
                         break;
                     case '$':
-                        if (!state_._macro && state_._curr == state_._end)
+                        if (!state_._macro_name && state_._curr == state_._end)
                         {
                             token_._type = EOL;
                         }
@@ -217,8 +217,8 @@ public:
                     {
                         std::ostringstream ss_;
 
-                        ss_ << "Lookahead ('/') is not supported yet in " <<
-                            "rule id " << state_._id << '.';
+                        ss_ << "Lookahead ('/') is not supported yet in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                         break;
                     }
@@ -285,8 +285,9 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated comment) " <<
-                    "in rule id " << state_._id << '.';
+                ss_ << "Unexpected end of regex "
+                    "(unterminated comment) in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
             else
@@ -333,8 +334,8 @@ private:
 
                         // Pointless returning index if at end of string
                         ss_ << "Unexpected end of regex (unterminated " <<
-                            "C style comment) in rule id " <<
-                            state_._id << '.';
+                            "C style comment) in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                     else
@@ -416,8 +417,8 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Unknown option at index " <<
-                            state_.index() - 1 << " in rule id " <<
-                            state_._id << '.';
+                            state_.index() - 1 << " in ";
+                        state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
                 }
@@ -443,7 +444,7 @@ private:
         if (str_)
         {
             char_state state2_(str_ + 1, str_ + str_len_, state_._id,
-                state_._flags, state_._locale, false);
+                state_._flags, state_._locale, 0);
 
             tokeniser_helper::charset(state2_, token_);
         }
@@ -454,15 +455,15 @@ private:
     }
 
     static void open_curly(re_token &lhs_, state &state_,
-        re_token &token_, const rules_char_type *name_)
+        re_token &token_)
     {
         if (state_.eos())
         {
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}') in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex (missing '}') in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
         else if (*state_._curr == '-' || *state_._curr == '+')
@@ -474,7 +475,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "CHARSET must precede {-} at index " <<
-                    state_.index() - 1 << " in rule id " << state_._id << '.';
+                    state_.index() - 1 << " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -487,8 +489,8 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '}') in rule id " <<
-                    state_._id << '.';
+                ss_ << "Unexpected end of regex (missing '}') in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -497,7 +499,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                    " in rule id " << state_._id << '.';
+                    " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
         }
@@ -507,7 +510,7 @@ private:
         }
         else
         {
-            macro(state_, token_, name_);
+            macro(state_, token_);
         }
     }
 
@@ -541,8 +544,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}') in rule id " <<
-                state_._id << '.';
+            ss_ << "Unexpected end of regex (missing '}') in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -559,8 +562,8 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '}') in rule id " <<
-                    state_._id << '.';
+                ss_ << "Unexpected end of regex (missing '}') in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -586,7 +589,8 @@ private:
                     std::ostringstream ss_;
 
                     ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                        " in rule id " << state_._id << '.';
+                        " in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -606,7 +610,8 @@ private:
 
                     // Pointless returning index if at end of string
                     ss_ << "Unexpected end of regex (missing '}') "
-                        "in rule id " << state_._id << '.';
+                        "in ";
+                    state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
 
@@ -631,7 +636,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -645,7 +651,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Cannot have exactly zero repeats preceding index " <<
-                    state_.index() << " in rule id " << state_._id << '.';
+                    state_.index() << " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -654,7 +661,8 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Max less than min preceding index " <<
-                    state_.index() << " in rule id " << state_._id << '.';
+                    state_.index() << " in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
 
@@ -694,8 +702,7 @@ private:
         }
     }
 
-    static void macro(state &state_, re_token &token_,
-        const rules_char_type *name_)
+    static void macro(state &state_, re_token &token_)
     {
         rules_char_type ch_ = 0;
         bool eos_ = false;
@@ -708,7 +715,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Invalid MACRO name at index " << state_.index() - 1 <<
-                " in rule id " << state_._id << '.';
+                " in ";
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
@@ -723,7 +731,8 @@ private:
 
                 // Pointless returning index if at end of string
                 ss_ << "Unexpected end of regex " <<
-                    "(missing '}') in rule id " << state_._id << '.';
+                    "(missing '}') in ";
+                state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
         } while (ch_ == '_' || ch_ == '-' || (ch_ >= 'A' && ch_ <= 'Z') ||
@@ -735,18 +744,7 @@ private:
 
             ss_ << "Missing '}' at index " << state_.index() - 1 <<
                 " in ";
-
-            if (name_)
-            {
-                ss_ << "MACRO '";
-                narrow(name_, ss_);
-                ss_ << "'.";
-            }
-            else
-            {
-                ss_ << "rule id " << state_._id << '.';
-            }
-
+            state_.error(ss_);
             throw runtime_error(ss_.str());
         }
 
