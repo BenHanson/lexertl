@@ -17,11 +17,6 @@ struct basic_char_traits
     typedef ch_type char_type;
     typedef ch_type index_type;
 
-    static index_type index(const char_type ch)
-    {
-       return ch;
-    }
-
     static index_type max_val()
     {
         return sizeof(char_type) > 2 ? 0x10ffff :
@@ -34,11 +29,6 @@ struct basic_char_traits<char>
 {
     typedef char char_type;
     typedef unsigned char index_type;
-
-    static index_type index(const char ch)
-    {
-        return static_cast<index_type>(ch);
-    }
 
     static index_type max_val()
     {

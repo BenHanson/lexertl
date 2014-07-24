@@ -1,3 +1,5 @@
+#include "../lexertl/rules.hpp"
+
 enum cpp_id {T_ERROR,
     T_AND_ALT = 1,
     T_ANDASSIGN_ALT,
@@ -189,14 +191,16 @@ enum cpp_id {T_ERROR,
     T_POUND_TRIGRAPH,
     T_ANY_TRIGRAPH,
     T_ANY,
-	T_ALIGNAS,
-	T_ALIGNOF,
-	T_CHAR16_T,
-	T_CHAR32_T,
-	T_CONSTEXPR,
-	T_DECLTYPE,
-	T_NOEXCEPT,
-	T_NULLPTR,
-	T_STATICASSERT,
-	T_THREADLOCAL,
-	T_RAWSTRINGLIT};
+    T_ALIGNAS,
+    T_ALIGNOF,
+    T_CHAR16_T,
+    T_CHAR32_T,
+    T_CONSTEXPR,
+    T_DECLTYPE,
+    T_NOEXCEPT,
+    T_NULLPTR,
+    T_STATICASSERT,
+    T_THREADLOCAL,
+    T_RAWSTRINGLIT};
+
+void build_cpp(lexertl::rules &rules_);

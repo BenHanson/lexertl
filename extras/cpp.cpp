@@ -20,7 +20,6 @@ handle errors better.
 #include "stdafx.h"
 
 #include "cpp.h"
-#include "../lexertl/rules.hpp"
 
 #define act_in_cpp0x_mode 1
 #define enable_ms_extensions 1
@@ -48,13 +47,13 @@ void build_cpp(lexertl::rules &rules_)
     rules_.insert_macro("HexQuad", "{HexDigit}{HexDigit}{HexDigit}{HexDigit}");
     rules_.insert_macro("UniversalChar", "{Backslash}(u{HexQuad}|U{HexQuad}{HexQuad})");
     rules_.insert_macro("Newline", "\r\n|\n|\r");
-    rules_.insert_macro("PPSpace", "([\t\f\v]|(\"/*\"({any}{-}[*]|{Newline}|"
-        "([*]+({any}{-}[*/ ]|{Newline})))*[*]+[/]))*");
+    rules_.insert_macro("PPSpace", "([ \t\f\v]|(\"/*\"({any}{-}[*]|{Newline}|"
+        "([*]+({any}{-}[*/]|{Newline})))*[*]+[/]))*");
     rules_.insert_macro("Pound", "#|\"??=\"|%:");
     rules_.insert_macro("NonDigit", "[a-zA-Z$]|{UniversalChar}");
 
-    rules_.push("\\/\\*(.|\n)*?\\*\\/", T_CCOMMENT);
-    rules_.push("\\/\\/.*", T_CPPCOMMENT);
+    rules_.push("[/][*](.|\n)*?[*][/]", T_CCOMMENT);
+    rules_.push("[/][/].*", T_CPPCOMMENT);
 #ifdef detect_pp_numbers
     rules_.push("[.]?{Digit}[.]?{Digit}({Digit}|{NonDigit}|{ExponentStart}|"
         "[.])*", T_PP_NUMBER);
@@ -84,9 +83,9 @@ void build_cpp(lexertl::rules &rules_)
     rules_.push("thread_local", T_THREADLOCAL);
     rules_.push("(L|[uU]|u8)?R[\"]({EscapeSequence}|{UniversalChar}|"
         "{any}{-}[\r\n\\\\\"])[\"]", T_RAWSTRINGLIT);
-    rules_.push("[uU]'({EscapeSequence}|{UniversalChar}|{any}{-}[\n\r\\\\'])'",
-        T_CHARLIT);
-    rules_.push("([uU]|u8)[\"]({EscapeSequence}|UniversalChar|"
+    rules_.push("(L|[uU])?'({EscapeSequence}|{UniversalChar}|"
+		"{any}{-}[\n\r\\\\'])'", T_CHARLIT);
+	rules_.push("(L|[uU]|u8)?[\"]({EscapeSequence}|{UniversalChar}|"
         "{any}{-}[\n\r\\\\\"])*[\"]", T_STRINGLIT);
 #else
     rules_.push("alignas", T_IDENTIFIER);
@@ -227,7 +226,7 @@ void build_cpp(lexertl::rules &rules_)
     rules_.push("[)]", T_RIGHTPAREN);
     rules_.push(";", T_SEMICOLON);
     rules_.push(":", T_COLON);
-    rules_.push("...", T_ELLIPSIS);
+    rules_.push("\"...\"", T_ELLIPSIS);
     rules_.push("[?]", T_QUESTION_MARK);
     rules_.push("::", T_COLON_COLON);
     rules_.push("[.]", T_DOT);
@@ -237,7 +236,7 @@ void build_cpp(lexertl::rules &rules_)
     rules_.push("[*]", T_STAR);
     rules_.push("[/]", T_DIVIDE);
     rules_.push("%", T_PERCENT);
-    rules_.push("[^]", T_XOR);
+    rules_.push("\\^", T_XOR);
     rules_.push("\"??'\"", T_XOR_TRIGRAPH);
     rules_.push("xor", T_XOR_ALT);
     rules_.push("&", T_AND);
@@ -258,7 +257,7 @@ void build_cpp(lexertl::rules &rules_)
     rules_.push("[*]=", T_STARASSIGN);
     rules_.push("[/]=", T_DIVIDEASSIGN);
     rules_.push("%=", T_PERCENTASSIGN);
-    rules_.push("[^]=", T_XORASSIGN);
+    rules_.push("\\^=", T_XORASSIGN);
     rules_.push("xor_eq", T_XORASSIGN_ALT);
     rules_.push("\"??'=\"", T_XORASSIGN_TRIGRAPH);
     rules_.push("&=", T_ANDASSIGN);
@@ -318,6 +317,6 @@ void build_cpp(lexertl::rules &rules_)
     rules_.push("{Pound}{PPSpace}region", T_MSEXT_PP_REGION);
     rules_.push("{Pound}{PPSpace}endregion", T_MSEXT_PP_ENDREGION);
 
-    rules_.push("[\t\v\f]+", T_SPACE);
+    rules_.push("[ \t\v\f]+", T_SPACE);
     rules_.push("{Newline}", T_NEWLINE);
 }
