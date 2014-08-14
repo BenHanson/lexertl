@@ -201,6 +201,20 @@ enum cpp_id {T_ERROR,
     T_NULLPTR,
     T_STATICASSERT,
     T_THREADLOCAL,
-    T_RAWSTRINGLIT};
+    T_RAWSTRINGLIT,
+    T_BS_NEWLINE};
+
+struct macro_pair
+{
+	const char *_name;
+	const char *_regex;
+};
+
+struct rule_pair
+{
+	const char *_regex;
+	std::size_t _id;
+};
 
 void build_cpp(lexertl::rules &rules_);
+void build_rev_cpp(lexertl::rules &rules_);
