@@ -25,7 +25,7 @@ void build_rev_regex_lexer(lexertl::state_machine &sm_)
 
 	rules_.push("{escape}|{posix}", eCharset);
 	rules_.push("\\[^?({escape}|{posix}|[^\\\\\\]])*\\]", eCharset);
-	rules_.push("[(]([?]#[^)]*[)]", eComment);
+	rules_.push("[(][?]#[^)]*[)]", eComment);
 	rules_.push("[\"]({escape}|[^\"])*[\"]", eString);
 	rules_.push("\\^", eBOL);
 	rules_.push("[$]", eEOL);

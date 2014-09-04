@@ -53,7 +53,7 @@ public:
 
     // If you get a compile error here you have
     // failed to define an unsigned id type.
-    compile_assert<(static_cast<id_type>(~0) > 0)>
+    compile_assert < (static_cast<id_type>(~0) > 0) >
         _valid_id_type;
 
     basic_rules(const std::size_t flags_ = dot_not_newline) :
@@ -343,6 +343,34 @@ public:
         push(curr_dfa_, regex_, id_, new_dfa_, true, user_id_);
     }
 
+    void reverse()
+    {
+        typename token_deque_deque_deque::iterator state_iter_ =
+            _regexes.begin();
+        typename token_deque_deque_deque::iterator state_end_ =
+            _regexes.end();
+        typename macro_map::iterator macro_iter_ = _macro_map.begin();
+        typename macro_map::iterator macro_end_ = _macro_map.end();
+
+        for (; state_iter_ != state_end_; ++state_iter_)
+        {
+            typename token_deque_deque::iterator regex_iter_ =
+                state_iter_->begin();
+            typename token_deque_deque::iterator regex_end_ =
+                state_iter_->end();
+
+            for (; regex_iter_ != regex_end_; ++regex_iter_)
+            {
+                reverse(*regex_iter_);
+            }
+        }
+
+        for (; macro_iter_ != macro_end_; ++macro_iter_)
+        {
+            reverse(macro_iter_->second);
+        }
+    }
+
     const string_id_type_map &statemap() const
     {
         return _statemap;
@@ -405,22 +433,22 @@ public:
 
     static const rules_char_type *initial()
     {
-        static const rules_char_type initial_[] =
-            {'I', 'N', 'I', 'T', 'I', 'A', 'L', 0};
+        static const rules_char_type initial_ [] =
+        { 'I', 'N', 'I', 'T', 'I', 'A', 'L', 0 };
 
         return initial_;
     }
 
     static const rules_char_type *dot()
     {
-        static const rules_char_type dot_[] = {'.', 0};
+        static const rules_char_type dot_ [] = { '.', 0 };
 
         return dot_;
     }
 
     static const rules_char_type *all_states()
     {
-        static const rules_char_type star_[] = {'*', 0};
+        static const rules_char_type star_ [] = { '*', 0 };
 
         return star_;
     }
@@ -626,34 +654,34 @@ private:
 
                 switch (diff_)
                 {
-                    case '-':
-                        lhs_->_str.remove(rhs_._str);
+                case '-':
+                    lhs_->_str.remove(rhs_._str);
 
-                        if (lhs_->_str.empty())
+                    if (lhs_->_str.empty())
+                    {
+                        std::ostringstream ss_;
+
+                        ss_ << "Empty charset created by {-} at index " <<
+                            state_.index() - 1 << " in ";
+
+                        if (name_ != 0)
                         {
-                            std::ostringstream ss_;
-
-                            ss_ << "Empty charset created by {-} at index " <<
-                                state_.index() - 1 << " in ";
-
-                            if (name_ != 0)
-                            {
-                                ss_ << "macro ";
-                                narrow(name_, ss_);
-                            }
-                            else
-                            {
-                                ss_ << "rule id " << state_._id;
-                            }
-
-                            ss_ << '.';
-                            throw runtime_error(ss_.str());
+                            ss_ << "macro ";
+                            narrow(name_, ss_);
+                        }
+                        else
+                        {
+                            ss_ << "rule id " << state_._id;
                         }
 
-                        break;
-                    case '+':
-                        lhs_->_str.insert(rhs_._str);
-                        break;
+                        ss_ << '.';
+                        throw runtime_error(ss_.str());
+                    }
+
+                    break;
+                case '+':
+                    lhs_->_str.insert(rhs_._str);
+                    break;
                 }
 
                 diff_ = 0;
@@ -679,6 +707,102 @@ private:
             ss_ << " is not allowed.";
             throw runtime_error(ss_.str());
         }
+    }
+
+    void reverse(token_deque &deque_)
+    {
+        token_deque new_deque_;
+        typename token_deque::const_iterator iter_ =
+            deque_.begin();
+        typename token_deque::const_iterator end_ =
+            deque_.end();
+        std::stack<token_deque> stack_;
+
+        for (; iter_ != end_; ++iter_)
+        {
+            switch (iter_->_type)
+            {
+                case detail::BEGIN:
+                    stack_.push(token_deque());
+                    stack_.top().push_back(token(detail::END));
+                    break;
+                case detail::OR:
+                    reduce_stack(stack_);
+                    stack_.push(token_deque());
+                    stack_.top().push_back(*iter_);
+                    break;
+                case detail::CHARSET:
+                    stack_.push(token_deque());
+                    stack_.top().push_back(*iter_);
+                    break;
+                case detail::BOL:
+                    stack_.push(token_deque());
+                    stack_.top().push_back(token(detail::EOL));
+                    break;
+                case detail::EOL:
+                    stack_.push(token_deque());
+                    stack_.top().push_back(token(detail::BOL));
+                    break;
+                case detail::OPENPAREN:
+                    stack_.push(token_deque());
+                    stack_.top().push_back(*iter_);
+                    break;
+                case detail::CLOSEPAREN:
+                {
+                    token_deque deque_;
+
+                    reduce_stack(stack_);
+                    stack_.top().push_back(*iter_);
+                    deque_.swap(stack_.top());
+                    stack_.pop();
+                    stack_.top().insert(stack_.top().end(),
+                        deque_.begin(), deque_.end());
+                    break;
+                }
+                case detail::OPT:
+                case detail::AOPT:
+                case detail::ZEROORMORE:
+                case detail::AZEROORMORE:
+                case detail::ONEORMORE:
+                case detail::AONEORMORE:
+                case detail::REPEATN:
+                case detail::AREPEATN:
+                    stack_.top().push_back(*iter_);
+                    break;
+                case detail::END:
+                    stack_.push(token_deque());
+                    stack_.top().push_back(token(detail::BEGIN));
+                    break;
+                default:
+                    throw std::runtime_error("Unknown regex token.");
+                    break;
+            }
+        }
+
+        for (; !stack_.empty(); stack_.pop())
+        {
+            new_deque_.insert(new_deque_.end(), stack_.top().begin(),
+                stack_.top().end());
+        }
+
+        new_deque_.swap(deque_);
+    }
+
+    void reduce_stack(std::stack<token_deque> &stack_)
+    {
+        token_deque deque_;
+
+        for (; !stack_.empty() && (stack_.top().size() > 1 ||
+            stack_.top().front()._type == detail::CHARSET ||
+            stack_.top().front()._type == detail::OR ||
+            stack_.top().front()._type == detail::END);
+            stack_.pop())
+        {
+            deque_.insert(deque_.end(), stack_.top().begin(),
+                stack_.top().end());
+        }
+
+        stack_.push(deque_);
     }
 
     void push(const rules_char_type *curr_dfa_, const string &regex_,
