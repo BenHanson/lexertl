@@ -50,6 +50,13 @@ struct basic_re_token
         return *this;
     }
 
+    void swap(basic_re_token &rhs_)
+    {
+        std::swap(_type, rhs_._type);
+        _extra.swap(rhs_._extra);
+        _str.swap(rhs_._str);
+    }
+
     char precedence(const token_type type_) const
     {
         // Moved in here for Solaris compiler.
