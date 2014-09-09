@@ -46,7 +46,6 @@ public:
     typedef std::deque<token> token_deque;
     typedef std::deque<token_deque> token_deque_deque;
     typedef std::deque<token_deque_deque> token_deque_deque_deque;
-    typedef std::vector<token *> token_vector;
     typedef std::map<string, token_deque> macro_map;
     typedef std::pair<string, token_deque> macro_pair;
     typedef detail::basic_re_tokeniser
@@ -712,111 +711,88 @@ private:
 
     void reverse(token_deque &deque_)
     {
-        token_deque temp_deque_;
-        token_deque new_deque_;
-        typename token_deque::iterator iter_ =
-            deque_.begin();
-        typename token_deque::iterator end_ =
-            deque_.end();
-        std::stack<token_vector> stack_;
+        token_deque new_deque_(deque_.size(), token());
+        typename token_deque::reverse_iterator iter_ =
+            deque_.rbegin();
+        typename token_deque::reverse_iterator end_ =
+            deque_.rend();
+        typename token_deque::iterator dest_ = new_deque_.begin();
+        std::stack<typename token_deque::reverse_iterator> stack_;
 
-        for (; iter_ != end_; ++iter_)
+        for (; iter_ != end_; ++iter_, ++dest_)
         {
             switch (iter_->_type)
             {
-                case detail::BEGIN:
-                    stack_.push(token_vector());
-                    temp_deque_.push_back(token(detail::END));
-                    stack_.top().push_back(&temp_deque_.back());
-                    break;
-                case detail::OR:
-                    reduce_stack(stack_);
-                    stack_.push(token_vector());
-                    stack_.top().push_back(&*iter_);
-                    break;
-                case detail::CHARSET:
-                    stack_.push(token_vector());
-                    stack_.top().push_back(&*iter_);
-                    break;
-                case detail::BOL:
-                    stack_.push(token_vector());
-                    temp_deque_.push_back(token(detail::EOL));
-                    stack_.top().push_back(&temp_deque_.back());
-                    break;
-                case detail::EOL:
-                    stack_.push(token_vector());
-                    temp_deque_.push_back(token(detail::BOL));
-                    stack_.top().push_back(&temp_deque_.back());
-                    break;
-                case detail::OPENPAREN:
-                    stack_.push(token_vector());
-                    stack_.top().push_back(&*iter_);
-                    break;
-                case detail::CLOSEPAREN:
+            case detail::BEGIN:
+                iter_->swap(*dest_);
+                dest_->_type = detail::END;
+                break;
+            case detail::BOL:
+                iter_->swap(*dest_);
+                dest_->_type = detail::EOL;
+                break;
+            case detail::EOL:
+                iter_->swap(*dest_);
+                dest_->_type = detail::BOL;
+                break;
+            case detail::OPENPAREN:
+                iter_->swap(*dest_);
+                dest_->_type = detail::CLOSEPAREN;
+
+                if (stack_.top() != end_)
                 {
-                    token_vector vector_;
-
-                    reduce_stack(stack_);
-                    stack_.top().push_back(&*iter_);
-                    vector_.swap(stack_.top());
-                    stack_.pop();
-                    stack_.top().insert(stack_.top().end(),
-                        vector_.begin(), vector_.end());
-                    break;
+                    ++dest_;
+                    dest_->swap(*stack_.top());
                 }
-                case detail::OPT:
-                case detail::AOPT:
-                case detail::ZEROORMORE:
-                case detail::AZEROORMORE:
-                case detail::ONEORMORE:
-                case detail::AONEORMORE:
-                case detail::REPEATN:
-                case detail::AREPEATN:
-                    stack_.top().push_back(&*iter_);
-                    break;
-                case detail::END:
-                    stack_.push(token_vector());
-                    temp_deque_.push_back(token(detail::BEGIN));
-                    stack_.top().push_back(&temp_deque_.back());
-                    break;
-                default:
-                    throw std::runtime_error("Unknown regex token.");
-                    break;
-            }
-        }
 
-        for (; !stack_.empty(); stack_.pop())
-        {
-            typename token_vector::iterator i_ = stack_.top().begin();
-            typename token_vector::iterator e_ = stack_.top().end();
-            std::size_t index_ = new_deque_.size();
-
-            new_deque_.insert(new_deque_.end(), stack_.top().size(), token());
-
-            for (; i_ != e_; ++i_, ++index_)
+                stack_.pop();
+                break;
+            case detail::CLOSEPAREN:
+                iter_->swap(*dest_);
+                dest_->_type = detail::OPENPAREN;
+                stack_.push(end_);
+                break;
+            case detail::OPT:
+            case detail::AOPT:
+            case detail::ZEROORMORE:
+            case detail::AZEROORMORE:
+            case detail::ONEORMORE:
+            case detail::AONEORMORE:
+            case detail::REPEATN:
+            case detail::AREPEATN:
             {
-                new_deque_[index_].swap(**i_);
+                typename token_deque::reverse_iterator temp_ = iter_ + 1;
+
+                if (temp_->_type == detail::CLOSEPAREN)
+                {
+                    stack_.push(iter_);
+                    ++iter_;
+                    iter_->swap(*dest_);
+                    dest_->_type = detail::OPENPAREN;
+                }
+                else
+                {
+                    dest_->swap(*temp_);
+                    ++dest_;
+                    dest_->swap(*iter_);
+                    ++iter_;
+                }
+
+                break;
+            }
+            case detail::END:
+                iter_->swap(*dest_);
+                dest_->_type = detail::BEGIN;
+                break;
+            default:
+                // detail::OR
+                // detail::CHARSET
+                iter_->swap(*dest_);
+                break;
             }
         }
 
         new_deque_.swap(deque_);
-    }
-
-    void reduce_stack(std::stack<token_vector> &stack_)
-    {
-        token_vector vector_;
-
-        for (; !stack_.empty() && (stack_.top().size() > 1 ||
-            stack_.top().front()->_type == detail::CHARSET ||
-            stack_.top().front()->_type == detail::OR ||
-            stack_.top().front()->_type == detail::END);
-            stack_.pop())
-        {
-            vector_.insert(vector_.end(), stack_.top().begin(),
-                stack_.top().end());
-        }
-
-        stack_.push(vector_);
     }
 
     void push(const rules_char_type *curr_dfa_, const string &regex_,
