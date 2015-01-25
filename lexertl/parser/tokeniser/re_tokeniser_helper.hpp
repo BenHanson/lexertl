@@ -573,7 +573,8 @@ private:
     static void alnum_alpha(state_type &state_, string_token &token_,
         const bool negate_)
     {
-        bool alnum_ = true;
+        enum {unknown, alnum, alpha};
+        std::size_t type_ = unknown;
 
         state_.increment();
 
@@ -594,6 +595,7 @@ private:
                         if (!state_.eos() && *state_._curr == 'm')
                         {
                             state_.increment();
+                            type_ = alnum;
                         }
                     }
                 }
@@ -608,42 +610,14 @@ private:
                         if (!state_.eos() && *state_._curr == 'a')
                         {
                             state_.increment();
-                            alnum_ = false;
+                            type_ = alpha;
                         }
                     }
                 }
             }
         }
 
-        if (!state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!state_.eos() && *state_._curr == ']')
-        {
-            std::string str_;
-
-            state_.increment();
-
-            if (alnum_)
-            {
-                // alnum
-                str_ = sizeof(input_char_type) == 1 ?
-                    make_alnum(state_._locale) :
-                    std::string("[\\p{Ll}\\p{Lu}\\p{Nd}]");
-            }
-            else
-            {
-                // alpha
-                str_ = sizeof(input_char_type) == 1 ?
-                    make_alpha(state_._locale) :
-                    std::string("[\\p{Ll}\\p{Lu}]");
-            }
-
-            insert_charset(str_.c_str(), state_, token_, negate_);
-        }
-        else
+        if (type_ == unknown)
         {
             std::ostringstream ss_;
 
@@ -651,6 +625,52 @@ private:
                 state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                std::string str_;
+
+                state_.increment();
+
+                if (type_ == alnum)
+                {
+                    // alnum
+                    str_ = sizeof(input_char_type) == 1 ?
+                        make_alnum(state_._locale) :
+                        std::string("[\\p{Ll}\\p{Lu}\\p{Nd}]");
+                }
+                else
+                {
+                    // alpha
+                    str_ = sizeof(input_char_type) == 1 ?
+                        make_alpha(state_._locale) :
+                        std::string("[\\p{Ll}\\p{Lu}]");
+                }
+
+                insert_charset(str_.c_str(), state_, token_, negate_);
+            }
         }
     }
 
@@ -699,25 +719,13 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *blank_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*blank_++))
+            static_cast<rules_char_type>(*blank_))
         {
             state_.increment();
+            ++blank_;
         }
 
-        if (!*blank_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*blank_ && !state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = sizeof(input_char_type) == 1 ?
-                "[ \t]" : "[\\p{Zs}\t]";
-
-            state_.increment();
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (*blank_)
         {
             std::ostringstream ss_;
 
@@ -725,6 +733,37 @@ private:
                 state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = sizeof(input_char_type) == 1 ?
+                    "[ \t]" : "[\\p{Zs}\t]";
+
+                state_.increment();
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
@@ -739,25 +778,13 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *cntrl_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*cntrl_++))
+            static_cast<rules_char_type>(*cntrl_))
         {
             state_.increment();
+            ++cntrl_;
         }
 
-        if (!*cntrl_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*cntrl_ && !state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = sizeof(input_char_type) == 1 ?
-                "[\\x00-\x1f\x7f]" : "[\\p{Cc}]";
-
-            state_.increment();
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (*cntrl_)
         {
             std::ostringstream ss_;
 
@@ -765,6 +792,37 @@ private:
                 state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = sizeof(input_char_type) == 1 ?
+                    "[\\x00-\x1f\x7f]" : "[\\p{Cc}]";
+
+                state_.increment();
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
@@ -779,32 +837,51 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *digit_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*digit_++))
+            static_cast<rules_char_type>(*digit_))
         {
             state_.increment();
+            ++digit_;
         }
 
-        if (!*digit_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*digit_ && !state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = sizeof(input_char_type) == 1 ?
-                "[0-9]" : "[\\p{Nd}]";
-
-            state_.increment();
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (*digit_)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = sizeof(input_char_type) == 1 ?
+                    "[0-9]" : "[\\p{Nd}]";
+
+                state_.increment();
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
@@ -819,32 +896,51 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *graph_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*graph_++))
+            static_cast<rules_char_type>(*graph_))
         {
             state_.increment();
+            ++graph_;
         }
 
-        if (!*graph_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*graph_ && !state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = sizeof(input_char_type) == 1 ?
-                "[\x21-\x7e]" : "[^\\p{Z}\\p{C}]";
-
-            state_.increment();
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (*graph_)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = sizeof(input_char_type) == 1 ?
+                    "[\x21-\x7e]" : "[^\\p{Z}\\p{C}]";
+
+                state_.increment();
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
@@ -859,33 +955,52 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *lower_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*lower_++))
+            static_cast<rules_char_type>(*lower_))
         {
             state_.increment();
+            ++lower_;
         }
 
-        if (!*lower_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*lower_ && !state_.eos() && *state_._curr == ']')
-        {
-            std::string str_ = sizeof(input_char_type) == 1 ?
-                create_lower(state_._locale) :
-                std::string("[\\p{Ll}]");
-
-            state_.increment();
-            insert_charset(str_.c_str(), state_, token_, negate_);
-        }
-        else
+        if (*lower_)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                std::string str_ = sizeof(input_char_type) == 1 ?
+                    create_lower(state_._locale) :
+                    std::string("[\\p{Ll}]");
+
+                state_.increment();
+                insert_charset(str_.c_str(), state_, token_, negate_);
+            }
         }
     }
 
@@ -910,7 +1025,8 @@ private:
     static void print_punct(state_type &state_, string_token &token_,
         const bool negate_)
     {
-        bool print_ = true;
+        enum {unknown, print, punct};
+        std::size_t type_ = unknown;
 
         state_.increment();
 
@@ -931,6 +1047,7 @@ private:
                         if (!state_.eos() && *state_._curr == 't')
                         {
                             state_.increment();
+                            type_ = print;
                         }
                     }
                 }
@@ -950,48 +1067,66 @@ private:
                         if (!state_.eos() && *state_._curr == 't')
                         {
                             state_.increment();
-                            print_ = false;
+                            type_ = punct;
                         }
                     }
                 }
             }
         }
 
-        if (!state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = 0;
-
-            state_.increment();
-
-            if (print_)
-            {
-                // print
-                str_ = sizeof(input_char_type) == 1 ?
-                    "[\x20-\x7e]" : "[\\p{C}]";
-            }
-            else
-            {
-                // punct
-                str_ = sizeof(input_char_type) == 1 ?
-                    "[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]" :
-                    "[\\p{P}\\p{S}]";
-            }
-
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (type_ == unknown)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = 0;
+
+                state_.increment();
+
+                if (type_ == print)
+                {
+                    // print
+                    str_ = sizeof(input_char_type) == 1 ?
+                        "[\x20-\x7e]" : "[\\p{C}]";
+                }
+                else
+                {
+                    // punct
+                    str_ = sizeof(input_char_type) == 1 ?
+                        "[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]" :
+                        "[\\p{P}\\p{S}]";
+                }
+
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
@@ -1006,32 +1141,51 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *space_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*space_++))
+            static_cast<rules_char_type>(*space_))
         {
             state_.increment();
+            ++space_;
         }
 
-        if (!*space_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*space_ && !state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = sizeof(input_char_type) == 1 ?
-                "[ \t\r\n\v\f]" : "[\\p{Z}\t\r\n\v\f]";
-
-            state_.increment();
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (*space_)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = sizeof(input_char_type) == 1 ?
+                    "[ \t\r\n\v\f]" : "[\\p{Z}\t\r\n\v\f]";
+
+                state_.increment();
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
@@ -1046,33 +1200,52 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *upper_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*upper_++))
+            static_cast<rules_char_type>(*upper_))
         {
             state_.increment();
+            ++upper_;
         }
 
-        if (!*upper_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*upper_ && !state_.eos() && *state_._curr == ']')
-        {
-            std::string str_ = sizeof(input_char_type) == 1 ?
-                create_upper(state_._locale) :
-                std::string("[\\p{Lu}]");
-
-            state_.increment();
-            insert_charset(str_.c_str(), state_, token_, negate_);
-        }
-        else
+        if (*upper_)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                std::string str_ = sizeof(input_char_type) == 1 ?
+                    create_upper(state_._locale) :
+                    std::string("[\\p{Lu}]");
+
+                state_.increment();
+                insert_charset(str_.c_str(), state_, token_, negate_);
+            }
         }
     }
 
@@ -1104,31 +1277,50 @@ private:
         // Casts to prevent warnings (VC++ 2012)
         while (!state_.eos() && *xdigit_ &&
             static_cast<rules_char_type>(*state_._curr) ==
-            static_cast<rules_char_type>(*xdigit_++))
+            static_cast<rules_char_type>(*xdigit_))
         {
             state_.increment();
+            ++xdigit_;
         }
 
-        if (!*xdigit_ && !state_.eos() && *state_._curr == ':')
-        {
-            state_.increment();
-        }
-
-        if (!*xdigit_ && !state_.eos() && *state_._curr == ']')
-        {
-            const char *str_ = "[0-9A-Fa-f]";
-
-            state_.increment();
-            insert_charset(str_, state_, token_, negate_);
-        }
-        else
+        if (*xdigit_)
         {
             std::ostringstream ss_;
 
-            ss_ << "Unknown POSIX charset at index " << state_.index() <<
-                " in ";
+            ss_ << "Unknown POSIX charset at index " <<
+                state_.index() << " in ";
             state_.error(ss_);
             throw runtime_error(ss_.str());
+        }
+        else
+        {
+            bool unterminated_ = state_.eos() ||
+                *state_._curr != ':';
+
+            if (!unterminated_)
+            {
+                state_.increment();
+                unterminated_ = state_.eos() ||
+                    *state_._curr != ']';
+            }
+
+            if (unterminated_)
+            {
+                std::ostringstream ss_;
+
+                // Pointless returning index if at end of string
+                ss_ << "Unexpected end of regex (unterminated POSIX "
+                    "charset) in ";
+                state_.error(ss_);
+                throw runtime_error(ss_.str());
+            }
+            else
+            {
+                const char *str_ = "[0-9A-Fa-f]";
+
+                state_.increment();
+                insert_charset(str_, state_, token_, negate_);
+            }
         }
     }
 
