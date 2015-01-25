@@ -1,5 +1,5 @@
 // iteration_node.hpp
-// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2015 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,8 +24,8 @@ public:
     typedef typename node::node_type node_type;
     typedef typename node::node_vector node_vector;
 
-    basic_iteration_node(basic_node<id_type> *next_, const bool greedy_) :
-        basic_node<id_type>(true),
+    basic_iteration_node(node *next_, const bool greedy_) :
+        node(true),
         _next(next_),
         _greedy(greedy_)
     {
@@ -67,7 +67,7 @@ public:
 
 private:
     // Not owner of this pointer...
-    basic_node<id_type> *_next;
+    node *_next;
     bool _greedy;
 
     virtual void copy_node(node_ptr_vector &node_ptr_vector_,
@@ -76,7 +76,7 @@ private:
     {
         if (perform_op_stack_.top())
         {
-            basic_node<id_type> *ptr_ = new_node_stack_.top();
+            node *ptr_ = new_node_stack_.top();
 
             node_ptr_vector_->push_back
                 (static_cast<basic_iteration_node<id_type> *>(0));

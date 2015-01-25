@@ -1,5 +1,5 @@
 // selection_node.hpp
-// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2015 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,9 +23,8 @@ public:
     typedef typename node::node_stack node_stack;
     typedef typename node::node_type node_type;
 
-    basic_selection_node(basic_node<id_type> *left_,
-        basic_node<id_type> *right_) :
-        basic_node<id_type>(left_->nullable() || right_->nullable()),
+    basic_selection_node(node *left_, node *right_) :
+        node(left_->nullable() || right_->nullable()),
         _left(left_),
         _right(right_)
     {
@@ -67,8 +66,8 @@ public:
 
 private:
     // Not owner of these pointers...
-    basic_node<id_type> *_left;
-    basic_node<id_type> *_right;
+    node *_left;
+    node *_right;
 
     virtual void copy_node(node_ptr_vector &node_ptr_vector_,
         node_stack &new_node_stack_, bool_stack &perform_op_stack_,
@@ -76,11 +75,11 @@ private:
     {
         if (perform_op_stack_.top())
         {
-            basic_node<id_type> *rhs_ = new_node_stack_.top();
+            node *rhs_ = new_node_stack_.top();
 
             new_node_stack_.pop();
 
-            basic_node<id_type> *lhs_ = new_node_stack_.top();
+            node *lhs_ = new_node_stack_.top();
 
             node_ptr_vector_->push_back
                 (static_cast<basic_selection_node *>(0));

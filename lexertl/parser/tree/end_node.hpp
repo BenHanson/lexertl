@@ -1,5 +1,5 @@
 // end_node.hpp
-// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2015 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,7 +28,7 @@ public:
     basic_end_node(const id_type id_, const id_type user_id_,
         const id_type next_dfa_, const id_type push_dfa_,
         const bool pop_dfa_) :
-        basic_node<id_type>(false),
+        node(false),
         _id(id_),
         _user_id(user_id_),
         _next_dfa(next_dfa_),
@@ -36,8 +36,8 @@ public:
         _pop_dfa(pop_dfa_),
         _followpos()
     {
-        basic_node<id_type>::_firstpos.push_back(this);
-        basic_node<id_type>::_lastpos.push_back(this);
+        node::_firstpos.push_back(this);
+        node::_lastpos.push_back(this);
     }
 
     virtual ~basic_end_node()

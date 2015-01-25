@@ -1,5 +1,5 @@
 // node.hpp
-// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2015 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,11 +24,11 @@ public:
     enum node_type {LEAF, SEQUENCE, SELECTION, ITERATION, END};
 
     typedef std::stack<bool> bool_stack;
-    typedef std::stack<basic_node<id_type> *> node_stack;
+    typedef std::stack<basic_node *> node_stack;
     // stack and vector not owner of node pointers
-    typedef std::stack<const basic_node<id_type> *> const_node_stack;
-    typedef std::vector<basic_node<id_type> *> node_vector;
-    typedef ptr_vector<basic_node<id_type> > node_ptr_vector;
+    typedef std::stack<const basic_node *> const_node_stack;
+    typedef std::vector<basic_node *> node_vector;
+    typedef ptr_vector<basic_node> node_ptr_vector;
 
     basic_node() :
         _nullable(false),

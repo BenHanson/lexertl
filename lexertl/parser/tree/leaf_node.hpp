@@ -1,5 +1,5 @@
 // leaf_node.hpp
-// Copyright (c) 2005-2014 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2015 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,7 +27,7 @@ public:
     typedef typename node::node_vector node_vector;
 
     basic_leaf_node(const id_type token_, const bool greedy_) :
-        basic_node<id_type>(token_ == node::null_token()),
+        node(token_ == node::null_token()),
         _token(token_),
         _set_greedy(!greedy_),
         _greedy(greedy_),
