@@ -112,6 +112,8 @@ struct basic_re_tokeniser_state
 
     inline void error(std::ostringstream &ss_)
     {
+        ss_ << " in ";
+
         if (_macro_name)
         {
             ss_ << "MACRO '";

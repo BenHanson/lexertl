@@ -440,13 +440,11 @@ private:
     void eol(token_stack &, id_type &nl_id_)
 #endif
     {
-        // Done in two parts for VC6.
         const string_token nl_('\n');
+        const id_type temp_nl_id_ = lookup(nl_);
 
         assert(handle_->top()->_type == EOL &&
             handle_->size() == 1);
-
-        const id_type temp_nl_id_ = lookup(nl_);
 
         if (temp_nl_id_ != static_cast<id_type>(~0))
         {

@@ -59,7 +59,7 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '\"') in ";
+                ss_ << "Unexpected end of regex (missing '\"')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -69,7 +69,7 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing ')') in ";
+                ss_ << "Unexpected end of regex (missing ')')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -110,8 +110,7 @@ public:
                             std::ostringstream ss_;
 
                             ss_ << "Number of open parenthesis < 0 "
-                                "at index " << state_.index() - 1 <<
-                                " in ";
+                                "at index " << state_.index() - 1;
                             state_.error(ss_);
                             throw runtime_error(ss_.str());
                         }
@@ -217,7 +216,7 @@ public:
                     {
                         std::ostringstream ss_;
 
-                        ss_ << "Lookahead ('/') is not supported yet in ";
+                        ss_ << "Lookahead ('/') is not supported yet";
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                         break;
@@ -286,7 +285,7 @@ private:
 
                 // Pointless returning index if at end of string
                 ss_ << "Unexpected end of regex "
-                    "(unterminated comment) in ";
+                    "(unterminated comment)";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -334,7 +333,7 @@ private:
 
                         // Pointless returning index if at end of string
                         ss_ << "Unexpected end of regex (unterminated " <<
-                            "C style comment) in ";
+                            "C style comment)";
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -417,7 +416,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Unknown option at index " <<
-                            state_.index() - 1 << " in ";
+                            state_.index() - 1;
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -462,7 +461,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}') in ";
+            ss_ << "Unexpected end of regex (missing '}')";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -475,7 +474,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "CHARSET must precede {-} at index " <<
-                    state_.index() - 1 << " in ";
+                    state_.index() - 1;
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -489,7 +488,7 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '}') in ";
+                ss_ << "Unexpected end of regex (missing '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -498,8 +497,7 @@ private:
             {
                 std::ostringstream ss_;
 
-                ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                    " in ";
+                ss_ << "Missing '}' at index " << state_.index() - 1;
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -544,7 +542,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}') in ";
+            ss_ << "Unexpected end of regex (missing '}')";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -562,7 +560,7 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '}') in ";
+                ss_ << "Unexpected end of regex (missing '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -588,8 +586,7 @@ private:
                 {
                     std::ostringstream ss_;
 
-                    ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                        " in ";
+                    ss_ << "Missing '}' at index " << state_.index() - 1;
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -609,8 +606,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex (missing '}') "
-                        "in ";
+                    ss_ << "Unexpected end of regex (missing '}')";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -635,8 +631,7 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                " in ";
+            ss_ << "Missing '}' at index " << state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -651,7 +646,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Cannot have exactly zero repeats preceding index " <<
-                    state_.index() << " in ";
+                    state_.index();
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -661,7 +656,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Max less than min preceding index " <<
-                    state_.index() << " in ";
+                    state_.index();
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -714,8 +709,7 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Invalid MACRO name at index " << state_.index() - 1 <<
-                " in ";
+            ss_ << "Invalid MACRO name at index " << state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -731,7 +725,7 @@ private:
 
                 // Pointless returning index if at end of string
                 ss_ << "Unexpected end of regex " <<
-                    "(missing '}') in ";
+                    "(missing '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -742,8 +736,7 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Missing '}' at index " << state_.index() - 1 <<
-                " in ";
+            ss_ << "Missing '}' at index " << state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }

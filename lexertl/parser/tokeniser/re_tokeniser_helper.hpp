@@ -49,7 +49,7 @@ public:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following '\\' in ";
+            ss_ << "Unexpected end of regex following '\\'";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -81,7 +81,7 @@ public:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following '[' in ";
+            ss_ << "Unexpected end of regex following '['";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -97,7 +97,7 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex following '^' in ";
+                ss_ << "Unexpected end of regex following '^'";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -146,7 +146,7 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing ']') in ";
+                ss_ << "Unexpected end of regex (missing ']')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -187,7 +187,7 @@ public:
             std::ostringstream ss_;
 
             ss_ << "Empty charsets not allowed preceding index " <<
-                state_.index() << " in ";
+                state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -546,26 +546,13 @@ private:
                     xdigit(state_, token_, negate_);
                     break;
                 default:
-                {
-                    std::ostringstream ss_;
-
-                    ss_ << "Unknown POSIX charset at index " <<
-                        state_.index() << " in ";
-                    state_.error(ss_);
-                    throw runtime_error(ss_.str());
+                    unknown_posix(state_);
                     break;
-                }
             }
         }
         else
         {
-            std::ostringstream ss_;
-
-            // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (unterminated POSIX charset) " <<
-                "in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unterminated_posix(state_);
         }
     }
 
@@ -619,58 +606,30 @@ private:
 
         if (type_ == unknown)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            std::string str_;
 
-            if (!unterminated_)
+            check_posix_termination(state_);
+
+            if (type_ == alnum)
             {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
+                // alnum
+                str_ = sizeof(input_char_type) == 1 ?
+                    make_alnum(state_._locale) :
+                    std::string("[\\p{Ll}\\p{Lu}\\p{Nd}]");
             }
             else
             {
-                std::string str_;
-
-                state_.increment();
-
-                if (type_ == alnum)
-                {
-                    // alnum
-                    str_ = sizeof(input_char_type) == 1 ?
-                        make_alnum(state_._locale) :
-                        std::string("[\\p{Ll}\\p{Lu}\\p{Nd}]");
-                }
-                else
-                {
-                    // alpha
-                    str_ = sizeof(input_char_type) == 1 ?
-                        make_alpha(state_._locale) :
-                        std::string("[\\p{Ll}\\p{Lu}]");
-                }
-
-                insert_charset(str_.c_str(), state_, token_, negate_);
+                // alpha
+                str_ = sizeof(input_char_type) == 1 ?
+                    make_alpha(state_._locale) :
+                    std::string("[\\p{Ll}\\p{Lu}]");
             }
+
+            insert_charset(str_.c_str(), state_, token_, negate_);
         }
     }
 
@@ -727,43 +686,15 @@ private:
 
         if (*blank_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = sizeof(input_char_type) == 1 ?
+                "[ \t]" : "[\\p{Zs}\t]";
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                const char *str_ = sizeof(input_char_type) == 1 ?
-                    "[ \t]" : "[\\p{Zs}\t]";
-
-                state_.increment();
-                insert_charset(str_, state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_, state_, token_, negate_);
         }
     }
 
@@ -786,43 +717,15 @@ private:
 
         if (*cntrl_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = sizeof(input_char_type) == 1 ?
+                "[\\x00-\x1f\x7f]" : "[\\p{Cc}]";
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                const char *str_ = sizeof(input_char_type) == 1 ?
-                    "[\\x00-\x1f\x7f]" : "[\\p{Cc}]";
-
-                state_.increment();
-                insert_charset(str_, state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_, state_, token_, negate_);
         }
     }
 
@@ -845,43 +748,15 @@ private:
 
         if (*digit_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = sizeof(input_char_type) == 1 ?
+                "[0-9]" : "[\\p{Nd}]";
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                const char *str_ = sizeof(input_char_type) == 1 ?
-                    "[0-9]" : "[\\p{Nd}]";
-
-                state_.increment();
-                insert_charset(str_, state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_, state_, token_, negate_);
         }
     }
 
@@ -904,43 +779,15 @@ private:
 
         if (*graph_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = sizeof(input_char_type) == 1 ?
+                "[\x21-\x7e]" : "[^\\p{Z}\\p{C}]";
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                const char *str_ = sizeof(input_char_type) == 1 ?
-                    "[\x21-\x7e]" : "[^\\p{Z}\\p{C}]";
-
-                state_.increment();
-                insert_charset(str_, state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_, state_, token_, negate_);
         }
     }
 
@@ -963,44 +810,16 @@ private:
 
         if (*lower_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            std::string str_ = sizeof(input_char_type) == 1 ?
+                create_lower(state_._locale) :
+                std::string("[\\p{Ll}]");
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                std::string str_ = sizeof(input_char_type) == 1 ?
-                    create_lower(state_._locale) :
-                    std::string("[\\p{Ll}]");
-
-                state_.increment();
-                insert_charset(str_.c_str(), state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_.c_str(), state_, token_, negate_);
         }
     }
 
@@ -1076,57 +895,29 @@ private:
 
         if (type_ == unknown)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = 0;
 
-            if (!unterminated_)
+            check_posix_termination(state_);
+
+            if (type_ == print)
             {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
+                // print
+                str_ = sizeof(input_char_type) == 1 ?
+                    "[\x20-\x7e]" : "[\\p{C}]";
             }
             else
             {
-                const char *str_ = 0;
-
-                state_.increment();
-
-                if (type_ == print)
-                {
-                    // print
-                    str_ = sizeof(input_char_type) == 1 ?
-                        "[\x20-\x7e]" : "[\\p{C}]";
-                }
-                else
-                {
-                    // punct
-                    str_ = sizeof(input_char_type) == 1 ?
-                        "[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]" :
-                        "[\\p{P}\\p{S}]";
-                }
-
-                insert_charset(str_, state_, token_, negate_);
+                // punct
+                str_ = sizeof(input_char_type) == 1 ?
+                    "[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~]" :
+                    "[\\p{P}\\p{S}]";
             }
+
+            insert_charset(str_, state_, token_, negate_);
         }
     }
 
@@ -1149,43 +940,15 @@ private:
 
         if (*space_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = sizeof(input_char_type) == 1 ?
+                "[ \t\r\n\v\f]" : "[\\p{Z}\t\r\n\v\f]";
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                const char *str_ = sizeof(input_char_type) == 1 ?
-                    "[ \t\r\n\v\f]" : "[\\p{Z}\t\r\n\v\f]";
-
-                state_.increment();
-                insert_charset(str_, state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_, state_, token_, negate_);
         }
     }
 
@@ -1208,44 +971,16 @@ private:
 
         if (*upper_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            std::string str_ = sizeof(input_char_type) == 1 ?
+                create_upper(state_._locale) :
+                std::string("[\\p{Lu}]");
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                std::string str_ = sizeof(input_char_type) == 1 ?
-                    create_upper(state_._locale) :
-                    std::string("[\\p{Lu}]");
-
-                state_.increment();
-                insert_charset(str_.c_str(), state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_.c_str(), state_, token_, negate_);
         }
     }
 
@@ -1285,43 +1020,74 @@ private:
 
         if (*xdigit_)
         {
-            std::ostringstream ss_;
-
-            ss_ << "Unknown POSIX charset at index " <<
-                state_.index() << " in ";
-            state_.error(ss_);
-            throw runtime_error(ss_.str());
+            unknown_posix(state_);
         }
         else
         {
-            bool unterminated_ = state_.eos() ||
-                *state_._curr != ':';
+            const char *str_ = "[0-9A-Fa-f]";
 
-            if (!unterminated_)
-            {
-                state_.increment();
-                unterminated_ = state_.eos() ||
-                    *state_._curr != ']';
-            }
-
-            if (unterminated_)
-            {
-                std::ostringstream ss_;
-
-                // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (unterminated POSIX "
-                    "charset) in ";
-                state_.error(ss_);
-                throw runtime_error(ss_.str());
-            }
-            else
-            {
-                const char *str_ = "[0-9A-Fa-f]";
-
-                state_.increment();
-                insert_charset(str_, state_, token_, negate_);
-            }
+            check_posix_termination(state_);
+            insert_charset(str_, state_, token_, negate_);
         }
+    }
+
+    template<typename state_type>
+    static void check_posix_termination(state_type &state_)
+    {
+        if (state_.eos())
+        {
+            unterminated_posix(state_);
+        }
+        
+        if (*state_._curr != ':')
+        {
+            std::ostringstream ss_;
+
+            ss_ << "Missing ':' at index " << state_.index();
+            state_.error(ss_);
+            throw runtime_error(ss_.str());
+        }
+
+        state_.increment();
+
+        if (state_.eos())
+        {
+            unterminated_posix(state_);
+        }
+
+        if (*state_._curr != ']')
+        {
+            std::ostringstream ss_;
+
+            ss_ << "Missing ']' at index " << state_.index();
+            state_.error(ss_);
+            throw runtime_error(ss_.str());
+        }
+
+        state_.increment();
+    }
+
+    template<typename state_type>
+    static void unterminated_posix(state_type &state_)
+    {
+        std::ostringstream ss_;
+
+        // Pointless returning index if at end of string
+        ss_ << "Unexpected end of regex (unterminated POSIX "
+            "charset)";
+        state_.error(ss_);
+        throw runtime_error(ss_.str());
+    }
+
+    template<typename state_type>
+    static void unknown_posix(state_type &state_)
+    {
+        std::ostringstream ss_;
+
+        ss_ << "Unknown POSIX charset at index " <<
+            state_.index();
+        state_.error(ss_);
+        throw runtime_error(ss_.str());
     }
 
     template<typename state_type>
@@ -1400,7 +1166,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\p in ";
+            ss_ << "Unexpected end of regex following \\p";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -1410,7 +1176,7 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Syntax error following \\p at index " <<
-                state_.index() << " in ";
+                state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -1422,7 +1188,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\p{ in ";
+            ss_ << "Unexpected end of regex following \\p{";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -1437,8 +1203,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{C "
-                        "in ";
+                    ss_ << "Unexpected end of regex following \\p{C";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1471,7 +1236,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{C at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1486,8 +1251,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{L "
-                        " in ";
+                    ss_ << "Unexpected end of regex following \\p{L";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1526,7 +1290,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{L at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1541,8 +1305,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{M "
-                        " in ";
+                    ss_ << "Unexpected end of regex following \\p{M";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1569,7 +1332,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{M at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1584,8 +1347,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{N "
-                        " in ";
+                    ss_ << "Unexpected end of regex following \\p{N";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1612,7 +1374,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{N at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1627,8 +1389,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{P "
-                        " in ";
+                    ss_ << "Unexpected end of regex following \\p{P";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1672,7 +1433,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{P at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1687,8 +1448,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{S "
-                        " in ";
+                    ss_ << "Unexpected end of regex following \\p{S";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1719,7 +1479,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{S at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1734,8 +1494,7 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex following \\p{Z "
-                        " in ";
+                    ss_ << "Unexpected end of regex following \\p{Z";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -1762,7 +1521,7 @@ private:
                         std::ostringstream ss_;
 
                         ss_ << "Syntax error following \\p{Z at index " <<
-                            state_.index() << " in ";
+                            state_.index();
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -1774,7 +1533,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Syntax error following \\p{ at index " <<
-                    state_.index() << " in ";
+                    state_.index();
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -1784,8 +1543,7 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Missing } at index " << state_.index() <<
-                " in ";
+            ss_ << "Missing } at index " << state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2388,8 +2146,7 @@ private:
 
             ss_ << "Escape \\" << std::oct << oct_ <<
                 " is too big for the state machine char type "
-                "preceding index " << std::dec << state_.index() <<
-                " in ";
+                "preceding index " << std::dec << state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2411,7 +2168,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\c in ";
+            ss_ << "Unexpected end of regex following \\c";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2435,7 +2192,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Invalid control char at index " <<
-                    state_.index() - 1 << " in ";
+                    state_.index() - 1;
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -2458,7 +2215,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following \\x in ";
+            ss_ << "Unexpected end of regex following \\x";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2469,7 +2226,7 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Illegal char following \\x at index " <<
-                state_.index() - 1 << " in ";
+                state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2518,7 +2275,7 @@ private:
 
             ss_ << "Escape \\x" << std::hex << hex_ <<
                 " is too big for the state machine char type at index " <<
-                std::dec << state_.index() << " in ";
+                std::dec << state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2536,7 +2293,7 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Charset cannot form start of range preceding "
-                "index " << state_.index() - 1 << " in ";
+                "index " << state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2548,7 +2305,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex following '-' in ";
+            ss_ << "Unexpected end of regex following '-'";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2564,7 +2321,7 @@ private:
                 std::ostringstream ss_;
 
                 ss_ << "Charset cannot form end of range preceding index "
-                    << state_.index() << " in ";
+                    << state_.index();
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -2574,7 +2331,7 @@ private:
             std::ostringstream ss_;
 
             ss_ << "POSIX char class cannot form end of range at "
-                "index " << state_.index() - 1 << " in ";
+                "index " << state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2591,7 +2348,7 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing ']') in ";
+            ss_ << "Unexpected end of regex (missing ']')";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -2609,7 +2366,7 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Invalid range in charset preceding index " <<
-                state_.index() - 1 << " in ";
+                state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
