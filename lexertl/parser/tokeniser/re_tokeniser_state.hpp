@@ -110,6 +110,11 @@ struct basic_re_tokeniser_state
         return _curr >= _end;
     }
 
+    inline void unexpected_end(std::ostringstream &ss_)
+    {
+        ss_ << "Unexpected end of regex";
+    }
+
     inline void error(std::ostringstream &ss_)
     {
         ss_ << " in ";

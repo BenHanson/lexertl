@@ -59,7 +59,8 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '\"')";
+                state_.unexpected_end(ss_);
+                ss_ << " (missing '\"')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -69,7 +70,8 @@ public:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing ')')";
+                state_.unexpected_end(ss_);
+                ss_ << " (missing ')')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -284,8 +286,8 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex "
-                    "(unterminated comment)";
+                state_.unexpected_end(ss_);
+                ss_ << " (unterminated comment)";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -332,8 +334,8 @@ private:
                         std::ostringstream ss_;
 
                         // Pointless returning index if at end of string
-                        ss_ << "Unexpected end of regex (unterminated " <<
-                            "C style comment)";
+                        state_.unexpected_end(ss_);
+                        ss_ << " (unterminated C style comment)";
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
@@ -461,7 +463,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}')";
+            state_.unexpected_end(ss_);
+            ss_ << " (missing '}')";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -488,7 +491,8 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '}')";
+                state_.unexpected_end(ss_);
+                ss_ << " (missing '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -542,7 +546,8 @@ private:
             std::ostringstream ss_;
 
             // Pointless returning index if at end of string
-            ss_ << "Unexpected end of regex (missing '}')";
+            state_.unexpected_end(ss_);
+            ss_ << " (missing '}')";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -560,7 +565,8 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex (missing '}')";
+                state_.unexpected_end(ss_);
+                ss_ << " (missing '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -606,7 +612,8 @@ private:
                     std::ostringstream ss_;
 
                     // Pointless returning index if at end of string
-                    ss_ << "Unexpected end of regex (missing '}')";
+                    state_.unexpected_end(ss_);
+                    ss_ << " (missing '}')";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -724,8 +731,8 @@ private:
                 std::ostringstream ss_;
 
                 // Pointless returning index if at end of string
-                ss_ << "Unexpected end of regex " <<
-                    "(missing '}')";
+                state_.unexpected_end(ss_);
+                ss_ << " (missing '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
