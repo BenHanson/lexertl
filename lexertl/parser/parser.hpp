@@ -195,12 +195,12 @@ public:
 
     static id_type bol_token()
     {
-        return static_cast<id_type>(~1);
+        return ~static_cast<id_type>(1);
     }
 
     static id_type eol_token()
     {
-        return static_cast<id_type>(~2);
+        return ~static_cast<id_type>(2);
     }
 
 private:
@@ -446,7 +446,7 @@ private:
         assert(handle_->top()->_type == EOL &&
             handle_->size() == 1);
 
-        if (temp_nl_id_ != static_cast<id_type>(~0))
+        if (temp_nl_id_ != ~static_cast<id_type>(0))
         {
             nl_id_ = temp_nl_id_;
         }

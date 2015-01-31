@@ -173,7 +173,7 @@ public:
 
         for (std::size_t i_ = block_; iter_ != end_; ++iter_, ++i_)
         {
-            const bool bits_ = (*iter_ & (static_cast<T>(~0) << bit_)) != 0;
+            const bool bits_ = (*iter_ & (~static_cast<T>(0) << bit_)) != 0;
 
             if (bits_)
             {
@@ -205,7 +205,7 @@ public:
 
     std::size_t npos() const
     {
-        return static_cast<std::size_t>(~0);
+        return ~static_cast<std::size_t>(0);
     }
 
 private:
