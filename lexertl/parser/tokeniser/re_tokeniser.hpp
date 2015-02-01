@@ -46,11 +46,16 @@ public:
                 eos_ = state_.next(ch_);
             }
 
+            if (eos_) break;
+
             // (?# ...)
             skipped_ = comment(eos_, ch_, state_);
+
+            if (eos_) break;
+
             // skip_ws set
             skipped_ |= skip(eos_, ch_, state_);
-        } while (skipped_);
+        } while (!eos_ && skipped_);
 
         if (eos_)
         {
@@ -258,9 +263,9 @@ private:
     {
         bool skipped_ = false;
 
-        if (!eos_ && !state_._in_string && ch_ == '(' &&
-            !state_.eos() && *state_._curr == '?' &&
-            state_._curr + 1 < state_._end && *(state_._curr + 1) == '#')
+        if (!state_._in_string && ch_ == '(' && !state_.eos() &&
+            *state_._curr == '?' && state_._curr + 1 < state_._end &&
+            *(state_._curr + 1) == '#')
         {
             std::size_t paren_count_ = 1;
 
@@ -306,7 +311,7 @@ private:
     {
         bool skipped_ = false;
 
-        if (!eos_ && (state_._flags & skip_ws) && !state_._in_string)
+        if ((state_._flags & skip_ws) && !state_._in_string)
         {
             bool c_comment_ = false;
             bool skip_ws_ = false;
@@ -352,7 +357,7 @@ private:
                     eos_ = state_.next(ch_);
                     skipped_ = true;
                 }
-            } while (c_comment_ || skip_ws_);
+            } while (!eos_ && (c_comment_ || skip_ws_));
         }
 
         return skipped_;
@@ -476,7 +481,8 @@ private:
             {
                 std::ostringstream ss_;
 
-                ss_ << "CHARSET must precede {-} at index " <<
+                ss_ << "CHARSET must precede {" <<
+                    state_._curr << "} at index " <<
                     state_.index() - 1;
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
@@ -547,7 +553,7 @@ private:
 
             // Pointless returning index if at end of string
             state_.unexpected_end(ss_);
-            ss_ << " (missing '}')";
+            ss_ << " (missing repeat terminator '}')";
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -566,7 +572,7 @@ private:
 
                 // Pointless returning index if at end of string
                 state_.unexpected_end(ss_);
-                ss_ << " (missing '}')";
+                ss_ << " (missing repeat terminator '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -592,7 +598,8 @@ private:
                 {
                     std::ostringstream ss_;
 
-                    ss_ << "Missing '}' at index " << state_.index() - 1;
+                    ss_ << "Missing repeat terminator '}' at index " <<
+                        state_.index() - 1;
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -613,7 +620,7 @@ private:
 
                     // Pointless returning index if at end of string
                     state_.unexpected_end(ss_);
-                    ss_ << " (missing '}')";
+                    ss_ << " (missing repeat terminator '}')";
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }
@@ -638,7 +645,8 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Missing '}' at index " << state_.index() - 1;
+            ss_ << "Missing repeat terminator '}' at index " <<
+                state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }
@@ -732,7 +740,7 @@ private:
 
                 // Pointless returning index if at end of string
                 state_.unexpected_end(ss_);
-                ss_ << " (missing '}')";
+                ss_ << " (missing MACRO name terminator '}')";
                 state_.error(ss_);
                 throw runtime_error(ss_.str());
             }
@@ -743,7 +751,8 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Missing '}' at index " << state_.index() - 1;
+            ss_ << "Missing MACRO name terminator '}' at index " <<
+                state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
         }

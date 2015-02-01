@@ -190,7 +190,7 @@ public:
         {
             std::ostringstream ss_;
 
-            ss_ << "Empty charsets not allowed preceding index " <<
+            ss_ << "Empty charset not allowed preceding index " <<
                 state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
@@ -503,7 +503,11 @@ private:
             state_.increment();
         }
 
-        if (!state_.eos())
+        if (state_.eos())
+        {
+            unterminated_posix(state_);
+        }
+        else
         {
             switch (*state_._curr)
             {
@@ -553,10 +557,6 @@ private:
                     unknown_posix(state_);
                     break;
             }
-        }
-        else
-        {
-            unterminated_posix(state_);
         }
     }
 
@@ -2289,7 +2289,8 @@ private:
             std::ostringstream ss_;
 
             ss_ << "Escape \\x" << std::hex << hex_ <<
-                " is too big for the state machine char type at index " <<
+                " is too big for the state machine char type " <<
+                "preceding index " <<
                 std::dec << state_.index();
             state_.error(ss_);
             throw runtime_error(ss_.str());
@@ -2382,7 +2383,7 @@ private:
         {
             std::ostringstream ss_;
 
-            ss_ << "Invalid range in charset preceding index " <<
+            ss_ << "Max less than Min in charset range preceding index " <<
                 state_.index() - 1;
             state_.error(ss_);
             throw runtime_error(ss_.str());
