@@ -77,6 +77,7 @@ std::string out_var_type(const std::string &in_)
         {"DWORD *", "VTS_PUI4"},
         {"LONGLONG *", "VTS_PI8"},
         {"ULONGLONG *", "VTS_PUI8"},
+        {"unsigned int", "VTS_UI4"},
         {"NULL", "VTS_NONE"}, {0, 0}};
     std::string out_;
     const type_conv *ptr_ = list_;
@@ -394,18 +395,18 @@ void build_sm(lexertl::state_machine &sm_)
     rules_.push("PROP_START_ID", "\\[id\\(", sm_.skip(), "PROP_ID");
     rules_.push("PROP_ID", "[^)]+", eID, "PROP_END_ID");
     rules_.push("PROP_END_ID", "\\)[^\\]]*]", sm_.skip(), "PROP_TYPE");
-    rules_.push("PROP_TYPE", "[_a-zA-Z]+", eType, "PROP_NAME");
+    rules_.push("PROP_TYPE", "(unsigned[ \t]+)?[_a-zA-Z]+", eType, "PROP_NAME");
     rules_.push("PROP_NAME", "[a-zA-Z0-9]+", eName, "PROP_PAREN");
     rules_.push("PROP_PAREN", ";", eEntry, "PROP_START_ID");
 
     rules_.push("METHOD_START_ID", "\\[id\\(", sm_.skip(), "METHOD_ID");
     rules_.push("METHOD_ID", "[^)]+", eID, "METHOD_END_ID");
     rules_.push("METHOD_END_ID", "\\)[^\\]]*]", sm_.skip(), "METHOD_TYPE");
-    rules_.push("METHOD_TYPE", "[_a-zA-Z]+", eType, "METHOD_NAME");
+    rules_.push("METHOD_TYPE", "(unsigned[ \t]+)?[_a-zA-Z]+", eType, "METHOD_NAME");
     rules_.push("METHOD_NAME", "[a-zA-Z0-9]+", eName, "METHOD_PARAMS");
     rules_.push("METHOD_PARAMS", "\\(", sm_.skip(), "PARAM_TYPE");
 
-    rules_.push("PARAM_TYPE", "[_a-zA-Z]+\\**", eParamType, "PARAM_NAME");
+    rules_.push("PARAM_TYPE", "(unsigned[ \t]+)?[_a-zA-Z]+\\**", eParamType, "PARAM_NAME");
     rules_.push("PARAM_NAME", "[_a-zA-Z]+", eParamName, "END_PARAM_NAME");
     rules_.push("END_PARAM_NAME", ",", sm_.skip(), "PARAM_TYPE");
     rules_.push("PARAM_TYPE,END_PARAM_NAME", "\\);", eEntry, "METHOD_START_ID");
