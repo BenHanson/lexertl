@@ -109,7 +109,7 @@ public:
         bool chset_ = false;
         typename string_token::char_type prev_ = 0;
 
-        while (ch_ != ']')
+        do
         {
             if (ch_ == '\\')
             {
@@ -155,7 +155,7 @@ public:
                 throw runtime_error(ss_.str());
             }
 
-            if (ch_ == '-')
+            if (ch_ == '-' && *state_._curr != ']')
             {
                 charset_range(chset_, state_, eos_, ch_, prev_,
                     token_);
@@ -179,7 +179,7 @@ public:
                     }
                 }
             }
-        }
+        } while (ch_ != ']');
 
         if (negated_)
         {

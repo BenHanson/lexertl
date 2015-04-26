@@ -146,7 +146,8 @@ protected:
 
                 for (; ranges_iter_ != ranges_end_; ++ranges_iter_)
                 {
-                    if (ranges_iter_->first == '^' ||
+                    if (ranges_iter_->first == '-' ||
+                        ranges_iter_->first == '^' ||
                         ranges_iter_->first == ']')
                     {
                         stream_ << '\\';
@@ -162,7 +163,8 @@ protected:
                             chars_ += '-';
                         }
 
-                        if (ranges_iter_->second == '^' ||
+                        if (ranges_iter_->second == '-' ||
+                            ranges_iter_->second == '^' ||
                             ranges_iter_->second == ']')
                         {
                             stream_ << '\\';
