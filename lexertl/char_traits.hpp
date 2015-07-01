@@ -32,7 +32,10 @@ struct basic_char_traits<char>
 
     static index_type max_val()
     {
-        return ~static_cast<index_type>(0);
+        // Prevent annoying warning (VC++)
+        index_type zero_ = 0;
+
+        return ~zero_;
     }
 };
 }
