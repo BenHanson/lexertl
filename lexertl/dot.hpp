@@ -26,7 +26,7 @@ class basic_dot
 public:
     typedef lexertl::basic_char_state_machine<char_type, id_type, is_dfa>
         char_state_machine;
-    typedef lexertl::basic_rules<char_type, id_type> rules;
+    typedef lexertl::basic_rules<char_type, char_type, id_type> rules;
     typedef std::basic_ostream<char_type> ostream;
     typedef std::basic_string<char_type> string;
 
