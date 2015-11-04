@@ -46,11 +46,8 @@ public:
 
     virtual void append_followpos(const node_vector &followpos_)
     {
-        for (typename node_vector::const_iterator iter_ = followpos_.begin(),
-            end_ = followpos_.end(); iter_ != end_; ++iter_)
-        {
-            _followpos.push_back(*iter_);
-        }
+        _followpos.insert(_followpos.end(),
+            followpos_.begin(), followpos_.end());
     }
 
     virtual node_type what_type() const

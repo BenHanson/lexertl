@@ -96,7 +96,7 @@ public:
                 // All other meta characters lose their special meaning
                 // inside a string.
                 token_._type = CHARSET;
-                token_._str.insert(typename string_token::range(ch_, ch_));
+                add_char(ch_, state_, token_._str);
             }
             else
             {
@@ -230,28 +230,7 @@ public:
                     }
                     default:
                         token_._type = CHARSET;
-
-                        if (state_._flags & icase)
-                        {
-                            typename string_token::range range_(ch_, ch_);
-                            string_token folded_;
-
-                            token_._str.insert(range_);
-                            tokeniser_helper::fold(range_, state_._locale,
-                                folded_, typename tokeniser_helper::template
-                                size<sizeof(char_type)>());
-
-                            if (!folded_.empty())
-                            {
-                                token_._str.insert(folded_);
-                            }
-                        }
-                        else
-                        {
-                            token_._str.insert(typename string_token::range
-                                (ch_, ch_));
-                        }
-
+                        add_char(ch_, state_, token_._str);
                         break;
                 }
             }
@@ -456,7 +435,32 @@ private:
         }
         else
         {
-            token_.insert(typename string_token::range(ch_, ch_));
+            add_char(ch_, state_, token_);
+        }
+    }
+
+    static void add_char(const char_type ch_, const state &state_,
+        string_token &token_)
+    {
+        typename string_token::range range_(ch_, ch_);
+
+        if (state_._flags & icase)
+        {
+            string_token folded_;
+
+            token_.insert(range_);
+            tokeniser_helper::fold(range_, state_._locale,
+                folded_, typename tokeniser_helper::template
+                size<sizeof(char_type)>());
+
+            if (!folded_.empty())
+            {
+                token_.insert(folded_);
+            }
+        }
+        else
+        {
+            token_.insert(range_);
         }
     }
 
