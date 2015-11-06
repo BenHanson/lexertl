@@ -168,14 +168,14 @@ public:
         if ((flags_ & match_zero_len) == 0)
         {
             const typename node::node_vector &firstpos_ = root_->firstpos();
-            typename node::node_vector::const_iterator iter_ =
+            typename node::node_vector::const_iterator i_ =
                 firstpos_.begin();
-            typename node::node_vector::const_iterator end_ =
+            typename node::node_vector::const_iterator e_ =
                 firstpos_.end();
 
-            for (; iter_ != end_; ++iter_)
+            for (; i_ != e_; ++i_)
             {
-                const node *node_ = *iter_;
+                const node *node_ = *i_;
 
                 if (node_->end_state())
                 {
@@ -955,9 +955,9 @@ private:
 
                     for (std::size_t i_ = 1; i_ < count_; ++i_)
                     {
-                        node *temp_ = prev_->copy(_node_ptr_vector);
+                        node *node_ = prev_->copy(_node_ptr_vector);
 
-                        curr_ = temp_;
+                        curr_ = node_;
                         _tree_node_stack.push(static_cast<node *>(0));
                         _tree_node_stack.top() = prev_;
                         sequence();

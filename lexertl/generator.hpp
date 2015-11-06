@@ -132,8 +132,8 @@ public:
         while (regex_iter_ != regex_iter_end_)
         {
             // Re-declare var, otherwise we perform an assignment..!
-            const typename rules::token_deque &regex_ = *regex_iter_;
-            node *rhs_ = parser_.parse(regex_, *id_iter_, *user_id_iter_,
+            const typename rules::token_deque &re_ = *regex_iter_;
+            node *rhs_ = parser_.parse(re_, *id_iter_, *user_id_iter_,
                 *next_dfa_iter_, *push_dfa_iter_, *pop_dfa_iter_,
                 rules_.flags(), nl_id_,
                 (rules_.features()[dfa_] & bol_bit) != 0);

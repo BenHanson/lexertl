@@ -444,11 +444,12 @@ private:
     {
         typename string_token::range range_(ch_, ch_);
 
+        token_.insert(range_);
+
         if (state_._flags & icase)
         {
             string_token folded_;
 
-            token_.insert(range_);
             tokeniser_helper::fold(range_, state_._locale,
                 folded_, typename tokeniser_helper::template
                 size<sizeof(char_type)>());
@@ -457,10 +458,6 @@ private:
             {
                 token_.insert(folded_);
             }
-        }
-        else
-        {
-            token_.insert(range_);
         }
     }
 

@@ -517,11 +517,11 @@ private:
 
                 if (iter_ == _macro_map.end())
                 {
-                    const rules_char_type *name_ = rhs_._extra.c_str();
+                    const rules_char_type *n_ = rhs_._extra.c_str();
                     std::ostringstream ss_;
 
                     ss_ << "Unknown MACRO name '";
-                    narrow(name_, ss_);
+                    narrow(n_, ss_);
                     ss_ << "'.";
                     throw runtime_error(ss_.str());
                 }
