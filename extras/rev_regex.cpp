@@ -79,15 +79,15 @@ std::string rev_regex(const std::string &rx_, const lexertl::state_machine &sm_)
 			{
 				lexertl::citerator i_(iter_->start + 1, iter_->end - 1, sm_);
 				lexertl::citerator e_;
-				std::string str_;
+				std::string s_;
 
 				for (; i_ != e_; ++i_)
 				{
-					str_ = i_->str() + str_;
+					s_ = i_->str() + s_;
 				}
 
-				str_ = '"' + str_ + '"';
-				stack_.push(token_pair((eToken)iter_->id, str_));
+				s_ = '"' + s_ + '"';
+				stack_.push(token_pair((eToken)iter_->id, s_));
 				break;
 			}
 			case eQuantifier:
@@ -131,13 +131,13 @@ std::string rev_regex(const std::string &rx_, const lexertl::state_machine &sm_)
 					throw std::runtime_error("Unbalanced parens in regex.");
 				}
 
-				std::string str_;
+				std::string s_;
 
 				reduce_stack(stack_);
-				str_ = stack_.top().second;
-				str_ += iter_->str();
+				s_ = stack_.top().second;
+				s_ += iter_->str();
 				stack_.pop();
-				stack_.top().second += str_;
+				stack_.top().second += s_;
 				stack_.top().first = eCharset;
 				--parens_;
 				break;
