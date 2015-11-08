@@ -220,5 +220,5 @@ int fail_tests()
         rules_.clear();
     }
 
-	return ret;
+    return ret;
 }

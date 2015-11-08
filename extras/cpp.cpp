@@ -32,7 +32,7 @@ static macro_pair g_macros_[] =
 {"Digit", "[0-9]"},
 {"HexDigit", "[a-fA-F0-9]"},
 {"Integer",
-	"((0[xX]{HexDigit}+)|(0{OctalDigit}*)|([1-9]{Digit}*))"},
+    "((0[xX]{HexDigit}+)|(0{OctalDigit}*)|([1-9]{Digit}*))"},
 {"ExponentStart", "[Ee][-+]"},
 {"ExponentPart", "[Ee][-+]?{Digit}+"},
 {"FractionalConstant", "({Digit}*[.]{Digit}+)|({Digit}+[.])"},
@@ -42,13 +42,13 @@ static macro_pair g_macros_[] =
 {"MSLongIntegerSuffix", "u?i64"},
 {"Backslash", "[\\\\]|\"??/\""},
 {"EscapeSequence",
-	"{Backslash}([abfnrtv?'\"]|{Backslash}|x{HexDigit}+|"
-	"{OctalDigit}{OctalDigit}?{OctalDigit}?)"},
+    "{Backslash}([abfnrtv?'\"]|{Backslash}|x{HexDigit}+|"
+    "{OctalDigit}{OctalDigit}?{OctalDigit}?)"},
 {"HexQuad", "{HexDigit}{HexDigit}{HexDigit}{HexDigit}"},
 {"UniversalChar", "{Backslash}(u{HexQuad}|U{HexQuad}{HexQuad})"},
 {"Newline", "\r\n|\n|\r"},
 {"PPSpace", "([ \t\f\v]|(\"/*\"({any}{-}[*]|{Newline}|"
-	"([*]+({any}{-}[*/]|{Newline})))*[*]+[/]))*"},
+    "([*]+({any}{-}[*/]|{Newline})))*[*]+[/]))*"},
 {"Pound", "#|\"??=\"|%:"},
 { "NonDigit", "[a-zA-Z$]|{UniversalChar}" },
 {0, 0} };
@@ -85,9 +85,9 @@ T_LONGINTLIT },
 {"thread_local", T_THREADLOCAL},
 {"(L|[uU]|u8)?R[\"][(](.|\n)*?[)][\"]", T_RAWSTRINGLIT},
 {"(L|[uU])?'({EscapeSequence}|{UniversalChar}|"
-	"{any}{-}[\n\r\\\\'])'", T_CHARLIT},
+    "{any}{-}[\n\r\\\\'])'", T_CHARLIT},
 {"(L|[uU]|u8)?[\"]({EscapeSequence}|{UniversalChar}|"
-	"{any}{-}[\n\r\\\\\"]|\\\\{Newline})*[\"]", T_STRINGLIT},
+    "{any}{-}[\n\r\\\\\"]|\\\\{Newline})*[\"]", T_STRINGLIT},
 #else
 {"alignas", T_IDENTIFIER},
 {"alignof", T_IDENTIFIER},
@@ -186,9 +186,9 @@ T_LONGINTLIT },
 {"_?_inline", T_MSEXT_INLINE},
 {"_?_asm", T_MSEXT_ASM},
 {"{Pound}{PPSpace}using{PPSpace}"
-	"<({any}{-}[\n\r>])+>", T_PP_HHEADER},
+    "<({any}{-}[\n\r>])+>", T_PP_HHEADER},
 {"{Pound}{PPSpace}(import|using){PPSpace}[\"]"
-	"({any}{-}[\n\r\"])+[\"]", T_PP_QHEADER},
+    "({any}{-}[\n\r\"])+[\"]", T_PP_QHEADER},
 #else
 {"__int8", T_IDENTIFIER},
 {"__int16", T_IDENTIFIER},
@@ -294,18 +294,18 @@ T_LONGINTLIT },
 {"\"??/\"", T_ANY_TRIGRAPH},
 
 {"L?('({EscapeSequence}|{UniversalChar}|"
-	"{any}{-}[\n\r\\\\'])+')", T_CHARLIT},
+    "{any}{-}[\n\r\\\\'])+')", T_CHARLIT},
 {"L?([\"]({EscapeSequence}|{UniversalChar}|"
-	"{any}{-}[\n\r\\\\\"]|\\\\{Newline})*[\"])", T_STRINGLIT},
+    "{any}{-}[\n\r\\\\\"]|\\\\{Newline})*[\"])", T_STRINGLIT},
 
 {"([a-zA-Z_$]|{UniversalChar})([a-zA-Z_0-9$]|"
-	"{UniversalChar})*", T_IDENTIFIER},
+    "{UniversalChar})*", T_IDENTIFIER},
 {"{Pound}{PPSpace}(include|include_next){PPSpace}"
-	"<({any}{-}[\n\r>])+>", T_PP_HHEADER},
+    "<({any}{-}[\n\r>])+>", T_PP_HHEADER},
 {"{Pound}{PPSpace}(include|include_next){PPSpace}[\"]"
-	"({any}{-}[\n\r\"])+[\"]", T_PP_QHEADER},
+    "({any}{-}[\n\r\"])+[\"]", T_PP_QHEADER},
 {"{Pound}{PPSpace}(include|include_next){PPSpace}",
-	T_PP_INCLUDE},
+    T_PP_INCLUDE},
 {"{Pound}{PPSpace}if", T_PP_IF},
 {"{Pound}{PPSpace}ifdef", T_PP_IFDEF},
 {"{Pound}{PPSpace}ifndef", T_PP_IFNDEF},
@@ -328,31 +328,31 @@ T_LONGINTLIT },
 
 void build_cpp(lexertl::rules &rules_)
 {
-	for (macro_pair *ptr_ = g_macros_; ptr_->_name; ++ptr_)
-	{
-		rules_.insert_macro(ptr_->_name, ptr_->_regex);
-	}
+    for (macro_pair *ptr_ = g_macros_; ptr_->_name; ++ptr_)
+    {
+        rules_.insert_macro(ptr_->_name, ptr_->_regex);
+    }
 
-	for (rule_pair *ptr_ = g_regexes_; ptr_->_regex; ++ptr_)
-	{
-		rules_.push(ptr_->_regex, ptr_->_id);
-	}
+    for (rule_pair *ptr_ = g_regexes_; ptr_->_regex; ++ptr_)
+    {
+        rules_.push(ptr_->_regex, ptr_->_id);
+    }
 }
 
 void build_rev_cpp(lexertl::rules &rules_)
 {
-	lexertl::state_machine rev_rx_sm_;
+    lexertl::state_machine rev_rx_sm_;
 
-	build_rev_regex_lexer(rev_rx_sm_);
+    build_rev_regex_lexer(rev_rx_sm_);
 
-	for (macro_pair *ptr_ = g_macros_; ptr_->_name; ++ptr_)
-	{
-		rules_.insert_macro(ptr_->_name,
-			rev_regex(ptr_->_regex, rev_rx_sm_).c_str());
-	}
+    for (macro_pair *ptr_ = g_macros_; ptr_->_name; ++ptr_)
+    {
+        rules_.insert_macro(ptr_->_name,
+            rev_regex(ptr_->_regex, rev_rx_sm_).c_str());
+    }
 
-	for (rule_pair *ptr_ = g_regexes_; ptr_->_regex; ++ptr_)
-	{
-		rules_.push(rev_regex(ptr_->_regex, rev_rx_sm_).c_str(), ptr_->_id);
-	}
+    for (rule_pair *ptr_ = g_regexes_; ptr_->_regex; ++ptr_)
+    {
+        rules_.push(rev_regex(ptr_->_regex, rev_rx_sm_).c_str(), ptr_->_id);
+    }
 }

@@ -232,7 +232,9 @@ void case_mapping()
             second_.first = second_.second = pair.second;
         }
         else if (pair.first == first_.second + 1 &&
-            pair.second == second_.second + 1)
+            (pair.second == second_.second + 1 ||
+            pair.second <= pair.first &&
+            pair.second == second_.second - 1))
         {
             first_.second = pair.first;
             second_.second = pair.second;
