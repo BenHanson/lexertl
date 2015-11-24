@@ -9,7 +9,7 @@ struct entry
     std::string _id;
     std::string _type;
     std::string _name;
-    std::vector<std::pair<std::string, std::string>> _params;
+    std::vector<std::pair<std::string, std::string> > _params;
 
     entry() :
         _properties(false)
