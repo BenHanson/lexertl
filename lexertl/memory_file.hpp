@@ -11,13 +11,13 @@
 
 #include <cstddef>
 
-#ifdef __unix__
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#elif defined _WIN32
-#include <windows.h>
 #endif
 
 // Only files small enough to fit into memory are supported.
@@ -30,11 +30,11 @@ public:
     basic_memory_file(const char *pathname_) :
         _data(0),
         _size(0),
-#ifdef __unix__
-        _fh(0)
-#else
+#ifdef _WIN32
         _fh(0),
         _fmh(0)
+#else
+        _fh(0)
 #endif
     {
         open(pathname_);
@@ -49,7 +49,24 @@ public:
     {
         if (_data) close();
 
-#ifdef __unix__
+#ifdef _WIN32
+        _fh = ::CreateFileA(pathname_, GENERIC_READ, FILE_SHARE_READ, 0,
+            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+        _fmh = 0;
+
+        if (_fh != INVALID_HANDLE_VALUE)
+        {
+            _fmh = ::CreateFileMapping(_fh, 0, PAGE_READONLY, 0, 0, 0);
+
+            if (_fmh != 0)
+            {
+                _data = static_cast<char_type *>(::MapViewOfFile
+                    (_fmh, FILE_MAP_READ, 0, 0, 0));
+
+                if (_data) _size = ::GetFileSize(_fh, 0) / sizeof(char_type);
+            }
+        }
+#else
         _fh = ::open(pathname_, O_RDONLY);
 
         if (_fh > -1)
@@ -71,23 +88,6 @@ public:
                 }
             }
         }
-#elif defined _WIN32
-        _fh = ::CreateFileA(pathname_, GENERIC_READ, FILE_SHARE_READ, 0,
-            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-        _fmh = 0;
-
-        if (_fh != INVALID_HANDLE_VALUE)
-        {
-            _fmh = ::CreateFileMapping(_fh, 0, PAGE_READONLY, 0, 0, 0);
-
-            if (_fmh != 0)
-            {
-                _data = static_cast<char_type *>(::MapViewOfFile
-                    (_fmh, FILE_MAP_READ, 0, 0, 0));
-
-                if (_data) _size = ::GetFileSize(_fh, 0) / sizeof(char_type);
-            }
-        }
 #endif
     }
 
@@ -103,18 +103,18 @@ public:
 
     void close()
     {
-#if defined(__unix__)
-        ::munmap(const_cast<char_type *>(_data), _size);
-        ::close(_fh);
-#elif defined(_WIN32)
+#ifdef _WIN32
         ::UnmapViewOfFile(_data);
         ::CloseHandle(_fmh);
         ::CloseHandle(_fh);
+#else
+        ::munmap(const_cast<char_type *>(_data), _size);
+        ::close(_fh);
 #endif
         _data = 0;
         _size = 0;
         _fh = 0;
-#ifndef __unix__
+#ifdef _WIN32
         _fmh = 0;
 #endif
     }
@@ -122,13 +122,11 @@ public:
 private:
     const char_type *_data;
     std::size_t _size;
-#ifdef __unix__
-    int _fh;
-#elif defined _WIN32
+#ifdef _WIN32
     HANDLE _fh;
     HANDLE _fmh;
 #else
-    #error Only Posix or Windows are supported.
+    int _fh;
 #endif
 
     // No copy construction.
