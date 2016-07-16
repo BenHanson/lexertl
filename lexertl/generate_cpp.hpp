@@ -738,7 +738,7 @@ public:
 
         if (dfas_ > 1)
         {
-            os_ << "s_[" << dfas_ << "] = {";
+            os_ << "s_[" << std::dec << dfas_ << "] = {";
         }
         else
         {
@@ -836,6 +836,8 @@ public:
 
             os_ << "};\n";
         }
+
+        os_ << std::dec;
     }
 
 protected:
