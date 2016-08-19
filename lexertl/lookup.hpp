@@ -393,10 +393,11 @@ again:
     {
         if (!lu_state_.is_eol(*curr_, bool_<(flags & eol_bit) != 0>()))
         {
-            const typename results::char_type prev_char_ = *curr_++;
+            const typename results::char_type prev_char_ = *curr_;
             const id_type state_ = lu_state_.next_char(prev_char_,
                 compressed_);
 
+            ++curr_;
             lu_state_.bol(prev_char_, bool_<(flags & bol_bit) != 0>());
 
             if (state_ == 0)

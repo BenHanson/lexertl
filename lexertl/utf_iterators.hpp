@@ -113,32 +113,53 @@ private:
         {
         case 1:
             _end = _it;
+            ++_end;
             break;
         case 2:
             _end = _it;
             ++_end;
+
+            if (!(*_end & 0x80)) break;
+
             ch_ = (ch_ << 6 & 0x7ff) | (*_end & 0x3f);
+            ++_end;
             break;
         case 3:
             _end = _it;
             ++_end;
+
+            if (!(*_end & 0x80)) break;
+
             ch_ = (ch_ << 12 & 0xffff) | ((*_end & 0xff) << 6 & 0xfff);
             ++_end;
+
+            if (!(*_end & 0x80)) break;
+
             ch_ |= *_end & 0x3f;
+            ++_end;
             break;
         case 4:
             _end = _it;
             ++_end;
+
+            if (!(*_end & 0x80)) break;
+
             ch_ = (ch_ << 18 & 0x1fffff) | ((*_end & 0xff) << 12 & 0x3ffff);
             ++_end;
+
+            if (!(*_end & 0x80)) break;
+
             ch_ |= (*_end & 0xff) << 6 & 0xfff;
             ++_end;
+
+            if (!(*_end & 0x80)) break;
+
             ch_ |= *_end & 0x3f;
+            ++_end;
             break;
         }
 
         _char = ch_;
-        ++_end;
     }
 
     char len(const char_iterator &it_) const
@@ -148,7 +169,8 @@ private:
         return ch_ < 0x80 ? 1 :
             ch_ >> 5 == 0x06 ? 2 :
             ch_ >> 4 == 0x0e ? 3 :
-            ch_ >> 3 == 0x1e ? 4 : 0;
+            ch_ >> 3 == 0x1e ? 4 :
+            1;
     }
 };
 
