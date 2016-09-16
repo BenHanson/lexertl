@@ -359,7 +359,7 @@ void inc_end(results &, const false_ &)
 template<typename results>
 void inc_end(results &results_, const true_ &)
 {
-    ++results_.end;
+    ++results_.second;
 }
 
 template<typename iter_type, std::size_t flags, typename id_type,
@@ -370,12 +370,12 @@ void next(const basic_state_machine<typename std::iterator_traits
     const bool_<recursive> &recursive_)
 {
     const basic_internals<id_type> &internals_ = sm_.data();
-    typename results::iter_type end_token_ = results_.end;
+    typename results::iter_type end_token_ = results_.second;
 
 skip:
-    typename results::iter_type curr_ = results_.end;
+    typename results::iter_type curr_ = results_.second;
 
-    results_.start = curr_;
+    results_.first = curr_;
 
 again:
     if (curr_ == results_.eoi)
@@ -422,7 +422,7 @@ again:
         lu_state_.start_state(results_.state,
             bool_<(flags & multi_state_bit) != 0>());
         lu_state_.bol(results_.bol, bool_<(flags & bol_bit) != 0>());
-        results_.end = end_token_;
+        results_.second = end_token_;
 
         if (lu_state_._id == sm_.skip()) goto skip;
 
@@ -434,9 +434,9 @@ again:
     }
     else
     {
-        results_.end = end_token_;
-        results_.bol = *results_.end == '\n';
-        results_.start = results_.end;
+        results_.second = end_token_;
+        results_.bol = *results_.second == '\n';
+        results_.first = results_.second;
         // No match causes char to be skipped
         inc_end(results_, bool_<(flags & advance_bit) != 0>());
         lu_state_._id = results::npos();

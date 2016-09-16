@@ -118,7 +118,7 @@ void calc(const std::string &input_,
 
         if (results_.id == eOperator)
         {
-            switch (*results_.start)
+            switch (*results_.first)
             {
             case '~':
             case '(':
@@ -142,7 +142,7 @@ void calc(const std::string &input_,
                 break;
             }
 
-            ops_.push(*results_.start);
+            ops_.push(*results_.first);
         }
         else if (results_.id == eNegate)
         {
@@ -150,9 +150,7 @@ void calc(const std::string &input_,
         }
         else if (results_.id == eValue)
         {
-            std::string val_(results_.start, results_.end);
-
-            value_ = atoi(val_.c_str());
+            value_ = atoi(results_.first);
             operands_.push(value_);
         }
         else if (results_.id == eOpen)

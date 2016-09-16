@@ -427,7 +427,7 @@ void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
         switch (results_.id)
         {
         case eDispName:
-            entry_._disp_name.assign(results_.start, results_.end);
+            entry_._disp_name = results_.str();
             break;
         case eProperties:
             entry_._properties = true;
@@ -441,13 +441,13 @@ void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
             break;
         case eID:
             entry_.clear();
-            entry_._id.assign(results_.start, results_.end);
+            entry_._id = results_.str();
             break;
         case eType:
-            entry_._type.assign(results_.start, results_.end);
+            entry_._type = results_.str();
             break;
         case eName:
-            entry_._name.assign(results_.start, results_.end);
+            entry_._name = results_.str();
             break;
         case eParamType:
         {
@@ -455,7 +455,7 @@ void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
             std::size_t star_index_ = std::string::npos;
             std::pair<std::string, std::string> pair_;
 
-            type_.assign(results_.start, results_.end);
+            type_ = results_.str();
             star_index_ = type_.find('*');
 
             if (star_index_ != std::string::npos)
@@ -468,7 +468,7 @@ void lookup(const lexertl::state_machine &sm_, lexertl::cmatch &results_,
             break;
         }
         case eParamName:
-            entry_._params.back().second.assign(results_.start, results_.end);
+            entry_._params.back().second = results_.str();
             break;
         case eEntry:
             process(entry_, header_, source_);

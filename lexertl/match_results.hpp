@@ -26,8 +26,8 @@ struct match_results
 
     id_type id;
     id_type user_id;
-    iter_type start;
-    iter_type end;
+    iter_type first;
+    iter_type second;
     iter_type eoi;
     bool bol;
     id_type state;
@@ -35,8 +35,8 @@ struct match_results
     match_results() :
         id(0),
         user_id(npos()),
-        start(iter_type()),
-        end(iter_type()),
+        first(iter_type()),
+        second(iter_type()),
         eoi(iter_type()),
         bol(true),
         state(0)
@@ -46,8 +46,8 @@ struct match_results
     match_results(const iter_type &start_, const iter_type &end_) :
         id(0),
         user_id(npos()),
-        start(start_),
-        end(start_),
+        first(start_),
+        second(start_),
         eoi(end_),
         bol(true),
         state(0)
@@ -60,20 +60,20 @@ struct match_results
 
     string str() const
     {
-        return string(start, end);
+        return string(first, second);
     }
 
     string substr(const std::size_t soffset_, const std::size_t eoffset_) const
     {
-        return string(start + soffset_, end - eoffset_);
+        return string(first + soffset_, second - eoffset_);
     }
 
     virtual void clear()
     {
         id  = 0;
         user_id = npos();
-        start = eoi;
-        end = eoi;
+        first = eoi;
+        second = eoi;
         bol = true;
         state = 0;
     }
@@ -82,8 +82,8 @@ struct match_results
     {
         id  = 0;
         user_id = npos();
-        start = start_;
-        end  = start_;
+        first = start_;
+        second  = start_;
         eoi = end_;
         bol = true;
         state = 0;
@@ -103,8 +103,8 @@ struct match_results
     {
         return id == rhs_.id &&
             user_id == rhs_.user_id &&
-            start == rhs_.start &&
-            end == rhs_.end &&
+            first == rhs_.first &&
+            second == rhs_.second &&
             eoi == rhs_.eoi &&
             bol == rhs_.bol &&
             state == rhs_.state;

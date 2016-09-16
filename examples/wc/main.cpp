@@ -33,15 +33,15 @@ int main(int argc, char *argv[])
         case eoi:
             break;
         case word:
-            cc += results_.end - results_.start;
+            cc += results_.second - results_.first;
             ++wc;
             break;
         case ws:
-            cc += results_.end - results_.start;
+            cc += results_.second - results_.first;
             break;
         case newline:
             ++lc;
-            cc += results_.end - results_.start;
+            cc += results_.second - results_.first;
             break;
         default:
             assert(0);

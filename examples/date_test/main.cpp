@@ -97,23 +97,23 @@ int main(int /*argc*/, char** /*argv*/)
         case 0:
             break;
         case edow:
-            dow += std::string(results_.start, results_.end);
+            dow += results_.str();
             break;
         case eday:
-            day.assign(results_.start, results_.end);
+            day = results_.str();
             break;
         case emonth:
-            month.assign(results_.start, results_.end);
+            month = results_.str();
             break;
         case eyear:
-            year.assign(results_.start, results_.end);
+            year = results_.str();
             break;
         case elong:
             std::cout << "Long:\n" <<
                 "  DOW   : " << dow << " \n" <<
                 "  Day   : " << day << " \n" <<
                 "  Month : " << month << " \n" <<
-                "  Year  : " << std::string(results_.start, results_.end) <<
+                "  Year  : " << results_.str() <<
                 "\n";
             dow.clear();
             day.clear();

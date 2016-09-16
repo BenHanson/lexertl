@@ -97,7 +97,7 @@ private:
     {
         lexertl::lookup(*_sm, _results);
 
-        if (_results.start == _results.eoi)
+        if (_results.first == _results.eoi)
         {
             _sm = 0;
         }

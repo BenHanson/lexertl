@@ -80,13 +80,13 @@ int main()
 
             if (results.id == eString)
             {
-                std::cout << std::string(utf_out_iter(results.start + 1, results.end - 1),
-                    utf_out_iter(results.end - 1, results.end - 1));
+                std::cout << std::string(utf_out_iter(results.first + 1, results.second - 1),
+                    utf_out_iter(results.second - 1, results.second - 1));
             }
             else
             {
-                std::cout << std::string(utf_out_iter(results.start, results.end),
-                    utf_out_iter(results.end, results.end));
+                std::cout << std::string(utf_out_iter(results.first, results.second),
+                    utf_out_iter(results.second, results.second));
             }
             
             std::cout << " state = " << results.state << '\n';

@@ -48,7 +48,7 @@ void lex_unicode_data()
         }
         else if (results_.id == eName)
         {
-            const std::string name_(results_.start, results_.end);
+            const std::string name_ = results_.str();
 
             map_[name_].insert(lexertl::basic_string_token<std::size_t>::range
                 (num_, num_));
@@ -188,7 +188,7 @@ void case_mapping()
             throw std::runtime_error("Syntax error");
         }
 
-        code_.assign(results_.start, results_.end);
+        code_ = results_.str();
         lexertl::lookup(sm_, results_);
         eToken = static_cast<e_Token>(results_.id);
 
@@ -208,7 +208,7 @@ void case_mapping()
                 std::size_t code_val_;
                 std::size_t mapping_val_;
 
-                mapping_.assign(results_.start, results_.end);
+                mapping_ = results_.str();
                 ss_ << code_;
                 ss_ >> std::hex >> code_val_;
                 ss_.str("");
@@ -317,17 +317,17 @@ void test_unicode()
 
 #ifdef WIN32
         str_.assign(lexertl::basic_utf16_out_iterator<const int *>
-            (results_.start, results_.end),
+            (results_.first, results_.second),
             lexertl::basic_utf16_out_iterator<const int *>
-            (results_.end, results_.end));
+            (results_.second, results_.second));
         std::wcout << L"Id: " << results_.id << L", Token: '";
         ::WriteConsoleW(hStdOut, str_.c_str(), str_.size(), &dwBytesWritten, 0);
         std::wcout << '\'' << std::endl;
 #else
         str_.assign(lexertl::basic_utf8_out_iterator<const int *>
-            (results_.start, results_.end),
+            (results_.first, results_.second),
             lexertl::basic_utf8_out_iterator<const int *>
-            (results_.end, results_.end));
+            (results_.second, results_.second));
         std::cout << "Id: " << results_.id << ", Token: '" <<
             str_ << '\'' << std::endl;
 #endif

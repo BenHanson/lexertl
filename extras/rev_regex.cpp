@@ -77,7 +77,7 @@ std::string rev_regex(const std::string &rx_, const lexertl::state_machine &sm_)
                 break;
             case eString:
             {
-                lexertl::citerator i_(iter_->start + 1, iter_->end - 1, sm_);
+                lexertl::citerator i_(iter_->first + 1, iter_->second - 1, sm_);
                 lexertl::citerator e_;
                 std::string s_;
 

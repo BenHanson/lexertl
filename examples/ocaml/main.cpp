@@ -56,9 +56,7 @@ int main(int /*argc*/, char ** /*argv*/)
            std::cout << "Unknown token";
        }
 
-       std::cout << ", Token: '" <<
-            std::string(results_.start, results_.end) <<
-            '\'' << std::endl;
+       std::cout << ", Token: '" << results_.str() << '\'' << std::endl;
     } while (results_.id != 0);
 
     results_.clear();

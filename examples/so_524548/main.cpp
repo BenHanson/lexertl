@@ -38,7 +38,7 @@ int main(int /*argc*/, char ** /*argv*/)
         if (results_.id == 1)
         {
             std::cout << "found on line " <<
-                std::count(start_, results_.end, '\n') + 1 << '\n';
+                std::count(start_, results_.second, '\n') + 1 << '\n';
         }
     } while (results_.id != sm_.eoi());
 

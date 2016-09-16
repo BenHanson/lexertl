@@ -54,15 +54,16 @@ public:
 
         os_ << "<iter_type, id_type> results;\n";
         os_ << "    typedef typename results::char_type char_type;\n";
-        os_ << "    typename results::iter_type end_token_ = results_.end;\n";
+        os_ << "    typename results::iter_type end_token_ = "
+            "results_.second;\n";
 
         if (internals_._features & skip_bit)
         {
             os_ << "skip:\n";
         }
 
-        os_ << "    typename results::iter_type curr_ = results_.end;\n\n";
-        os_ << "    results_.start = curr_;\n\n";
+        os_ << "    typename results::iter_type curr_ = results_.second;\n\n";
+        os_ << "    results_.first = curr_;\n\n";
 
         if (internals_._features & again_bit)
         {
@@ -606,7 +607,7 @@ public:
             os_ << "        results_.bol = end_bol_;\n";
         }
 
-        os_ << "        results_.end = end_token_;\n";
+        os_ << "        results_.second = end_token_;\n";
 
         if (internals_._features & skip_bit)
         {
@@ -639,15 +640,15 @@ public:
         os_ << "    else\n";
         os_ << "    {\n";
         os_ << "        // No match causes char to be skipped\n";
-        os_ << "        results_.end = end_token_;\n";
+        os_ << "        results_.second = end_token_;\n";
 
         if (internals_._features & bol_bit)
         {
-            os_ << "        results_.bol = *results_.end == '\\n';\n";
+            os_ << "        results_.bol = *results_.second == '\\n';\n";
         }
 
-        os_ << "        results_.start = results_.end;\n";
-        os_ << "        ++results_.end;\n";
+        os_ << "        results_.first = results_.second;\n";
+        os_ << "        ++results_.second;\n";
         os_ << "        id_ = results::npos();\n";
         os_ << "        uid_ = results::npos();\n";
         os_ << "    }\n\n";
