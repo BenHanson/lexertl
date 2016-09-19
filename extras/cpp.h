@@ -217,4 +217,4 @@ struct rule_pair
 };
 
 void build_cpp(lexertl::rules &rules_);
-void build_rev_cpp(lexertl::rules &rules_);
+//void build_rev_cpp(lexertl::rules &rules_);

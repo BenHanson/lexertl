@@ -20,7 +20,7 @@ handle errors better.
 #include "stdafx.h"
 
 #include "cpp.h"
-#include "rev_regex.h"
+//#include "rev_regex.h"
 
 #define act_in_cpp0x_mode 1
 #define enable_ms_extensions 1
@@ -338,7 +338,8 @@ void build_cpp(lexertl::rules &rules_)
         rules_.push(ptr_->_regex, ptr_->_id);
     }
 }
-
+// This can now be done with lexertl::rules::reverse().
+/*
 void build_rev_cpp(lexertl::rules &rules_)
 {
     lexertl::state_machine rev_rx_sm_;
@@ -356,3 +357,4 @@ void build_rev_cpp(lexertl::rules &rules_)
         rules_.push(rev_regex(ptr_->_regex, rev_rx_sm_).c_str(), ptr_->_id);
     }
 }
+*/

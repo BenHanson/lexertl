@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-//#include "../lexertl/lexertl/debug.hpp"
+//#include "../lexertl/debug.hpp"
 #include "../lexertl/generator.hpp"
 #include <iostream>
 #include "../lexertl/iterator.hpp"

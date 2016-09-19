@@ -261,7 +261,7 @@ protected:
                         {
                             dfa_.front() = transition_;
                         }
-                        else if (i_ == parser:: eol_token())
+                        else if (i_ == parser::eol_token())
                         {
                             ptr_[eol_index] = transition_;
                             eol_set_.insert(index_ + 1);
