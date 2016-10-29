@@ -119,7 +119,7 @@ private:
             _end = _it;
             ++_end;
 
-            if (!(*_end & 0x80)) break;
+            if ((*_end & 0xc0) != 0x80) break;
 
             ch_ = (ch_ << 6 & 0x7ff) | (*_end & 0x3f);
             ++_end;
@@ -128,12 +128,12 @@ private:
             _end = _it;
             ++_end;
 
-            if (!(*_end & 0x80)) break;
+            if ((*_end & 0xc0) != 0x80) break;
 
             ch_ = (ch_ << 12 & 0xffff) | ((*_end & 0xff) << 6 & 0xfff);
             ++_end;
 
-            if (!(*_end & 0x80)) break;
+            if ((*_end & 0xc0) != 0x80) break;
 
             ch_ |= *_end & 0x3f;
             ++_end;
@@ -142,17 +142,17 @@ private:
             _end = _it;
             ++_end;
 
-            if (!(*_end & 0x80)) break;
+            if ((*_end & 0xc0) != 0x80) break;
 
             ch_ = (ch_ << 18 & 0x1fffff) | ((*_end & 0xff) << 12 & 0x3ffff);
             ++_end;
 
-            if (!(*_end & 0x80)) break;
+            if ((*_end & 0xc0) != 0x80) break;
 
             ch_ |= (*_end & 0xff) << 6 & 0xfff;
             ++_end;
 
-            if (!(*_end & 0x80)) break;
+            if ((*_end & 0xc0) != 0x80) break;
 
             ch_ |= *_end & 0x3f;
             ++_end;
