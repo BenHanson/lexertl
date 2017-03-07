@@ -107,7 +107,7 @@ struct basic_string_token
     {
         bool insert_ = true;
         typename range_vector::iterator iter_ = _ranges.begin();
-        typename range_vector::const_iterator end_ = _ranges.end();
+        typename range_vector::iterator end_ = _ranges.end();
 
         while (iter_ != end_)
         {
@@ -186,7 +186,7 @@ struct basic_string_token
         index_type next_ = 0;
         const index_type max_ = char_traits::max_val();
         string_token temp_;
-        typename range_vector::iterator iter_ = _ranges.begin();
+        typename range_vector::const_iterator iter_ = _ranges.begin();
         typename range_vector::const_iterator end_ = _ranges.end();
         bool finished_ = false;
 
@@ -194,7 +194,8 @@ struct basic_string_token
         {
             if (next_ < iter_->first)
             {
-                temp_.insert(range(next_, iter_->first - 1));
+                temp_.insert(range(next_,
+                    static_cast<index_type>(iter_->first - 1)));
             }
 
             if (iter_->second < max_)
@@ -219,9 +220,9 @@ struct basic_string_token
     void intersect(basic_string_token &rhs_, basic_string_token &overlap_)
     {
         typename range_vector::iterator lhs_iter_ = _ranges.begin();
-        typename range_vector::const_iterator lhs_end_ = _ranges.end();
+        typename range_vector::iterator lhs_end_ = _ranges.end();
         typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin();
-        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end();
+        typename range_vector::iterator rhs_end_ = rhs_._ranges.end();
 
         while (lhs_iter_ != lhs_end_ && rhs_iter_ != rhs_end_)
         {
@@ -265,9 +266,9 @@ struct basic_string_token
     void remove(basic_string_token &rhs_)
     {
         typename range_vector::iterator lhs_iter_ = _ranges.begin();
-        typename range_vector::const_iterator lhs_end_ = _ranges.end();
+        typename range_vector::iterator lhs_end_ = _ranges.end();
         typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin();
-        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end();
+        typename range_vector::iterator rhs_end_ = rhs_._ranges.end();
 
         while (lhs_iter_ != lhs_end_ && rhs_iter_ != rhs_end_)
         {
@@ -389,7 +390,7 @@ struct basic_string_token
 private:
     void adjust(const range &range_, basic_string_token &token_,
         typename range_vector::iterator &iter_,
-        typename range_vector::const_iterator &end_)
+        typename range_vector::iterator &end_)
     {
         if (range_.first > iter_->first)
         {
@@ -399,7 +400,8 @@ private:
 
             if (range_.second < second_)
             {
-                range new_range_(range_.second + 1, second_);
+                range new_range_(static_cast<index_type>(range_.second + 1),
+                    second_);
 
                 iter_ = token_.insert(new_range_);
                 end_ = token_._ranges.end();

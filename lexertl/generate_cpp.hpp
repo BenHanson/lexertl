@@ -668,8 +668,6 @@ public:
         // Lookup is always 256 entries long now
         const std::size_t lookup_quotient_ = 256 / lookup_divisor_;
         const std::size_t dfas_ = internals_._lookup->size();
-        std::size_t col_ = 1;
-        std::size_t row_ = 1;
 
         output_tabs(tabs_, os_);
         os_ << "static const id_type lookup";
@@ -698,20 +696,20 @@ public:
             // We want numbers regardless of id_type.
             os_ << "{0x" << std::hex << static_cast<std::size_t>(*ptr_++);
 
-            for (col_ = 1; col_ < lookup_divisor_; ++col_)
+            for (std::size_t col_ = 1; col_ < lookup_divisor_; ++col_)
             {
                 // We want numbers regardless of id_type.
                 os_ << ", 0x" << std::hex << static_cast<std::size_t>(*ptr_++);
             }
 
-            for (row_ = 1; row_ < lookup_quotient_; ++row_)
+            for (std::size_t row_ = 1; row_ < lookup_quotient_; ++row_)
             {
                 os_ << ",\n";
                 output_tabs(tabs_ + 1, os_);
                 // We want numbers regardless of id_type.
                 os_ << "0x" << std::hex << static_cast<std::size_t>(*ptr_++);
 
-                for (col_ = 1; col_ < lookup_divisor_; ++col_)
+                for (std::size_t col_ = 1; col_ < lookup_divisor_; ++col_)
                 {
                     // We want numbers regardless of id_type.
                     os_ << ", 0x" << std::hex <<
@@ -750,7 +748,7 @@ public:
         os_ << "0x" << std::hex << static_cast<std::size_t>
             (internals_._dfa_alphabet[0]);
 
-        for (col_ = 1; col_ < dfas_; ++col_)
+        for (std::size_t col_ = 1; col_ < dfas_; ++col_)
         {
             // We want numbers regardless of id_type.
             os_ << ", 0x" << std::hex << static_cast<std::size_t>(internals_.
@@ -830,7 +828,7 @@ public:
 
             os_ << " *dfas_[] = {dfa0_";
 
-            for (col_ = 1; col_ < dfas_; ++col_)
+            for (std::size_t col_ = 1; col_ < dfas_; ++col_)
             {
                 os_ << ", dfa" << col_ << '_';
             }

@@ -5,8 +5,8 @@
 #include <iostream>
 #include "../lexertl/iterator.hpp"
 
-enum eToken {eEOF, eCharset, eComment, eString, eQuantifier, eMacro, eDifference,
-    eBOL, eEOL, eOr, eOpen, eClose};
+enum eToken {eEOF, eCharset, eComment, eString, eQuantifier, eMacro,
+    eDifference, eBOL, eEOL, eOr, eOpen, eClose};
 
 typedef std::pair<eToken, std::string> token_pair;
 typedef std::stack<token_pair> token_stack;
@@ -59,7 +59,6 @@ void reduce_stack(token_stack &stack_)
 
 std::string rev_regex(const std::string &rx_, const lexertl::state_machine &sm_)
 {
-    std::string str_;
     std::string curr_;
     token_stack stack_;
     lexertl::citerator iter_(rx_.c_str(), rx_.c_str() + rx_.length(), sm_);
@@ -147,6 +146,8 @@ std::string rev_regex(const std::string &rx_, const lexertl::state_machine &sm_)
                 break;
         }
     }
+
+    std::string str_;
 
     for (; !stack_.empty(); stack_.pop())
     {
