@@ -20,7 +20,7 @@ struct basic_char_traits
     static index_type max_val()
     {
         return sizeof(char_type) > 2 ? 0x10ffff :
-            static_cast<index_type>(~0);
+            ~static_cast<index_type>(0);
     }
 };
 
