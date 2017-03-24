@@ -46,7 +46,6 @@ The same using lexertl::iterator:
 ```cpp
 #include "lexertl/generator.hpp"
 #include "lexertl/iterator.hpp"
-#include "lexertl/lookup.hpp"
 #include <iostream>
 
 int main()
