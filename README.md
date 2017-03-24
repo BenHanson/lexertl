@@ -1,12 +1,12 @@
 lexertl: The Modular Lexical Analyser Generator
 =======
 
-lexertl is a header-only library for writing lexer analyzers. With lexertl you can:
+lexertl is a header-only library for writing lexical analysers. With lexertl you can:
 
-- build lexical scanner at runtime
-- scan Unicode and ASCII input
-- scan from file or memory
-- generate C++ code or even write your own code generator
+- Build lexical analysers at runtime
+- Scan Unicode and ASCII input
+- Scan from files or memory
+- Generate C++ code or even write your own code generator
 
 ### Construct a Lexer and Tokenize input
 
@@ -41,7 +41,7 @@ int main()
 }
 ```
 
-The same using lexertl::iterator:
+The same thing using lexertl::iterator:
 
 ```cpp
 #include "lexertl/generator.hpp"
