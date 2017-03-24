@@ -8,7 +8,7 @@ lexertl is a header-only library for writing lexical analysers. With lexertl you
 - Scan from files or memory
 - Generate C++ code or even write your own code generator
 
-### Construct a Lexer and Tokenize input
+### Construct a Lexer and Tokenise input
 
 ```cpp
 #include "lexertl/generator.hpp"
