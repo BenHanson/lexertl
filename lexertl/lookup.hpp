@@ -365,9 +365,9 @@ void inc_end(results &results_, const true_ &)
 template<typename iter_type, std::size_t flags, typename id_type,
     typename results, bool compressed, bool recursive>
 void next(const basic_state_machine<typename std::iterator_traits
-    <iter_type>::value_type, id_type> &sm_,
-    results &results_, const bool_<compressed> &compressed_,
-    const bool_<recursive> &recursive_)
+    <iter_type>::value_type, id_type> &sm_, results &results_,
+    const bool_<compressed> &compressed_, const bool_<recursive> &recursive_,
+    std::forward_iterator_tag)
 {
     const basic_internals<id_type> &internals_ = sm_.data();
     typename results::iter_type end_token_ = results_.second;
@@ -459,7 +459,8 @@ void lookup(const basic_state_machine<typename std::iterator_traits
     assert((sm_.data()._features & flags) == sm_.data()._features);
     detail::next<iter_type, flags, id_type>(sm_, results_, bool_<(sizeof
         (typename std::iterator_traits<iter_type>::value_type) > 1)>(),
-        false_());
+        false_(),
+        typename std::iterator_traits<iter_type>::iterator_category());
 }
 
 template<typename iter_type, typename id_type, std::size_t flags>
@@ -471,7 +472,8 @@ void lookup(const basic_state_machine<typename std::iterator_traits
     assert((sm_.data()._features & flags) == sm_.data()._features);
     detail::next<iter_type, flags | recursive_bit, id_type>(sm_, results_,
         bool_<(sizeof(typename std::iterator_traits<iter_type>::
-            value_type) > 1)>(), true_());
+            value_type) > 1)>(), true_(),
+        typename std::iterator_traits<iter_type>::iterator_category());
 }
 }
 
