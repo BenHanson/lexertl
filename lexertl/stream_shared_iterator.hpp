@@ -4,8 +4,8 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef LEXERTL_STREAM_SHARED_ITERATOR_H
-#define LEXERTL_STREAM_SHARED_ITERATOR_H
+#ifndef LEXERTL_STREAM_SHARED_ITERATOR_HPP
+#define LEXERTL_STREAM_SHARED_ITERATOR_HPP
 
 #include <algorithm>
 // memcpy

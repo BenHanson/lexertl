@@ -3,8 +3,8 @@
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-#ifndef LEXERTL_RE_TOKENISER_HELPER_H
-#define LEXERTL_RE_TOKENISER_HELPER_H
+#ifndef LEXERTL_RE_TOKENISER_HELPER_HPP
+#define LEXERTL_RE_TOKENISER_HELPER_HPP
 
 #include "../../bool.hpp"
 #include "../../char_traits.hpp"

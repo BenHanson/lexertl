@@ -367,7 +367,7 @@ template<typename iter_type, std::size_t flags, typename id_type,
 void next(const basic_state_machine<typename std::iterator_traits
     <iter_type>::value_type, id_type> &sm_, results &results_,
     const bool_<compressed> &compressed_, const bool_<recursive> &recursive_,
-    std::forward_iterator_tag)
+    const std::forward_iterator_tag &)
 {
     const basic_internals<id_type> &internals_ = sm_.data();
     typename results::iter_type end_token_ = results_.second;
@@ -453,14 +453,15 @@ void lookup(const basic_state_machine<typename std::iterator_traits
     <iter_type>::value_type, id_type> &sm_,
     match_results<iter_type, id_type, flags> &results_)
 {
+    typedef typename std::iterator_traits<iter_type>::value_type value_type;
+    typedef typename std::iterator_traits<iter_type>::iterator_category cat;
+
     // If this asserts, you have either not defined all the correct
     // flags, or you should be using recursive_match_results instead
     // of match_results.
     assert((sm_.data()._features & flags) == sm_.data()._features);
-    detail::next<iter_type, flags, id_type>(sm_, results_, bool_<(sizeof
-        (typename std::iterator_traits<iter_type>::value_type) > 1)>(),
-        false_(),
-        typename std::iterator_traits<iter_type>::iterator_category());
+    detail::next<iter_type, flags, id_type>
+        (sm_, results_, bool_<(sizeof(value_type) > 1)>(), false_(), cat());
 }
 
 template<typename iter_type, typename id_type, std::size_t flags>
@@ -468,12 +469,13 @@ void lookup(const basic_state_machine<typename std::iterator_traits
     <iter_type>::value_type, id_type> &sm_,
     recursive_match_results<iter_type, id_type, flags> &results_)
 {
+    typedef typename std::iterator_traits<iter_type>::value_type value_type;
+    typedef typename std::iterator_traits<iter_type>::iterator_category cat;
+
     // If this asserts, you have not defined all the correct flags
     assert((sm_.data()._features & flags) == sm_.data()._features);
-    detail::next<iter_type, flags | recursive_bit, id_type>(sm_, results_,
-        bool_<(sizeof(typename std::iterator_traits<iter_type>::
-            value_type) > 1)>(), true_(),
-        typename std::iterator_traits<iter_type>::iterator_category());
+    detail::next<iter_type, flags | recursive_bit, id_type>
+        (sm_, results_, bool_<(sizeof(value_type) > 1)>(), true_(), cat());
 }
 }
 

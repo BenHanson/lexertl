@@ -4,8 +4,8 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef LEXERTL_ENUMS_H
-#define LEXERTL_ENUMS_H
+#ifndef LEXERTL_ENUMS_HPP
+#define LEXERTL_ENUMS_HPP
 
 namespace lexertl
 {
