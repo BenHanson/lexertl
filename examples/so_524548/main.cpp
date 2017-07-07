@@ -15,7 +15,7 @@ int main(int /*argc*/, char ** /*argv*/)
     rules_.push_state("SEMI");
     rules_.push_state("NESTED");
 
-    rules_.push("*", "[/][/].*|[/][*](.|\n)*?[*][/]|[\"](.|\\\")*[\"]",
+    rules_.push("*", "[/][/].*|[/][*].{+}[\r\n]*?[*][/]|[\"](.|\\\")*[\"]",
         rules_.skip(), ".");
     rules_.push("INITIAL", "for\\s*\\([^;]*;[^;]*;|while\\s*\\(",
         rules_.skip(), "FW");
@@ -23,7 +23,7 @@ int main(int /*argc*/, char ** /*argv*/)
     rules_.push("FW,NESTED", "\\(", ">NESTED");
     rules_.push("NESTED", "\\)", rules_.skip(), "<");
     rules_.push("SEMI", "\\s*;", 1, "INITIAL");
-    rules_.push("SEMI", ".|\n", rules_.skip(), "INITIAL");
+    rules_.push("SEMI", ".{+}[\r\n]", rules_.skip(), "INITIAL");
     lexertl::generator::build(rules_, sm_);
 
     lexertl::memory_file buff_("main.cpp");

@@ -55,7 +55,7 @@ static macro_pair g_macros_[] =
 
 static rule_pair g_regexes_[] =
 { { "\\\\{Newline}", T_BS_NEWLINE },
-{ "[/][*](.|\n)*?[*][/]", T_CCOMMENT },
+{ "[/][*].{+}[\r\n]*?[*][/]", T_CCOMMENT },
 { "[/][/].*", T_CPPCOMMENT },
 #ifdef detect_pp_numbers
 {"[.]?{Digit}[.]?{Digit}({Digit}|{NonDigit}|{ExponentStart}|[.])*", T_PP_NUMBER},
@@ -83,7 +83,7 @@ T_LONGINTLIT },
 {"nullptr", T_NULLPTR},
 {"static_assert", T_STATICASSERT},
 {"thread_local", T_THREADLOCAL},
-{"(L|[uU]|u8)?R[\"][(](.|\n)*?[)][\"]", T_RAWSTRINGLIT},
+{"(L|[uU]|u8)?R[\"][(].{+}[\r\n]*?[)][\"]", T_RAWSTRINGLIT},
 {"(L|[uU])?'({EscapeSequence}|{UniversalChar}|"
     "{any}{-}[\n\r\\\\'])'", T_CHARLIT},
 {"(L|[uU]|u8)?[\"]({EscapeSequence}|{UniversalChar}|"

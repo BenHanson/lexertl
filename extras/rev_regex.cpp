@@ -36,7 +36,7 @@ void build_rev_regex_lexer(lexertl::state_machine &sm_)
     rules_.push("[{][-+][}]", eDifference);
     rules_.push("[(]([?](-?[is])*:)?", eOpen);
     rules_.push("[)]", eClose);
-    rules_.push("(.|\n)", eCharset);
+    rules_.push(".{+}[\r\n]", eCharset);
 
     lexertl::generator::build(rules_, sm_);
     //    lexertl::debug::dump(g_sm, std::cout);
