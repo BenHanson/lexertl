@@ -167,7 +167,7 @@ struct lookup_state
         bool ret_ = false;
 
         _eol_state._EOL_state = _ptr[eol_index];
-        ret_ = _eol_state._EOL_state && curr_ == '\n';
+        ret_ = _eol_state._EOL_state && (curr_ == '\r' || curr_ == '\n');
 
         if (ret_)
         {
