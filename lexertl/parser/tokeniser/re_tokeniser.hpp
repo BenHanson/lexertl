@@ -202,9 +202,14 @@ public:
                     {
                         token_._type = CHARSET;
 
-                        if (state_._flags & dot_not_newline)
+                        if ((state_._flags & dot_not_newline) ||
+                            (state_._flags & dot_not_cr_lf))
                         {
                             token_._str.insert(range('\n', '\n'));
+                        }
+
+                        if (state_._flags & dot_not_cr_lf)
+                        {
                             token_._str.insert(range('\r', '\r'));
                         }
 
@@ -376,11 +381,19 @@ private:
                     case 's':
                         if (negate_)
                         {
+#ifdef _WIN32
+                            state_._flags = state_._flags | dot_not_cr_lf;
+#else
                             state_._flags = state_._flags | dot_not_newline;
+#endif
                         }
                         else
                         {
+#ifdef _WIN32
+                            state_._flags = state_._flags & ~dot_not_cr_lf;
+#else
                             state_._flags = state_._flags & ~dot_not_newline;
+#endif
                         }
 
                         negate_ = false;

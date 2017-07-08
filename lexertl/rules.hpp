@@ -55,7 +55,11 @@ public:
     // failed to define an unsigned id type.
     compile_assert <(~static_cast<id_type>(0) > 0)> _valid_id_type;
 
+#ifdef _WIN32
+    basic_rules(const std::size_t flags_ = dot_not_cr_lf) :
+#else
     basic_rules(const std::size_t flags_ = dot_not_newline) :
+#endif
         _valid_id_type(),
         _statemap(),
         _macro_map(),
@@ -84,7 +88,11 @@ public:
         _next_dfas.clear();
         _pushes.clear();
         _pops.clear();
+#ifdef _WIN32
+        _flags = dot_not_cr_lf;
+#else
         _flags = dot_not_newline;
+#endif
         _locale = std::locale();
         _lexer_state_names.clear();
         push_state(initial());
