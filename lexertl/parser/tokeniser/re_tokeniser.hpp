@@ -202,14 +202,13 @@ public:
                     {
                         token_._type = CHARSET;
 
-                        if ((state_._flags & dot_not_newline) ||
-                            (state_._flags & dot_not_cr_lf))
+                        if (state_._flags & dot_not_newline)
                         {
                             token_._str.insert(range('\n', '\n'));
                         }
-
-                        if (state_._flags & dot_not_cr_lf)
+                        else if (state_._flags & dot_not_cr_lf)
                         {
+                            token_._str.insert(range('\n', '\n'));
                             token_._str.insert(range('\r', '\r'));
                         }
 
