@@ -30,7 +30,7 @@ public:
     // failed to define an unsigned id type.
     // g++ 4.4.7 won't compile this:
 #if !defined(__GNUC__) || __GNUC__ > 4 || __GNUC__ == 4 && __GNUC__MINIOR__ > 4
-    compile_assert<(~static_cast<id_type>(0) > 0)> _valid_id_type;
+    compile_assert<(static_cast<id_type>(~0) > 0)> _valid_id_type;
 #endif
 
     basic_state_machine() :
@@ -287,7 +287,7 @@ struct basic_char_state_machine
 #if !defined(__GNUC__) || __GNUC__ > 4 || __GNUC__ == 4 && __GNUC__MINIOR__ > 4
     // If you get a compile error here you have
     // failed to define an unsigned id type.
-    compile_assert<(~static_cast<id_type>(0) > 0)> _valid_id_type;
+    compile_assert<(static_cast<id_type>(~0) > 0)> _valid_id_type;
 #endif
     dfa_deque _sm_deque;
 

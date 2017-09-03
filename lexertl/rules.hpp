@@ -53,7 +53,7 @@ public:
 
     // If you get a compile error here you have
     // failed to define an unsigned id type.
-    compile_assert <(~static_cast<id_type>(0) > 0)> _valid_id_type;
+    compile_assert <(static_cast<id_type>(~0) > 0)> _valid_id_type;
 
 #ifdef _WIN32
     basic_rules(const std::size_t flags_ = dot_not_cr_lf) :
