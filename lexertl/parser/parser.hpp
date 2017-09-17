@@ -65,8 +65,8 @@ public:
     typedef basic_string_token<char_type> string_token;
     typedef basic_selection_node<id_type> selection_node;
     typedef basic_sequence_node<id_type> sequence_node;
-    typedef std::map<string_token, std::size_t> charset_map;
-    typedef std::pair<string_token, std::size_t> charset_pair;
+    typedef std::map<string_token, id_type> charset_map;
+    typedef std::pair<string_token, id_type> charset_pair;
     typedef bool_<sm_traits::compressed> compressed;
     typedef basic_re_token<rules_char_type, input_char_type> token;
     typedef std::deque<token> token_deque;
@@ -195,12 +195,12 @@ public:
 
     static id_type bol_token()
     {
-        return ~static_cast<id_type>(1);
+        return static_cast<id_type>(~1);
     }
 
     static id_type eol_token()
     {
-        return ~static_cast<id_type>(2);
+        return static_cast<id_type>(~2);
     }
 
 private:
@@ -767,13 +767,13 @@ private:
     id_type lookup(const string_token &charset_)
     {
         // Converted to id_type below.
-        std::size_t id_ = sm_traits::npos();
+        id_type id_ = sm_traits::npos();
         typename charset_map::const_iterator iter_ =
             _charset_map.find(charset_);
 
         if (iter_ == _charset_map.end())
         {
-            id_ = _charset_map.size();
+            id_ = static_cast<id_type>(_charset_map.size());
             _charset_map.insert(charset_pair(charset_, id_));
         }
         else

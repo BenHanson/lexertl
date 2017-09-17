@@ -22,8 +22,7 @@
 
 namespace lexertl
 {
-template<typename r_ch_type, typename ch_type,
-    typename id_ty = std::size_t>
+template<typename r_ch_type, typename ch_type, typename id_ty = std::size_t>
 class basic_rules
 {
 public:
@@ -124,7 +123,7 @@ public:
 
     static id_type skip()
     {
-        return ~static_cast<id_type>(1);
+        return static_cast<id_type>(~1);
     }
 
     id_type eoi() const
@@ -134,7 +133,7 @@ public:
 
     static id_type npos()
     {
-        return ~static_cast<id_type>(0);
+        return static_cast<id_type>(~0);
     }
 
     std::locale imbue(const std::locale &locale_)
@@ -191,7 +190,7 @@ public:
         validate(name_);
 
         if (_statemap.insert(string_id_type_pair(name_,
-            _statemap.size())).second)
+            static_cast<id_type>(_statemap.size()))).second)
         {
             _regexes.push_back(token_deque_deque());
             _features.push_back(0);

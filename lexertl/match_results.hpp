@@ -91,12 +91,12 @@ struct match_results
 
     static id_type npos()
     {
-        return ~static_cast<id_type>(0);
+        return static_cast<id_type>(~0);
     }
 
     static id_type skip()
     {
-        return ~static_cast<id_type>(1);
+        return static_cast<id_type>(~1);
     }
 
     bool operator ==(const match_results &rhs_) const

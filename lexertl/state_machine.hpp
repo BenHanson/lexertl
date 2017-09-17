@@ -68,8 +68,7 @@ public:
 
     void minimise()
     {
-        const id_type dfas_ = static_cast<id_type>(_internals.
-            _dfa->size());
+        const id_type dfas_ = static_cast<id_type>(_internals._dfa->size());
 
         for (id_type i_ = 0; i_ < dfas_; ++i_)
         {
@@ -91,12 +90,12 @@ public:
 
     static id_type npos()
     {
-        return ~static_cast<id_type>(0);
+        return static_cast<id_type>(~0);
     }
 
     static id_type skip()
     {
-        return ~static_cast<id_type>(1);
+        return static_cast<id_type>(~1);
     }
 
     void swap(basic_state_machine &rhs_)
@@ -360,8 +359,8 @@ struct basic_char_state_machine
                     if (trans_iter_ == state_._transitions.end())
                     {
                         trans_iter_ = state_._transitions.insert
-                            (id_type_string_token_pair(next_ - 1,
-                            token_vector_[col_index_])).first;
+                            (id_type_string_token_pair(static_cast<id_type>
+                            (next_ - 1), token_vector_[col_index_])).first;
                     }
                     else
                     {
