@@ -767,24 +767,26 @@ private:
     id_type lookup(const string_token &charset_)
     {
         // Converted to id_type below.
-        id_type id_ = sm_traits::npos();
-        typename charset_map::const_iterator iter_ =
-            _charset_map.find(charset_);
-
-        if (iter_ == _charset_map.end())
-        {
-            id_ = static_cast<id_type>(_charset_map.size());
-            _charset_map.insert(charset_pair(charset_, id_));
-        }
-        else
-        {
-            id_ = iter_->second;
-        }
+        std::size_t id_ = sm_traits::npos();
 
         if (static_cast<id_type>(id_) < id_)
         {
             throw runtime_error("id_type is not large enough "
                 "to hold all ids.");
+        }
+
+        typename charset_map::const_iterator iter_ =
+            _charset_map.find(charset_);
+
+        if (iter_ == _charset_map.end())
+        {
+            id_ = _charset_map.size();
+            _charset_map.insert(charset_pair(charset_,
+                static_cast<id_type>(id_)));
+        }
+        else
+        {
+            id_ = iter_->second;
         }
 
         return static_cast<id_type>(id_);

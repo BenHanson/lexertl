@@ -360,7 +360,7 @@ struct basic_char_state_machine
                     {
                         trans_iter_ = state_._transitions.insert
                             (id_type_string_token_pair(static_cast<id_type>
-                            (next_ - 1), token_vector_[col_index_])).first;
+                                (next_ - 1), token_vector_[col_index_])).first;
                     }
                     else
                     {
