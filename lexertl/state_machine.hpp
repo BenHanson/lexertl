@@ -305,7 +305,7 @@ struct basic_char_state_machine
     {
         const std::size_t dfa_alphabet_ = internals_._dfa_alphabet[dfa_index_];
         const std::size_t alphabet_ = dfa_alphabet_ - transitions_index;
-        const id_type_vector &source_dfa_ = *internals_._dfa[dfa_index_];
+        const id_type_vector &source_dfa_ = internals_._dfa[dfa_index_];
         const id_type *ptr_ = &source_dfa_.front();
         const std::size_t size_ = (source_dfa_.size() - dfa_alphabet_) /
             dfa_alphabet_;

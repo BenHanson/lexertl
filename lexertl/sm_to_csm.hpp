@@ -27,7 +27,7 @@ void sm_to_csm(const sm &sm_, char_state_machine &csm_)
         const std::size_t alphabet_ = internals_._dfa_alphabet[i_] -
             transitions_index;
         string_token_vector token_vector_(alphabet_, string_token());
-        id_type *ptr_ = &internals_._lookup[i_].front();
+        const id_type *ptr_ = &internals_._lookup[i_].front();
 
         for (std::size_t c_ = 0; c_ < 256; ++c_, ++ptr_)
         {
