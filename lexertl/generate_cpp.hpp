@@ -691,7 +691,7 @@ public:
 
         for (std::size_t l_ = 0; l_ < dfas_; ++l_)
         {
-            const id_type *ptr_ = &internals_._lookup[l_]->front();
+            const id_type *ptr_ = &internals_._lookup[l_].front();
 
             // We want numbers regardless of id_type.
             os_ << "{0x" << std::hex << static_cast<std::size_t>(*ptr_++);
@@ -766,9 +766,9 @@ public:
         for (std::size_t dfa_ = 0; dfa_ < dfas_; ++dfa_)
         {
             const id_type dfa_alphabet_ = internals_._dfa_alphabet[dfa_];
-            const std::size_t rows_ = internals_._dfa[dfa_]->size() /
+            const std::size_t rows_ = internals_._dfa[dfa_].size() /
                 dfa_alphabet_;
-            const id_type *ptr_ = &internals_._dfa[dfa_]->front();
+            const id_type *ptr_ = &internals_._dfa[dfa_].front();
             std::string dfa_name_ = "dfa";
 
             output_tabs(tabs_, os_);

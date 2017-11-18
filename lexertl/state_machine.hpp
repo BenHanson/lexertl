@@ -18,10 +18,11 @@
 
 namespace lexertl
 {
-template<typename char_type, typename id_type = std::size_t>
+template<typename char_type, typename id_ty = std::size_t>
 class basic_state_machine
 {
 public:
+    typedef id_ty id_type;
     typedef basic_sm_traits<char_type, id_type,
         (sizeof(char_type) > 1), true, true> traits;
     typedef detail::basic_internals<id_type> internals;
@@ -202,10 +203,11 @@ private:
 typedef basic_state_machine<char> state_machine;
 typedef basic_state_machine<wchar_t> wstate_machine;
 
-template<typename char_type, typename id_type = std::size_t,
+template<typename char_type, typename id_ty = std::size_t,
     bool is_dfa = true>
 struct basic_char_state_machine
 {
+    typedef id_ty id_type;
     typedef basic_sm_traits<char_type, id_type, false, false, is_dfa> traits;
     typedef detail::basic_internals<id_type> internals;
     typedef typename internals::id_type_vector id_type_vector;

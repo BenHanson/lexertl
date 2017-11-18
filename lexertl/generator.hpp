@@ -69,7 +69,7 @@ public:
                 build_dfa(charset_map_, root_, internals_, temp_sm_, index_,
                     nl_id_);
 
-                if (internals_._dfa[index_]->size() /
+                if (internals_._dfa[index_].size() /
                     internals_._dfa_alphabet[index_] >= sm_traits::npos())
                 {
                     // Overflow
@@ -186,8 +186,7 @@ protected:
         charset_list charset_list_;
         // vector mapping token indexes to partitioned token index sets
         index_set_vector set_mapping_;
-        typename internals::id_type_vector &dfa_ =
-            *internals_._dfa[dfa_index_];
+        typename internals::id_type_vector &dfa_ = internals_._dfa[dfa_index_];
         std::size_t dfa_alphabet_ = 0;
         const node_vector *followpos_ = &root_->firstpos();
         node_set_vector seen_sets_;
@@ -231,7 +230,7 @@ protected:
         {
             equivset_list equiv_list_;
 
-            build_equiv_list(seen_vectors_[index_], set_mapping_,
+            build_equiv_list(&seen_vectors_[index_], set_mapping_,
                 equiv_list_, is_dfa());
 
             for (typename equivset_list::list::const_iterator iter_ =
@@ -522,7 +521,7 @@ protected:
 
             set_iter_ = cs_->_index_set.begin();
             set_end_ = cs_->_index_set.end();
-            fill_lookup(cs_->_token, internals_._lookup[dfa_index_],
+            fill_lookup(cs_->_token, &internals_._lookup[dfa_index_],
                 index_, lookup());
 
             for (; set_iter_ != set_end_; ++set_iter_)

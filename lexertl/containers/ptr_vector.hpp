@@ -49,14 +49,14 @@ public:
         return _vector;
     }
 
-    ptr_type * &operator [](const std::size_t index_)
+    ptr_type &operator [](const std::size_t index_)
     {
-        return _vector[index_];
+        return *_vector[index_];
     }
 
-    ptr_type * const &operator [](const std::size_t index_) const
+    const ptr_type &operator [](const std::size_t index_) const
     {
-        return _vector[index_];
+        return *_vector[index_];
     }
 
     bool operator ==(const ptr_vector &rhs_) const
