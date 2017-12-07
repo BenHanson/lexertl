@@ -27,14 +27,22 @@ template<typename char_type>
 class basic_memory_file
 {
 public:
+    basic_memory_file() :
+        _data(0),
+        _size(0),
+        _fh(0),
+#ifdef _WIN32
+        _fmh(0)
+#endif
+    {
+    }
+
     basic_memory_file(const char *pathname_) :
         _data(0),
         _size(0),
-#ifdef _WIN32
         _fh(0),
+#ifdef _WIN32
         _fmh(0)
-#else
-        _fh(0)
 #endif
     {
         open(pathname_);
