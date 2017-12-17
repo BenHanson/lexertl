@@ -30,6 +30,7 @@ public:
     basic_memory_file() :
         _data(0),
         _size(0),
+// _fh duplicated due to commas
 #ifdef _WIN32
         _fh(0),
         _fmh(0)
@@ -42,6 +43,7 @@ public:
     basic_memory_file(const char *pathname_) :
         _data(0),
         _size(0),
+// _fh duplicated due to commas
 #ifdef _WIN32
         _fh(0),
         _fmh(0)
