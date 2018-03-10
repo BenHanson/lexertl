@@ -90,6 +90,11 @@ public:
         return !(*this == rhs_);
     }
 
+    const sm_type &sm() const
+    {
+        return *_sm;
+    }
+
 private:
     value_type _results;
     const sm_type *_sm;
