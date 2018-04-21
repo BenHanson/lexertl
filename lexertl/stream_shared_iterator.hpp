@@ -11,7 +11,6 @@
 // memcpy
 #include <cstring>
 #include <iostream>
-#include <list>
 #include <math.h>
 #include "runtime_error.hpp"
 #include "size_t.hpp"
@@ -50,7 +49,7 @@ public:
         // Safe to call potentially throwing new now.
         _shared = new shared(stream_, buff_size_, increment_);
         ++_shared->_ref_count;
-        _iter = _shared->_clients.insert(_shared->_clients.end(), this);
+        _shared->_clients.push_back(this);
     }
 
     basic_stream_shared_iterator(const basic_stream_shared_iterator &rhs_) :
@@ -66,7 +65,7 @@ public:
             // even if the rhs is not (otherwise we will never
             // have a record of the start of the current range!)
             ++_shared->_ref_count;
-            _iter = _shared->_clients.insert(_shared->_clients.end(), this);
+            _shared->_clients.push_back(this);
             _live = true;
         }
     }
@@ -94,23 +93,29 @@ public:
             _master = false;
             _index  = rhs_._master ? rhs_._shared->lowest() : rhs_._index;
 
-            if (_live && !rhs_._live)
+            if (!_live && !rhs_._live)
+            {
+                if (rhs_._shared)
+                {
+                    ++rhs_._shared->_ref_count;
+                }
+            }
+            else if (!_live && rhs_._live)
+            {
+                rhs_._shared->_clients.push_back(this);
+
+                if (!_shared)
+                {
+                    ++rhs_._shared->_ref_count;
+                }
+            }
+            else if (_live && !rhs_._live)
             {
                 _shared->erase(this);
 
                 if (!rhs_._shared)
                 {
                     --_shared->_ref_count;
-                }
-            }
-            else if (!_live && rhs_._live)
-            {
-                rhs_._iter = rhs_._shared->_clients.insert(rhs_._shared->
-                    _clients.end(), this);
-
-                if (!_shared)
-                {
-                    ++rhs_._shared->_ref_count;
                 }
             }
 
@@ -164,7 +169,7 @@ private:
     public:
         std::size_t _ref_count;
         typedef std::vector<char_type> char_vector;
-        typedef std::list<basic_stream_shared_iterator *> iter_list;
+        typedef std::vector<basic_stream_shared_iterator *> iter_list;
         istream &_stream;
         std::size_t _increment;
         std::size_t _len;
@@ -232,11 +237,11 @@ private:
 
         void erase(basic_stream_shared_iterator *ptr_)
         {
-            if (ptr_->_iter != _clients.end())
-            {
-                _clients.erase(ptr_->_iter);
-                ptr_->_iter = _clients.end();
-            }
+            typename iter_list::const_iterator iter_ =
+                std::find(_clients.begin(), _clients.end(), ptr_);
+
+            if (iter_ != _clients.end())
+                _clients.erase(iter_);
         }
 
         std::size_t lowest() const
@@ -311,7 +316,6 @@ private:
     bool _live;
     std::size_t _index;
     shared *_shared;
-    mutable typename shared::iter_list::iterator _iter;
 
     void check_master()
     {
