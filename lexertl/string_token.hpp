@@ -108,6 +108,7 @@ struct basic_string_token
         bool insert_ = true;
         typename range_vector::iterator iter_ = _ranges.begin();
         typename range_vector::iterator end_ = _ranges.end();
+        typename range_vector::iterator erase_iter_ = end_;
 
         while (iter_ != end_)
         {
@@ -169,11 +170,26 @@ struct basic_string_token
 
             // Code minimisation: this always applies unless we have already
             // exited the loop, or "continue" executed.
-            iter_ = _ranges.erase(iter_);
-            end_ = _ranges.end();
+            if (erase_iter_ == end_)
+            {
+                erase_iter_ = iter_;
+            }
+
+            ++iter_;
         }
 
-        if (insert_)
+        if (erase_iter_ != end_)
+        {
+            if (insert_)
+            {
+                // Re-use obsolete location
+                *erase_iter_ = rhs_;
+                ++erase_iter_;
+            }
+
+            iter_ = _ranges.erase(erase_iter_, iter_);
+        }
+        else if (insert_)
         {
             iter_ = _ranges.insert(iter_, rhs_);
         }
