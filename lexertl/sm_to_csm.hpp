@@ -6,6 +6,9 @@
 #ifndef LEXERTL_SM_TO_CSM_HPP
 #define LEXERTL_SM_TO_CSM_HPP
 
+#include "enums.hpp"
+#include "size_t.hpp"
+
 namespace lexertl
 {
 template<typename sm, typename char_state_machine>

@@ -225,11 +225,13 @@ protected:
         closure(followpos_, seen_sets_, seen_vectors_, hash_vector_,
             static_cast<id_type>(dfa_alphabet_), dfa_);
 
+        // Loop over states
         for (id_type index_ = 0; index_ < static_cast<id_type>
             (seen_vectors_->size()); ++index_)
         {
             equivset_list equiv_list_;
 
+            // Intersect charsets
             build_equiv_list(&seen_vectors_[index_], set_mapping_,
                 equiv_list_, is_dfa());
 
@@ -250,27 +252,8 @@ protected:
                     // Prune abstemious transitions from end states.
                     if (*ptr_ && !equivset_->_greedy) continue;
 
-                    for (typename equivset::index_vector::const_iterator
-                        equiv_iter_ = equivset_->_index_vector.begin(),
-                        equiv_end_ = equivset_->_index_vector.end();
-                        equiv_iter_ != equiv_end_; ++equiv_iter_)
-                    {
-                        const id_type i_ = *equiv_iter_;
-
-                        if (i_ == parser::bol_token())
-                        {
-                            dfa_.front() = transition_;
-                        }
-                        else if (i_ == parser::eol_token())
-                        {
-                            ptr_[eol_index] = transition_;
-                            eol_set_.insert(index_ + 1);
-                        }
-                        else
-                        {
-                            ptr_[i_ + transitions_index] = transition_;
-                        }
-                    }
+                    set_transitions(transition_, equivset_, dfa_, ptr_,
+                        index_, eol_set_);
                 }
             }
         }
@@ -278,6 +261,33 @@ protected:
         fix_clashes(eol_set_, nl_id_, zero_id_, dfa_, dfa_alphabet_,
             compressed());
         append_dfa(charset_list_, internals_, sm_, dfa_index_, lookup());
+    }
+
+    static void set_transitions(const id_type transition_, equivset *equivset_,
+        typename internals::id_type_vector &dfa_, id_type *ptr_,
+        const id_type index_, id_type_set &eol_set_)
+    {
+        for (typename equivset::index_vector::const_iterator
+            equiv_iter_ = equivset_->_index_vector.begin(),
+            equiv_end_ = equivset_->_index_vector.end();
+            equiv_iter_ != equiv_end_; ++equiv_iter_)
+        {
+            const id_type i_ = *equiv_iter_;
+
+            if (i_ == parser::bol_token())
+            {
+                dfa_.front() = transition_;
+            }
+            else if (i_ == parser::eol_token())
+            {
+                ptr_[eol_index] = transition_;
+                eol_set_.insert(index_ + 1);
+            }
+            else
+            {
+                ptr_[i_ + transitions_index] = transition_;
+            }
+        }
     }
 
     // Uncompressed

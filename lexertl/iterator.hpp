@@ -110,19 +110,19 @@ private:
     }
 };
 
-typedef iterator<std::string::const_iterator, lexertl::state_machine, smatch>
+typedef iterator<std::string::const_iterator, state_machine, smatch>
     siterator;
-typedef iterator<const char *, lexertl::state_machine, cmatch> citerator;
-typedef iterator<std::wstring::const_iterator, lexertl::wstate_machine,
+typedef iterator<const char *, state_machine, cmatch> citerator;
+typedef iterator<std::wstring::const_iterator, wstate_machine,
     wsmatch> wsiterator;
-typedef iterator<const wchar_t *, lexertl::wstate_machine, wcmatch> wciterator;
+typedef iterator<const wchar_t *, wstate_machine, wcmatch> wciterator;
 
-typedef iterator<std::string::const_iterator, lexertl::state_machine, srmatch>
+typedef iterator<std::string::const_iterator, state_machine, srmatch>
     sriterator;
-typedef iterator<const char *, lexertl::state_machine, crmatch> criterator;
-typedef iterator<std::wstring::const_iterator, lexertl::wstate_machine,
+typedef iterator<const char *, state_machine, crmatch> criterator;
+typedef iterator<std::wstring::const_iterator, wstate_machine,
     wsrmatch> wsriterator;
-typedef iterator<const wchar_t *, lexertl::wstate_machine, wcrmatch>
+typedef iterator<const wchar_t *, wstate_machine, wcrmatch>
     wcriterator;
 }
 

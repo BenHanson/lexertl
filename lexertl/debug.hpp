@@ -22,10 +22,10 @@ template<typename sm, typename char_type, typename id_type = std::size_t,
 class basic_debug
 {
 public:
-    typedef lexertl::basic_char_state_machine<char_type, id_type, is_dfa>
+    typedef basic_char_state_machine<char_type, id_type, is_dfa>
         char_state_machine;
     typedef std::basic_ostream<char_type> ostream;
-    typedef lexertl::basic_rules<char_type, char_type, id_type> rules;
+    typedef basic_rules<char_type, char_type, id_type> rules;
     typedef std::basic_string<char_type> string;
 
     static void dump(const sm &sm_, rules &rules_, ostream &stream_)
