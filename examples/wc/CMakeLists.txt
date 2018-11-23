@@ -7,3 +7,4 @@
 # file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 add_executable(lexertl_wc main.cpp)
+target_link_libraries(lexertl_wc PRIVATE lexertl)

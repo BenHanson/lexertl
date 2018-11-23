@@ -221,8 +221,8 @@ void case_mapping()
         }
     } while (results_.id != 0);
 
-    std::pair<std::size_t, std::size_t> first_ = { 0, 0 };
-    std::pair<std::size_t, std::size_t> second_ = { 0, 0 };
+    std::pair<std::size_t, std::size_t> first_ { 0, 0 };
+    std::pair<std::size_t, std::size_t> second_ { 0, 0 };
 
     for (auto &pair : map)
     {
@@ -233,8 +233,8 @@ void case_mapping()
         }
         else if (pair.first == first_.second + 1 &&
             (pair.second == second_.second + 1 ||
-            pair.second <= pair.first &&
-            pair.second == second_.second - 1))
+            (pair.second <= pair.first &&
+            pair.second == second_.second - 1)))
         {
             first_.second = pair.first;
             second_.second = pair.second;

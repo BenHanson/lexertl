@@ -6,3 +6,4 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 add_executable(lexertl_gen_cpp_from_idl main.cpp)
+target_link_libraries(lexertl_gen_cpp_from_idl PRIVATE lexertl)

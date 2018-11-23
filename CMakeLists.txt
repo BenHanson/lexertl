@@ -6,8 +6,11 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 project(lexertl)
+
+add_library(lexertl INTERFACE)
+target_include_directories(lexertl INTERFACE "${CMAKE_SOURCE_DIR}/lexertl")
 
 if(MSVC)
   if(MSVC80 OR MSVC90 OR MSVC10 OR MSVC11 OR MSVC12)
@@ -20,7 +23,7 @@ if(MSVC)
   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    target_compile_options(lexertl PRIVATE "/W4")
   endif()
 endif()
 
@@ -32,23 +35,17 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     message(WARNING "GCC 4.3+ is recommended, otherwise compilation may fail")
   endif()
 
-  list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long -std=c++0x")
+  target_compile_options(lexertl PRIVATE "-Wall -Wextra -Wno-long-long -std=c++0x")
 
   if(GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-    list(APPEND CMAKE_CXX_FLAGS "-Wpedantic")
+	target_compile_options(lexertl PRIVATE "-Wpedantic")
   else()
-    list(APPEND CMAKE_CXX_FLAGS "-pedantic")
+	target_compile_options(lexertl PRIVATE "-pedantic")
   endif()
 endif()
 
 if(CMAKE_CXX_COMPILER MATCHES "clang")
-  set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+  target_compile_options(lexertl PRIVATE "-Wall -Wextra -pedantic -Wno-long-long")
 endif()
-
-separate_arguments(CMAKE_CXX_FLAGS)
-list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS)
-string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
-include_directories("${CMAKE_SOURCE_DIR}/lexertl")
 
 add_subdirectory(examples)

@@ -7,3 +7,5 @@
 # file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 add_executable(lexertl_unicode main.cpp)
+target_link_libraries(lexertl_unicode PRIVATE lexertl)
+target_compile_features(lexertl_unicode PUBLIC cxx_std_11)
