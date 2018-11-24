@@ -6,9 +6,17 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-cmake_minimum_required (VERSION 2.8)
-project(lexertl)
+cmake_minimum_required (VERSION 3.5)
+project(lexertl VERSION 0.1.0)
 
+# Define project
+add_library(lexertl INTERFACE)
+target_include_directories(lexertl INTERFACE 
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<INSTALL_INTERFACE:include>
+)
+
+# Add custom requirements for the compiler
 if(MSVC)
   if(MSVC80 OR MSVC90 OR MSVC10 OR MSVC11 OR MSVC12)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
@@ -20,7 +28,7 @@ if(MSVC)
   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    target_compile_options(lexertl PRIVATE "/W4")
   endif()
 endif()
 
@@ -32,23 +40,41 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     message(WARNING "GCC 4.3+ is recommended, otherwise compilation may fail")
   endif()
 
-  list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long -std=c++0x")
+  target_compile_options(lexertl PRIVATE "-Wall -Wextra -Wno-long-long -std=c++0x")
 
   if(GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-    list(APPEND CMAKE_CXX_FLAGS "-Wpedantic")
+	target_compile_options(lexertl PRIVATE "-Wpedantic")
   else()
-    list(APPEND CMAKE_CXX_FLAGS "-pedantic")
+	target_compile_options(lexertl PRIVATE "-pedantic")
   endif()
 endif()
 
 if(CMAKE_CXX_COMPILER MATCHES "clang")
-  set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+  target_compile_options(lexertl PRIVATE "-Wall -Wextra -pedantic -Wno-long-long")
 endif()
 
-separate_arguments(CMAKE_CXX_FLAGS)
-list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS)
-string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
-include_directories("${CMAKE_SOURCE_DIR}/lexertl")
-
+# Add the examples
 add_subdirectory(examples)
+
+# Generate install
+install(TARGETS lexertl EXPORT lexertlTargets
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+	RUNTIME DESTINATION bin
+	PUBLIC_HEADER DESTINATION include
+)
+install(DIRECTORY include/lexertl DESTINATION include)
+install(EXPORT lexertlTargets
+	FILE lexertlTargets.cmake
+	NAMESPACE lexertl::
+	DESTINATION lib/cmake/lexertl
+)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file("lexertlConfigVersion.cmake"
+	VERSION ${lexertl_VERSION}
+	COMPATIBILITY SameMajorVersion
+)
+install(FILES "lexertlConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/lexertlConfigVersion.cmake"
+	DESTINATION lib/cmake/lexertl
+)
+

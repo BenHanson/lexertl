@@ -130,8 +130,8 @@ public:
     {
         return _index == rhs_._index &&
             (_shared == rhs_._shared ||
-            (_index == shared::npos() || rhs_._index == shared::npos()) &&
-            (!_shared || !rhs_._shared));
+            ((_index == shared::npos() || rhs_._index == shared::npos()) &&
+            (!_shared || !rhs_._shared)));
     }
 
     bool operator !=(const basic_stream_shared_iterator &rhs_) const

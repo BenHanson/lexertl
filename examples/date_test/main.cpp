@@ -1,7 +1,7 @@
 #include <fstream>
-#include "../../lexertl/generator.hpp"
-#include "../../lexertl/lookup.hpp"
-#include "../../lexertl/stream_shared_iterator.hpp"
+#include <lexertl/generator.hpp>
+#include <lexertl/lookup.hpp>
+#include <lexertl/stream_shared_iterator.hpp>
 
 int main(int /*argc*/, char** /*argv*/)
 {

@@ -1,10 +1,10 @@
 #include <fstream>
-#include "../../lexertl/generator.hpp"
+#include <lexertl/generator.hpp>
 #include <iomanip>
-#include "../../lexertl/lookup.hpp"
-#include "../../lexertl/memory_file.hpp"
-#include "../../lexertl/stream_shared_iterator.hpp"
-#include "../../lexertl/utf_iterators.hpp"
+#include <lexertl/lookup.hpp>
+#include <lexertl/memory_file.hpp>
+#include <lexertl/stream_shared_iterator.hpp>
+#include <lexertl/utf_iterators.hpp>
 
 #ifdef WIN32
 #include <windows.h>
@@ -221,8 +221,8 @@ void case_mapping()
         }
     } while (results_.id != 0);
 
-    std::pair<std::size_t, std::size_t> first_ = { 0, 0 };
-    std::pair<std::size_t, std::size_t> second_ = { 0, 0 };
+    std::pair<std::size_t, std::size_t> first_ { 0, 0 };
+    std::pair<std::size_t, std::size_t> second_ { 0, 0 };
 
     for (auto &pair : map)
     {
@@ -233,8 +233,8 @@ void case_mapping()
         }
         else if (pair.first == first_.second + 1 &&
             (pair.second == second_.second + 1 ||
-            pair.second <= pair.first &&
-            pair.second == second_.second - 1))
+            (pair.second <= pair.first &&
+            pair.second == second_.second - 1)))
         {
             first_.second = pair.first;
             second_.second = pair.second;

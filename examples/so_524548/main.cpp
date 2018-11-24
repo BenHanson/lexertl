@@ -1,10 +1,10 @@
 // http://stackoverflow.com/questions/524548/regular-expression-to-detect-semi-colon-terminated-c-for-while-loops/11725855#11725855
 
 #include <algorithm>
-#include "../../lexertl/generator.hpp"
+#include <lexertl/generator.hpp>
 #include <iostream>
-#include "../../lexertl/lookup.hpp"
-#include "../../lexertl/memory_file.hpp"
+#include <lexertl/lookup.hpp>
+#include <lexertl/memory_file.hpp>
 
 int main(int /*argc*/, char ** /*argv*/)
 {

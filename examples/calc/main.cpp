@@ -1,6 +1,6 @@
 #include <iostream>
-#include "../../lexertl/generator.hpp"
-#include "../../lexertl/lookup.hpp"
+#include <lexertl/generator.hpp>
+#include <lexertl/lookup.hpp>
 #include <string>
 
 enum calc_id {eEOF, eNegate, eValue, eOperator, eOpen, eClose};
