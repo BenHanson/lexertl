@@ -539,11 +539,14 @@ private:
                     const token &first_ = iter_->second[1];
                     const token &second_ =
                         iter_->second[iter_->second.size() - 2];
-                    bool bol_ = first_._type == detail::CHARSET &&
+                    const bool bol_ = tokens_.size() == 1 &&
+                        first_._type == detail::CHARSET &&
                         first_._str.size() == 1 &&
                         first_._str._ranges[0] ==
                         typename token::string_token::range('^', '^');
-                    bool eol_ = second_._type == detail::CHARSET &&
+                    const bool eol_ = state_._end == regex_.c_str() +
+                        regex_.size() &&
+                        second_._type == detail::CHARSET &&
                         second_._str.size() == 1 &&
                         second_._str._ranges[0] ==
                         typename token::string_token::range('$', '$');
@@ -593,11 +596,6 @@ private:
                         std::size_t start_offset_ = 1;
                         std::size_t end_offset_ = 1;
 
-                        bol_ &= tokens_.size() == 1;
-                        eol_ &= tokens_.size() == 1 &&
-                            state_._end == regex_.c_str() + regex_.size();
-
-                        // Don't insert BEGIN or END tokens
                         if (bol_)
                         {
                             token token_;
@@ -612,6 +610,7 @@ private:
                             ++end_offset_;
                         }
 
+                        // Don't insert BEGIN or END tokens
                         tokens_.insert(tokens_.end(), iter_->second.begin() +
                             start_offset_, iter_->second.end() - end_offset_);
 
