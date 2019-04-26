@@ -55,6 +55,11 @@ struct basic_string_token
         return _ranges.empty();
     }
 
+    std::size_t size() const
+    {
+        return _ranges.size();
+    }
+
     bool any() const
     {
         return _ranges.size() == 1 && _ranges.front().first == 0 &&

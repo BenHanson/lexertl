@@ -279,12 +279,13 @@ public:
         _regexes.front().push_back(token_deque());
         tokenise(regex_, _regexes.front().back(), id_, 0);
 
-        if (regex_[0] == '^')
+        if (_regexes.front().front()[1]._type == detail::BOL)
         {
             _features.front() |= bol_bit;
         }
 
-        if (regex_.size() > 0 && regex_[regex_.size() - 1] == '$')
+        if (_regexes.front().front()[_regexes.front().front().size() - 2].
+            _type == detail::EOL)
         {
             _features.front() |= eol_bit;
         }
@@ -524,17 +525,28 @@ private:
 
                 if (iter_ == _macro_map.end())
                 {
-                    const rules_char_type *n_ = rhs_._extra.c_str();
+                    const rules_char_type *rhs_name_ = rhs_._extra.c_str();
                     std::ostringstream ss_;
 
                     ss_ << "Unknown MACRO name '";
-                    narrow(n_, ss_);
+                    narrow(rhs_name_, ss_);
                     ss_ << "'.";
                     throw runtime_error(ss_.str());
                 }
                 else
                 {
                     const bool multiple_ = iter_->second.size() > 3;
+                    const token &first_ = iter_->second[1];
+                    const token &second_ =
+                        iter_->second[iter_->second.size() - 2];
+                    bool bol_ = first_._type == detail::CHARSET &&
+                        first_._str.size() == 1 &&
+                        first_._str._ranges[0] ==
+                        typename token::string_token::range('^', '^');
+                    bool eol_ = second_._type == detail::CHARSET &&
+                        second_._str.size() == 1 &&
+                        second_._str._ranges[0] ==
+                        typename token::string_token::range('$', '$');
 
                     if (diff_)
                     {
@@ -566,7 +578,7 @@ private:
 
                     // Any macro with more than one charset (or quantifiers)
                     // requires bracketing.
-                    if (multiple_)
+                    if (multiple_ && !(bol_ || eol_))
                     {
                         token open_;
 
@@ -578,13 +590,43 @@ private:
                     // Don't need to store token if it is diff.
                     if (!diff_)
                     {
+                        std::size_t start_offset_ = 1;
+                        std::size_t end_offset_ = 1;
+
+                        bol_ &= tokens_.size() == 1;
+                        eol_ &= tokens_.size() == 1 &&
+                            state_._end == regex_.c_str() + regex_.size();
+
                         // Don't insert BEGIN or END tokens
-                        tokens_.insert(tokens_.end(), iter_->second.begin() + 1,
-                            iter_->second.end() - 1);
+                        if (bol_)
+                        {
+                            token token_;
+
+                            token_._type = detail::BOL;
+                            tokens_.push_back(token_);
+                            ++start_offset_;
+                        }
+
+                        if (eol_)
+                        {
+                            ++end_offset_;
+                        }
+
+                        tokens_.insert(tokens_.end(), iter_->second.begin() +
+                            start_offset_, iter_->second.end() - end_offset_);
+
+                        if (eol_)
+                        {
+                            token token_;
+
+                            token_._type = detail::EOL;
+                            tokens_.push_back(token_);
+                        }
+
                         lhs_ = &tokens_.back();
                     }
 
-                    if (multiple_)
+                    if (multiple_ && !(bol_ || eol_))
                     {
                         token close_;
 
@@ -943,12 +985,13 @@ private:
             _regexes[curr_].push_back(token_deque());
             tokenise(regex_, _regexes[curr_].back(), id_, 0);
 
-            if (regex_[0] == '^')
+            if (_regexes[curr_].front()[1]._type == detail::BOL)
             {
                 _features[curr_] |= bol_bit;
             }
 
-            if (regex_[regex_.size() - 1] == '$')
+            if (_regexes[curr_].front()[_regexes[curr_].front().size() - 2].
+                _type == detail::EOL)
             {
                 _features[curr_] |= eol_bit;
             }
