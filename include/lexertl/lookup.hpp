@@ -280,9 +280,9 @@ struct lookup_state
 
     template<typename iter_type, typename char_type>
     void check_eol(iter_type &end_token_, iter_type &curr_,
-        const id_type npos, const char_type eoi_, const true_ &)
+        const id_type npos_, const char_type eoi_, const true_ &)
     {
-        if (_eol_state._EOL_state != npos && curr_ == eoi_)
+        if (_eol_state._EOL_state != npos_ && curr_ == eoi_)
         {
             _eol_state._EOL_state = _ptr[eol_index];
 

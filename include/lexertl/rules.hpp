@@ -279,12 +279,12 @@ public:
         _regexes.front().push_back(token_deque());
         tokenise(regex_, _regexes.front().back(), id_, 0);
 
-        if (_regexes.front().front()[1]._type == detail::BOL)
+        if (_regexes.front().back()[1]._type == detail::BOL)
         {
             _features.front() |= bol_bit;
         }
 
-        if (_regexes.front().front()[_regexes.front().front().size() - 2].
+        if (_regexes.front().back()[_regexes.front().back().size() - 2].
             _type == detail::EOL)
         {
             _features.front() |= eol_bit;
@@ -984,12 +984,12 @@ private:
             _regexes[curr_].push_back(token_deque());
             tokenise(regex_, _regexes[curr_].back(), id_, 0);
 
-            if (_regexes[curr_].front()[1]._type == detail::BOL)
+            if (_regexes[curr_].back()[1]._type == detail::BOL)
             {
                 _features[curr_] |= bol_bit;
             }
 
-            if (_regexes[curr_].front()[_regexes[curr_].front().size() - 2].
+            if (_regexes[curr_].back()[_regexes[curr_].back().size() - 2].
                 _type == detail::EOL)
             {
                 _features[curr_] |= eol_bit;

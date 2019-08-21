@@ -29,9 +29,9 @@ public:
     {
     }
 
-    iterator(const iter &start_, const iter &end_, const sm_type &sm) :
+    iterator(const iter &start_, const iter &end_, const sm_type &sm_) :
         _results(start_, end_),
-        _sm(&sm)
+        _sm(&sm_)
     {
         lookup();
     }
