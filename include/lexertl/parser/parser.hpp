@@ -446,7 +446,7 @@ private:
         assert(handle_->top()->_type == EOL &&
             handle_->size() == 1);
 
-        if (temp_nl_id_ != ~static_cast<id_type>(0))
+        if (temp_nl_id_ != sm_traits::npos())
         {
             nl_id_ = temp_nl_id_;
         }
