@@ -370,10 +370,9 @@ void next(const sm_type &sm_, results &results_,
     typedef typename sm_type::id_type id_type;
     const typename sm_type::internals &internals_ = sm_.data();
     typename results::iter_type end_token_ = results_.second;
-
-skip:
     typename results::iter_type curr_ = results_.second;
 
+skip:
     results_.first = curr_;
 
 again:
@@ -397,7 +396,6 @@ again:
             const id_type state_ = lu_state_.next_char(prev_char_,
                 compressed_);
 
-            ++curr_;
             lu_state_.bol(prev_char_, bool_<(flags & bol_bit) != 0>());
 
             if (state_ == 0)
@@ -406,6 +404,8 @@ again:
                     bool_<(flags & eol_bit) != 0>());
                 break;
             }
+
+            ++curr_;
         }
 
         lu_state_.end_state(end_token_, curr_);

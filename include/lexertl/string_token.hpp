@@ -284,12 +284,12 @@ struct basic_string_token
         }
     }
 
-    void remove(basic_string_token &rhs_)
+    void remove(const basic_string_token &rhs_)
     {
         typename range_vector::iterator lhs_iter_ = _ranges.begin();
         typename range_vector::iterator lhs_end_ = _ranges.end();
-        typename range_vector::iterator rhs_iter_ = rhs_._ranges.begin();
-        typename range_vector::iterator rhs_end_ = rhs_._ranges.end();
+        typename range_vector::const_iterator rhs_iter_ = rhs_._ranges.begin();
+        typename range_vector::const_iterator rhs_end_ = rhs_._ranges.end();
 
         while (lhs_iter_ != lhs_end_ && rhs_iter_ != rhs_end_)
         {
