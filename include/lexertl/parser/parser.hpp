@@ -86,7 +86,8 @@ public:
     node *parse(const token_deque &regex_, const id_type id_,
         const id_type user_id_, const id_type next_dfa_,
         const id_type push_dfa_, const bool pop_dfa_,
-        const std::size_t flags_, id_type &nl_id_, const bool seen_bol_)
+        const std::size_t flags_, id_type &cr_id_, id_type &nl_id_,
+        const bool seen_bol_)
     {
         typename token_deque::const_iterator iter_ = regex_.begin();
         typename token_deque::const_iterator end_ = regex_.end();
@@ -119,7 +120,7 @@ public:
 
                     break;
                 case '>':
-                    reduce(nl_id_);
+                    reduce(cr_id_, nl_id_);
                     break;
                 default:
                 {
@@ -233,7 +234,7 @@ private:
         }
     };
 
-    void reduce(id_type &nl_id_)
+    void reduce(id_type &cr_id_, id_type &nl_id_)
     {
         token *lhs_ = 0;
         token *rhs_ = 0;
@@ -285,7 +286,7 @@ private:
             bol(handle_);
             break;
         case EOL:
-            eol(handle_, nl_id_);
+            eol(handle_, cr_id_, nl_id_);
             break;
         case CHARSET:
             charset(handle_, compressed());
@@ -435,16 +436,23 @@ private:
     }
 
 #ifndef NDEBUG
-    void eol(token_stack &handle_, id_type &nl_id_)
+    void eol(token_stack &handle_, id_type &cr_id_, id_type &nl_id_)
 #else
-    void eol(token_stack &, id_type &nl_id_)
+    void eol(token_stack &, id_type &cr_id_, id_type &nl_id_)
 #endif
     {
+        const string_token cr_('\r');
         const string_token nl_('\n');
+        const id_type temp_cr_id_ = lookup(cr_);
         const id_type temp_nl_id_ = lookup(nl_);
 
         assert(handle_->top()->_type == EOL &&
             handle_->size() == 1);
+
+        if (temp_cr_id_ != sm_traits::npos())
+        {
+            cr_id_ = temp_cr_id_;
+        }
 
         if (temp_nl_id_ != sm_traits::npos())
         {

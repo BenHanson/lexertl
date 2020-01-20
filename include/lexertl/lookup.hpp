@@ -370,9 +370,9 @@ void next(const sm_type &sm_, results &results_,
     typedef typename sm_type::id_type id_type;
     const typename sm_type::internals &internals_ = sm_.data();
     typename results::iter_type end_token_ = results_.second;
+skip:
     typename results::iter_type curr_ = results_.second;
 
-skip:
     results_.first = curr_;
 
 again:
