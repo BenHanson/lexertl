@@ -1,5 +1,5 @@
 // equivset.hpp
-// Copyright (c) 2005-2018 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2020 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,134 +12,136 @@
 
 namespace lexertl
 {
-namespace detail
-{
-template<typename id_type>
-struct basic_equivset
-{
-    typedef std::set<id_type> index_set;
-    typedef std::vector<id_type> index_vector;
-    // Not owner of nodes:
-    typedef basic_node<id_type> node;
-    typedef std::vector<node *> node_vector;
-
-    index_vector _index_vector;
-    id_type _id;
-    bool _greedy;
-    node_vector _followpos;
-
-    basic_equivset() :
-        _index_vector(),
-        _id(0),
-        _greedy(true),
-        _followpos()
+    namespace detail
     {
-    }
-
-    basic_equivset(const index_set &index_set_, const id_type id_,
-        const bool greedy_, const node_vector &followpos_) :
-        _index_vector(index_set_.begin(), index_set_.end()),
-        _id(id_),
-        _greedy(greedy_),
-        _followpos(followpos_)
-    {
-    }
-
-    bool empty() const
-    {
-        return _index_vector.empty() && _followpos.empty();
-    }
-
-    void intersect(basic_equivset &rhs_, basic_equivset &overlap_)
-    {
-        intersect_indexes(rhs_._index_vector, overlap_._index_vector);
-
-        if (!overlap_._index_vector.empty())
+        template<typename id_type>
+        struct basic_equivset
         {
-            // Note that the LHS takes priority in order to
-            // respect rule ordering priority in the lex spec.
-            overlap_._id = _id;
-            overlap_._greedy = _greedy;
-            overlap_._followpos = _followpos;
+            typedef std::set<id_type> index_set;
+            typedef std::vector<id_type> index_vector;
+            // Not owner of nodes:
+            typedef basic_node<id_type> node;
+            typedef std::vector<node*> node_vector;
 
-            typename node_vector::const_iterator overlap_begin_ =
-                overlap_._followpos.begin();
-            typename node_vector::const_iterator overlap_end_ =
-                overlap_._followpos.end();
-            typename node_vector::const_iterator rhs_iter_ =
-                rhs_._followpos.begin();
-            typename node_vector::const_iterator rhs_end_ =
-                rhs_._followpos.end();
+            index_vector _index_vector;
+            id_type _id;
+            bool _greedy;
+            node_vector _followpos;
 
-            for (; rhs_iter_ != rhs_end_; ++rhs_iter_)
+            basic_equivset() :
+                _index_vector(),
+                _id(0),
+                _greedy(true),
+                _followpos()
             {
-                node *node_ = *rhs_iter_;
+            }
 
-                if (std::find(overlap_begin_, overlap_end_, node_) ==
-                    overlap_end_)
+            basic_equivset(const index_set& index_set_, const id_type id_,
+                const bool greedy_, const node_vector& followpos_) :
+                _index_vector(index_set_.begin(), index_set_.end()),
+                _id(id_),
+                _greedy(greedy_),
+                _followpos(followpos_)
+            {
+            }
+
+            bool empty() const
+            {
+                return _index_vector.empty() && _followpos.empty();
+            }
+
+            void intersect(basic_equivset& rhs_, basic_equivset& overlap_)
+            {
+                intersect_indexes(rhs_._index_vector, overlap_._index_vector);
+
+                if (!overlap_._index_vector.empty())
                 {
-                    overlap_._followpos.push_back(node_);
-                    overlap_begin_ = overlap_._followpos.begin();
-                    overlap_end_ = overlap_._followpos.end();
+                    // Note that the LHS takes priority in order to
+                    // respect rule ordering priority in the lex spec.
+                    overlap_._id = _id;
+                    overlap_._greedy = _greedy;
+                    overlap_._followpos = _followpos;
+
+                    typename node_vector::const_iterator overlap_begin_ =
+                        overlap_._followpos.begin();
+                    typename node_vector::const_iterator overlap_end_ =
+                        overlap_._followpos.end();
+                    typename node_vector::const_iterator rhs_iter_ =
+                        rhs_._followpos.begin();
+                    typename node_vector::const_iterator rhs_end_ =
+                        rhs_._followpos.end();
+
+                    for (; rhs_iter_ != rhs_end_; ++rhs_iter_)
+                    {
+                        node* node_ = *rhs_iter_;
+
+                        if (std::find(overlap_begin_, overlap_end_, node_) ==
+                            overlap_end_)
+                        {
+                            overlap_._followpos.push_back(node_);
+                            overlap_begin_ = overlap_._followpos.begin();
+                            overlap_end_ = overlap_._followpos.end();
+                        }
+                    }
+
+                    if (_index_vector.empty())
+                    {
+                        _followpos.clear();
+                    }
+
+                    if (rhs_._index_vector.empty())
+                    {
+                        rhs_._followpos.clear();
+                    }
                 }
             }
 
-            if (_index_vector.empty())
+        private:
+            void intersect_indexes(index_vector& rhs_, index_vector& overlap_)
             {
-                _followpos.clear();
+                std::set_intersection(_index_vector.begin(),
+                    _index_vector.end(), rhs_.begin(), rhs_.end(),
+                    std::back_inserter(overlap_));
+
+                if (!overlap_.empty())
+                {
+                    remove(overlap_, _index_vector);
+                    remove(overlap_, rhs_);
+                }
             }
 
-            if (rhs_._index_vector.empty())
+            void remove(const index_vector& source_, index_vector& dest_)
             {
-                rhs_._followpos.clear();
+                typename index_vector::const_iterator inter_ = source_.begin();
+                typename index_vector::const_iterator inter_end_ =
+                    source_.end();
+                typename index_vector::iterator reader_ =
+                    std::find(dest_.begin(), dest_.end(), *inter_);
+                typename index_vector::iterator writer_ = reader_;
+                typename index_vector::iterator dest_end_ = dest_.end();
+
+                while (writer_ != dest_end_ && inter_ != inter_end_)
+                {
+                    if (*reader_ == *inter_)
+                    {
+                        ++inter_;
+                        ++reader_;
+                    }
+                    else
+                    {
+                        *writer_++ = *reader_++;
+                    }
+                }
+
+                while (reader_ != dest_end_)
+                {
+                    *writer_++ = *reader_++;
+                }
+
+                dest_.resize(dest_.size() - source_.size());
             }
-        }
+        };
     }
-
-private:
-    void intersect_indexes(index_vector &rhs_, index_vector &overlap_)
-    {
-        std::set_intersection(_index_vector.begin(), _index_vector.end(),
-            rhs_.begin(), rhs_.end(), std::back_inserter(overlap_));
-
-        if (!overlap_.empty())
-        {
-            remove(overlap_, _index_vector);
-            remove(overlap_, rhs_);
-        }
-    }
-
-    void remove(const index_vector &source_, index_vector &dest_)
-    {
-        typename index_vector::const_iterator inter_ = source_.begin();
-        typename index_vector::const_iterator inter_end_ = source_.end();
-        typename index_vector::iterator reader_ =
-            std::find(dest_.begin(), dest_.end(), *inter_);
-        typename index_vector::iterator writer_ = reader_;
-        typename index_vector::iterator dest_end_ = dest_.end();
-
-        while (writer_ != dest_end_ && inter_ != inter_end_)
-        {
-            if (*reader_ == *inter_)
-            {
-                ++inter_;
-                ++reader_;
-            }
-            else
-            {
-                *writer_++ = *reader_++;
-            }
-        }
-
-        while (reader_ != dest_end_)
-        {
-            *writer_++ = *reader_++;
-        }
-
-        dest_.resize(dest_.size() - source_.size());
-    }
-};
-}
 }
 
 #endif

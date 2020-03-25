@@ -1,5 +1,5 @@
 // match_results.hpp
-// Copyright (c) 2012-2018 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2012-2020 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -14,155 +14,157 @@
 
 namespace lexertl
 {
-template<typename iter, typename id_t = std::size_t,
-    std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
+    template<typename iter, typename id_t = std::size_t,
+        std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
         multi_state_bit | advance_bit>
-struct match_results
-{
-    typedef id_t id_type;
-    typedef iter iter_type;
-    typedef typename std::iterator_traits<iter_type>::value_type char_type;
-    typedef typename basic_char_traits<char_type>::index_type index_type;
-    typedef std::basic_string<char_type> string;
-
-    id_type id;
-    id_type user_id;
-    iter_type first;
-    iter_type second;
-    iter_type eoi;
-    bool bol;
-    id_type state;
-
-    match_results() :
-        id(0),
-        user_id(npos()),
-        first(iter_type()),
-        second(iter_type()),
-        eoi(iter_type()),
-        bol(true),
-        state(0)
+        struct match_results
     {
-    }
+        typedef id_t id_type;
+        typedef iter iter_type;
+        typedef typename std::iterator_traits<iter_type>::value_type char_type;
+        typedef typename basic_char_traits<char_type>::index_type index_type;
+        typedef std::basic_string<char_type> string;
 
-    match_results(const iter_type &start_, const iter_type &end_,
-        const bool bol_ = true, const id_type state_ = 0) :
-        id(0),
-        user_id(npos()),
-        first(start_),
-        second(start_),
-        eoi(end_),
-        bol(bol_),
-        state(state_)
-    {
-    }
+        id_type id;
+        id_type user_id;
+        iter_type first;
+        iter_type second;
+        iter_type eoi;
+        bool bol;
+        id_type state;
 
-    virtual ~match_results()
-    {
-    }
+        match_results() :
+            id(0),
+            user_id(npos()),
+            first(iter_type()),
+            second(iter_type()),
+            eoi(iter_type()),
+            bol(true),
+            state(0)
+        {
+        }
 
-    string str() const
-    {
-        return string(first, second);
-    }
+        match_results(const iter_type& start_, const iter_type& end_,
+            const bool bol_ = true, const id_type state_ = 0) :
+            id(0),
+            user_id(npos()),
+            first(start_),
+            second(start_),
+            eoi(end_),
+            bol(bol_),
+            state(state_)
+        {
+        }
 
-    string substr(const std::size_t soffset_, const std::size_t eoffset_) const
-    {
-        return string(first + soffset_, second - eoffset_);
-    }
+        virtual ~match_results()
+        {
+        }
 
-    virtual void clear()
-    {
-        id  = 0;
-        user_id = npos();
-        first = eoi;
-        second = eoi;
-        bol = true;
-        state = 0;
-    }
+        string str() const
+        {
+            return string(first, second);
+        }
 
-    virtual void reset(const iter_type &start_, const iter_type &end_)
-    {
-        id  = 0;
-        user_id = npos();
-        first = start_;
-        second  = start_;
-        eoi = end_;
-        bol = true;
-        state = 0;
-    }
+        string substr(const std::size_t soffset_,
+            const std::size_t eoffset_) const
+        {
+            return string(first + soffset_, second - eoffset_);
+        }
 
-    static id_type npos()
-    {
-        return static_cast<id_type>(~0);
-    }
+        virtual void clear()
+        {
+            id = 0;
+            user_id = npos();
+            first = eoi;
+            second = eoi;
+            bol = true;
+            state = 0;
+        }
 
-    static id_type skip()
-    {
-        return static_cast<id_type>(~1);
-    }
+        virtual void reset(const iter_type& start_, const iter_type& end_)
+        {
+            id = 0;
+            user_id = npos();
+            first = start_;
+            second = start_;
+            eoi = end_;
+            bol = true;
+            state = 0;
+        }
 
-    bool operator ==(const match_results &rhs_) const
-    {
-        return id == rhs_.id &&
-            user_id == rhs_.user_id &&
-            first == rhs_.first &&
-            second == rhs_.second &&
-            eoi == rhs_.eoi &&
-            bol == rhs_.bol &&
-            state == rhs_.state;
-    }
-};
+        static id_type npos()
+        {
+            return static_cast<id_type>(~0);
+        }
 
-template<typename iter, typename id_type = std::size_t,
-    std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
+        static id_type skip()
+        {
+            return static_cast<id_type>(~1);
+        }
+
+        bool operator ==(const match_results& rhs_) const
+        {
+            return id == rhs_.id &&
+                user_id == rhs_.user_id &&
+                first == rhs_.first &&
+                second == rhs_.second &&
+                eoi == rhs_.eoi &&
+                bol == rhs_.bol &&
+                state == rhs_.state;
+        }
+    };
+
+    template<typename iter, typename id_type = std::size_t,
+        std::size_t flags = bol_bit | eol_bit | skip_bit | again_bit |
         multi_state_bit | recursive_bit | advance_bit>
-struct recursive_match_results : public match_results<iter, id_type, flags>
-{
-    typedef std::pair<id_type, id_type> id_type_pair;
-    std::stack<id_type_pair> stack;
-
-    recursive_match_results() :
-        match_results<iter, id_type, flags>(),
-        stack()
+        struct recursive_match_results :
+        public match_results<iter, id_type, flags>
     {
-    }
+        typedef std::pair<id_type, id_type> id_type_pair;
+        std::stack<id_type_pair> stack;
 
-    recursive_match_results(const iter &start_, const iter &end_) :
-        match_results<iter, id_type, flags>(start_, end_),
-        stack()
-    {
-    }
+        recursive_match_results() :
+            match_results<iter, id_type, flags>(),
+            stack()
+        {
+        }
 
-    virtual ~recursive_match_results()
-    {
-    }
+        recursive_match_results(const iter& start_, const iter& end_) :
+            match_results<iter, id_type, flags>(start_, end_),
+            stack()
+        {
+        }
 
-    virtual void clear()
-    {
-        match_results<iter, id_type, flags>::clear();
+        virtual ~recursive_match_results()
+        {
+        }
 
-        while (!stack.empty()) stack.pop();
-    }
+        virtual void clear()
+        {
+            match_results<iter, id_type, flags>::clear();
 
-    virtual void reset(const iter &start_, const iter &end_)
-    {
-        match_results<iter, id_type, flags>::reset(start_, end_);
+            while (!stack.empty()) stack.pop();
+        }
 
-        while (!stack.empty()) stack.pop();
-    }
-};
+        virtual void reset(const iter& start_, const iter& end_)
+        {
+            match_results<iter, id_type, flags>::reset(start_, end_);
 
-typedef match_results<std::string::const_iterator> smatch;
-typedef match_results<const char *> cmatch;
-typedef match_results<std::wstring::const_iterator> wsmatch;
-typedef match_results<const wchar_t *> wcmatch;
+            while (!stack.empty()) stack.pop();
+        }
+    };
 
-typedef recursive_match_results<std::string::const_iterator>
-    srmatch;
-typedef recursive_match_results<const char *> crmatch;
-typedef recursive_match_results<std::wstring::const_iterator>
-    wsrmatch;
-typedef recursive_match_results<const wchar_t *> wcrmatch;
+    typedef match_results<std::string::const_iterator> smatch;
+    typedef match_results<const char*> cmatch;
+    typedef match_results<std::wstring::const_iterator> wsmatch;
+    typedef match_results<const wchar_t*> wcmatch;
+
+    typedef recursive_match_results<std::string::const_iterator>
+        srmatch;
+    typedef recursive_match_results<const char*> crmatch;
+    typedef recursive_match_results<std::wstring::const_iterator>
+        wsrmatch;
+    typedef recursive_match_results<const wchar_t*> wcrmatch;
 }
 
 #endif

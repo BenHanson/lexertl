@@ -1,5 +1,5 @@
 // leaf_node.hpp
-// Copyright (c) 2005-2018 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2020 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,100 +12,100 @@
 
 namespace lexertl
 {
-namespace detail
-{
-template<typename id_type>
-class basic_leaf_node : public basic_node<id_type>
-{
-public:
-    typedef basic_node<id_type> node;
-    typedef typename node::bool_stack bool_stack;
-    typedef typename node::const_node_stack const_node_stack;
-    typedef typename node::node_ptr_vector node_ptr_vector;
-    typedef typename node::node_stack node_stack;
-    typedef typename node::node_type node_type;
-    typedef typename node::node_vector node_vector;
-
-    basic_leaf_node(const id_type token_, const bool greedy_) :
-        node(token_ == node::null_token()),
-        _token(token_),
-        _set_greedy(!greedy_),
-        _greedy(greedy_),
-        _followpos()
+    namespace detail
     {
-        if (!node::_nullable)
+        template<typename id_type>
+        class basic_leaf_node : public basic_node<id_type>
         {
-            node::_firstpos.push_back(this);
-            node::_lastpos.push_back(this);
-        }
-    }
+        public:
+            typedef basic_node<id_type> node;
+            typedef typename node::bool_stack bool_stack;
+            typedef typename node::const_node_stack const_node_stack;
+            typedef typename node::node_ptr_vector node_ptr_vector;
+            typedef typename node::node_stack node_stack;
+            typedef typename node::node_type node_type;
+            typedef typename node::node_vector node_vector;
 
-    virtual ~basic_leaf_node()
-    {
-    }
+            basic_leaf_node(const id_type token_, const bool greedy_) :
+                node(token_ == node::null_token()),
+                _token(token_),
+                _set_greedy(!greedy_),
+                _greedy(greedy_),
+                _followpos()
+            {
+                if (!node::_nullable)
+                {
+                    node::_firstpos.push_back(this);
+                    node::_lastpos.push_back(this);
+                }
+            }
 
-    virtual void append_followpos(const node_vector &followpos_)
-    {
-        _followpos.insert(_followpos.end(),
-            followpos_.begin(), followpos_.end());
-    }
+            virtual ~basic_leaf_node()
+            {
+            }
 
-    virtual node_type what_type() const
-    {
-        return node::LEAF;
-    }
+            virtual void append_followpos(const node_vector& followpos_)
+            {
+                _followpos.insert(_followpos.end(),
+                    followpos_.begin(), followpos_.end());
+            }
 
-    virtual bool traverse(const_node_stack &/*node_stack_*/,
-        bool_stack &/*perform_op_stack_*/) const
-    {
-        return false;
-    }
+            virtual node_type what_type() const
+            {
+                return node::LEAF;
+            }
 
-    virtual id_type token() const
-    {
-        return _token;
-    }
+            virtual bool traverse(const_node_stack&/*node_stack_*/,
+                bool_stack&/*perform_op_stack_*/) const
+            {
+                return false;
+            }
 
-    virtual void greedy(const bool greedy_)
-    {
-        if (!_set_greedy)
-        {
-            _greedy = greedy_;
-            _set_greedy = true;
-        }
-    }
+            virtual id_type token() const
+            {
+                return _token;
+            }
 
-    virtual bool greedy() const
-    {
-        return _greedy;
-    }
+            virtual void greedy(const bool greedy_)
+            {
+                if (!_set_greedy)
+                {
+                    _greedy = greedy_;
+                    _set_greedy = true;
+                }
+            }
 
-    virtual const node_vector &followpos() const
-    {
-        return _followpos;
-    }
+            virtual bool greedy() const
+            {
+                return _greedy;
+            }
 
-    virtual node_vector &followpos()
-    {
-        return _followpos;
-    }
+            virtual const node_vector& followpos() const
+            {
+                return _followpos;
+            }
 
-private:
-    id_type _token;
-    bool _set_greedy;
-    bool _greedy;
-    node_vector _followpos;
+            virtual node_vector& followpos()
+            {
+                return _followpos;
+            }
 
-    virtual void copy_node(node_ptr_vector &node_ptr_vector_,
-        node_stack &new_node_stack_, bool_stack &/*perform_op_stack_*/,
-        bool &/*down_*/) const
-    {
-        node_ptr_vector_->push_back(static_cast<basic_leaf_node *>(0));
-        node_ptr_vector_->back() = new basic_leaf_node(_token, _greedy);
-        new_node_stack_.push(node_ptr_vector_->back());
+        private:
+            id_type _token;
+            bool _set_greedy;
+            bool _greedy;
+            node_vector _followpos;
+
+            virtual void copy_node(node_ptr_vector& node_ptr_vector_,
+                node_stack& new_node_stack_, bool_stack&/*perform_op_stack_*/,
+                bool&/*down_*/) const
+            {
+                node_ptr_vector_->push_back(static_cast<basic_leaf_node*>(0));
+                node_ptr_vector_->back() = new basic_leaf_node(_token, _greedy);
+                new_node_stack_.push(node_ptr_vector_->back());
+            }
+        };
     }
-};
-}
 }
 
 #endif
