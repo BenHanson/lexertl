@@ -129,8 +129,9 @@ namespace lexertl
         {
         }
 
-        recursive_match_results(const iter& start_, const iter& end_) :
-            match_results<iter, id_type, flags>(start_, end_),
+        recursive_match_results(const iter& start_, const iter& end_,
+            const bool bol_ = true, const id_type state_ = 0) :
+            match_results<iter, id_type, flags>(start_, end_, bol_, state_),
             stack()
         {
         }
