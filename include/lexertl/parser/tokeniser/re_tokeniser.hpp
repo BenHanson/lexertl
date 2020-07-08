@@ -498,9 +498,9 @@ namespace lexertl
                     {
                         std::ostringstream ss_;
 
-                        ss_ << "CHARSET must precede {" <<
-                            state_._curr << "} at index " <<
-                            state_.index() - 1;
+                        ss_ << "CHARSET must precede {";
+                        narrow(state_._curr, ss_);
+                        ss_ << "} at index " << state_.index() - 1;
                         state_.error(ss_);
                         throw runtime_error(ss_.str());
                     }
