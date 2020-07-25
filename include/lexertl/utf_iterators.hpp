@@ -511,72 +511,72 @@ namespace lexertl
         {
             return ch_ > 0xffff ? 2 : 1;
         }
+    };
 
-        template<typename char_iterator>
-        class basic_flip_iterator
+    template<typename char_iterator>
+    class basic_flip_iterator
+    {
+    public:
+        typedef std::forward_iterator_tag iterator_category;
+        typedef typename std::iterator_traits<char_iterator>::value_type
+            value_type;
+        typedef typename std::iterator_traits<char_iterator>::
+            difference_type difference_type;
+        typedef typename std::iterator_traits<char_iterator>::pointer
+            pointer;
+        typedef typename std::iterator_traits<char_iterator>::reference
+            reference;
+
+        basic_flip_iterator() :
+            _it(char_iterator())
         {
-        public:
-            typedef std::forward_iterator_tag iterator_category;
-            typedef typename std::iterator_traits<char_iterator>::value_type
-                value_type;
-            typedef typename std::iterator_traits<char_iterator>::
-                difference_type difference_type;
-            typedef typename std::iterator_traits<char_iterator>::pointer
-                pointer;
-            typedef typename std::iterator_traits<char_iterator>::reference
-                reference;
+        }
 
-            basic_flip_iterator() :
-                _it(char_iterator())
+        explicit basic_flip_iterator(const char_iterator& it_) :
+            _it(it_)
+        {
+        }
+
+        value_type operator *() const
+        {
+            value_type val = *_it;
+            char* first = reinterpret_cast<char*>(&val);
+            char* second = reinterpret_cast<char*>(&val + 1) - 1;
+
+            for (; first < second; ++first, --second)
             {
+                std::swap(*first, *second);
             }
 
-            explicit basic_flip_iterator(const char_iterator& it_) :
-                _it(it_)
-            {
-            }
+            return val;
+        }
 
-            value_type operator *() const
-            {
-                value_type val = *_it;
-                char* first = reinterpret_cast<char*>(&val);
-                char* second = reinterpret_cast<char*>(&val + 1) - 1;
+        bool operator ==(const basic_flip_iterator& rhs_) const
+        {
+            return _it == rhs_._it;
+        }
 
-                for (; first < second; ++first, --second)
-                {
-                    std::swap(*first, *second);
-                }
+        bool operator !=(const basic_flip_iterator& rhs_) const
+        {
+            return _it != rhs_._it;
+        }
 
-                return val;
-            }
+        basic_flip_iterator& operator ++()
+        {
+            ++_it;
+            return *this;
+        }
 
-            bool operator ==(const basic_flip_iterator& rhs_) const
-            {
-                return _it == rhs_._it;
-            }
+        basic_flip_iterator operator ++(int)
+        {
+            basic_flip_iterator temp_ = *this;
 
-            bool operator !=(const basic_flip_iterator& rhs_) const
-            {
-                return _it != rhs_._it;
-            }
+            ++_it;
+            return temp_;
+        }
 
-            basic_flip_iterator& operator ++()
-            {
-                ++_it;
-                return *this;
-            }
-
-            basic_flip_iterator operator ++(int)
-            {
-                basic_flip_iterator temp_ = *this;
-
-                ++_it;
-                return temp_;
-            }
-
-        private:
-            char_iterator _it;
-        };
+    private:
+        char_iterator _it;
     };
 }
 

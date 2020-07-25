@@ -129,7 +129,7 @@ namespace lexertl
                 ::munmap(const_cast<char_type*>(_data), _size);
                 ::close(_fh);
 #endif
-                _data = nullptr;
+                _data = 0;
                 _size = 0;
                 _fh = 0;
 #ifdef _WIN32

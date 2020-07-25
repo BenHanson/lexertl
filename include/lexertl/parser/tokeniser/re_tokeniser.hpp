@@ -559,7 +559,7 @@ namespace lexertl
                 while (!eos_ && ch_ >= '0' && ch_ <= '9')
                 {
                     min_ *= 10;
-                    min_ += ch_ - '0';
+                    min_ += static_cast<std::size_t>(ch_) - '0';
                     token_._extra += ch_;
                     eos_ = state_.next(ch_);
                 }
@@ -626,7 +626,7 @@ namespace lexertl
                         do
                         {
                             max_ *= 10;
-                            max_ += ch_ - '0';
+                            max_ += static_cast<std::size_t>(ch_) - '0';
                             token_._extra += ch_;
                             eos_ = state_.next(ch_);
                         } while (!eos_ && ch_ >= '0' && ch_ <= '9');

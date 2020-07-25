@@ -1512,7 +1512,7 @@ namespace lexertl
                 for (;;)
                 {
                     oct_ *= 8;
-                    oct_ += ch_ - '0';
+                    oct_ += static_cast<std::size_t>(ch_) - '0';
                     --count_;
                     state_.increment();
                     eos_ = state_.eos();
@@ -1630,15 +1630,15 @@ namespace lexertl
 
                     if (ch_ >= '0' && ch_ <= '9')
                     {
-                        hex_ += ch_ - '0';
+                        hex_ += static_cast<std::size_t>(ch_) - '0';
                     }
                     else if (ch_ >= 'a' && ch_ <= 'f')
                     {
-                        hex_ += 10 + (ch_ - 'a');
+                        hex_ += 10 + (static_cast<std::size_t>(ch_) - 'a');
                     }
                     else
                     {
-                        hex_ += 10 + (ch_ - 'A');
+                        hex_ += 10 + (static_cast<std::size_t>(ch_) - 'A');
                     }
 
                     eos_ = state_.eos();
