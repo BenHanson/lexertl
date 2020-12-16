@@ -1,10 +1,45 @@
 
-    static const char *other_control()
+    static const char* C()
+    {
+        return "[\\p{Cc}\\p{Cf}\\p{Co}\\p{Cs}]";
+    }
+
+    static const char* L()
+    {
+        return "[\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]";
+    }
+
+    static const char* M()
+    {
+        return "[\\p{Mc}\\p{Me}\\p{Mn}]";
+    }
+
+    static const char* N()
+    {
+        return "[\\p{Nd}\\p{Nl}\\p{No}]";
+    }
+
+    static const char* P()
+    {
+        return "[\\p{Pc}\\p{Pd}\\p{Pe}\\p{Pf}\\p{Pi}\\p{Po}\\p{Ps}]";
+    }
+
+    static const char* S()
+    {
+        return "[\\p{Sc}\\p{Sk}\\p{Sm}\\p{So}]";
+    }
+
+    static const char* Z()
+    {
+        return "[\\p{Zl}\\p{Zp}\\p{Zs}]";
+    }
+
+    static const char *Cc()
     {
         return "[\\x0-\\x1f\\x7f-\\x9f]";
     }
 
-    static const char *other_format()
+    static const char *Cf()
     {
         return "[\\xad\\x600-\\x605\\x61c\\x6dd\\x70f\\x890\\x891\\x8e2\\x180e"
             "\\x200b-\\x200f\\x202a-\\x202e\\x2060-\\x2064\\x2066-\\x206f"
@@ -13,17 +48,17 @@
             "\\xe0020-\\xe007f]";
     }
 
-    static const char *other_private()
+    static const char *Co()
     {
         return "[\\xe000\\xf8ff\\xf0000\\xffffd\\x100000\\x10fffd]";
     }
 
-    static const char *other_surrogate()
+    static const char *Cs()
     {
         return "[\\xd800\\xdb7f\\xdb80\\xdbff\\xdc00\\xdfff]";
     }
 
-    static const char *letter_lowercase()
+    static const char *Ll()
     {
         return "[\\x61-\\x7a\\xb5\\xdf-\\xf6\\xf8-\\xff\\x101\\x103\\x105\\x107"
             "\\x109\\x10b\\x10d\\x10f\\x111\\x113\\x115\\x117\\x119\\x11b\\x11d"
@@ -110,7 +145,7 @@
             "\\x1d7c4-\\x1d7c9\\x1d7cb\\x1e922-\\x1e943]";
     }
 
-    static const char *letter_modifier()
+    static const char *Lm()
     {
         return "[\\x2b0-\\x2c1\\x2c6-\\x2d1\\x2e0-\\x2e4\\x2ec\\x2ee\\x374"
             "\\x37a\\x559\\x640\\x6e5\\x6e6\\x7f4\\x7f5\\x7fa\\x81a\\x824\\x828"
@@ -124,7 +159,7 @@
             "\\x16fe0\\x16fe1\\x16fe3\\x1e137-\\x1e13d\\x1e94b]";
     }
 
-    static const char *letter_other()
+    static const char *Lo()
     {
         return "[\\xaa\\xba\\x1bb\\x1c0-\\x1c3\\x294\\x5d0-\\x5ea\\x5ef-\\x5f2"
             "\\x620-\\x63f\\x641-\\x64a\\x66e\\x66f\\x671-\\x6d3\\x6d5"
@@ -244,13 +279,13 @@
             "\\x2ebe0\\x2f800-\\x2fa1d\\x30000\\x3134a]";
     }
 
-    static const char *letter_titlecase()
+    static const char *Lt()
     {
         return "[\\x1c5\\x1c8\\x1cb\\x1f2\\x1f88-\\x1f8f\\x1f98-\\x1f9f"
             "\\x1fa8-\\x1faf\\x1fbc\\x1fcc\\x1ffc]";
     }
 
-    static const char *letter_uppercase()
+    static const char *Lu()
     {
         return "[\\x41-\\x5a\\xc0-\\xd6\\xd8-\\xde\\x100\\x102\\x104\\x106"
             "\\x108\\x10a\\x10c\\x10e\\x110\\x112\\x114\\x116\\x118\\x11a\\x11c"
@@ -334,7 +369,7 @@
             "\\x1d756-\\x1d76e\\x1d790-\\x1d7a8\\x1d7ca\\x1e900-\\x1e921]";
     }
 
-    static const char *mark_combining()
+    static const char *Mc()
     {
         return "[\\x903\\x93b\\x93e-\\x940\\x949-\\x94c\\x94e\\x94f\\x982\\x983"
             "\\x9be-\\x9c0\\x9c7\\x9c8\\x9cb\\x9cc\\x9d7\\xa03\\xa3e-\\xa40"
@@ -373,13 +408,13 @@
             "\\x16ff0\\x16ff1\\x1d165\\x1d166\\x1d16d-\\x1d172]";
     }
 
-    static const char *mark_enclosing()
+    static const char *Me()
     {
         return "[\\x488\\x489\\x1abe\\x20dd-\\x20e0\\x20e2-\\x20e4"
             "\\xa670-\\xa672]";
     }
 
-    static const char *mark_nonspacing()
+    static const char *Mn()
     {
         return "[\\x300-\\x36f\\x483-\\x487\\x591-\\x5bd\\x5bf\\x5c1\\x5c2"
             "\\x5c4\\x5c5\\x5c7\\x610-\\x61a\\x64b-\\x65f\\x670\\x6d6-\\x6dc"
@@ -452,7 +487,7 @@
             "\\x1e8d0-\\x1e8d6\\x1e944-\\x1e94a\\xe0100-\\xe01ef]";
     }
 
-    static const char *number_decimal()
+    static const char *Nd()
     {
         return "[\\x30-\\x39\\x660-\\x669\\x6f0-\\x6f9\\x7c0-\\x7c9"
             "\\x966-\\x96f\\x9e6-\\x9ef\\xa66-\\xa6f\\xae6-\\xaef\\xb66-\\xb6f"
@@ -473,14 +508,14 @@
             "\\x1e950-\\x1e959\\x1fbf0-\\x1fbf9]";
     }
 
-    static const char *number_letter()
+    static const char *Nl()
     {
         return "[\\x16ee-\\x16f0\\x2160-\\x2182\\x2185-\\x2188\\x3007"
             "\\x3021-\\x3029\\x3038-\\x303a\\xa6e6-\\xa6ef\\x10140-\\x10174"
             "\\x10341\\x1034a\\x103d1-\\x103d5\\x12400-\\x1246e]";
     }
 
-    static const char *number_other()
+    static const char *No()
     {
         return "[\\xb2\\xb3\\xb9\\xbc-\\xbe\\x9f4-\\x9f9\\xb72-\\xb77"
             "\\xbf0-\\xbf2\\xc78-\\xc7e\\xd58-\\xd5e\\xd70-\\xd78\\xf2a-\\xf33"
@@ -505,20 +540,20 @@
             "\\x1f100-\\x1f10c]";
     }
 
-    static const char *punctuation_connector()
+    static const char *Pc()
     {
         return "[\\x5f\\x203f\\x2040\\x2054\\xfe33\\xfe34\\xfe4d-\\xfe4f"
             "\\xff3f]";
     }
 
-    static const char *punctuation_dash()
+    static const char *Pd()
     {
         return "[\\x2d\\x58a\\x5be\\x1400\\x1806\\x2010-\\x2015\\x2e17\\x2e1a"
             "\\x2e3a\\x2e3b\\x2e40\\x301c\\x3030\\x30a0\\xfe31\\xfe32\\xfe58"
             "\\xfe63\\xff0d\\x10ead]";
     }
 
-    static const char *punctuation_close()
+    static const char *Pe()
     {
         return "[\\x29\\x5d\\x7d\\xf3b\\xf3d\\x169c\\x2046\\x207e\\x208e\\x2309"
             "\\x230b\\x232a\\x2769\\x276b\\x276d\\x276f\\x2771\\x2773\\x2775"
@@ -530,19 +565,19 @@
             "\\xfe48\\xfe5a\\xfe5c\\xfe5e\\xff09\\xff3d\\xff5d\\xff60\\xff63]";
     }
 
-    static const char *punctuation_final()
+    static const char *Pf()
     {
         return "[\\xbb\\x2019\\x201d\\x203a\\x2e03\\x2e05\\x2e0a\\x2e0d\\x2e1d"
             "\\x2e21]";
     }
 
-    static const char *punctuation_initial()
+    static const char *Pi()
     {
         return "[\\xab\\x2018\\x201b\\x201c\\x201f\\x2039\\x2e02\\x2e04\\x2e09"
             "\\x2e0c\\x2e1c\\x2e20]";
     }
 
-    static const char *punctuation_other()
+    static const char *Po()
     {
         return "[\\x21-\\x23\\x25-\\x27\\x2a\\x2c\\x2e\\x2f\\x3a\\x3b\\x3f\\x40"
             "\\x5c\\xa1\\xa7\\xb6\\xb7\\xbf\\x37e\\x387\\x55a-\\x55f\\x589"
@@ -584,7 +619,7 @@
             "\\x1e95e\\x1e95f]";
     }
 
-    static const char *punctuation_open()
+    static const char *Ps()
     {
         return "[\\x28\\x5b\\x7b\\xf3a\\xf3c\\x169b\\x201a\\x201e\\x2045\\x207d"
             "\\x208d\\x2308\\x230a\\x2329\\x2768\\x276a\\x276c\\x276e\\x2770"
@@ -597,7 +632,7 @@
             "\\xff5f\\xff62]";
     }
 
-    static const char *symbol_currency()
+    static const char *Sc()
     {
         return "[\\x24\\xa2-\\xa5\\x58f\\x60b\\x7fe\\x7ff\\x9f2\\x9f3\\x9fb"
             "\\xaf1\\xbf9\\xe3f\\x17db\\x20a0-\\x20c0\\xa838\\xfdfc\\xfe69"
@@ -605,7 +640,7 @@
             "\\x1ecb0]";
     }
 
-    static const char *symbol_modifier()
+    static const char *Sk()
     {
         return "[\\x5e\\x60\\xa8\\xaf\\xb4\\xb8\\x2c2-\\x2c5\\x2d2-\\x2df"
             "\\x2e5-\\x2eb\\x2ed\\x2ef-\\x2ff\\x375\\x384\\x385\\x888\\x1fbd"
@@ -615,7 +650,7 @@
             "\\xffe3\\x1f3fb-\\x1f3ff]";
     }
 
-    static const char *symbol_math()
+    static const char *Sm()
     {
         return "[\\x2b\\x3c-\\x3e\\x7c\\x7e\\xac\\xb1\\xd7\\xf7\\x3f6"
             "\\x606-\\x608\\x2044\\x2052\\x207a-\\x207c\\x208a-\\x208c\\x2118"
@@ -630,7 +665,7 @@
             "\\x1d76f\\x1d789\\x1d7a9\\x1d7c3\\x1eef0\\x1eef1]";
     }
 
-    static const char *symbol_other()
+    static const char *So()
     {
         return "[\\xa6\\xa9\\xae\\xb0\\x482\\x58d\\x58e\\x60e\\x60f\\x6de\\x6e9"
             "\\x6fd\\x6fe\\x7f6\\x9fa\\xb70\\xbf3-\\xbf8\\xbfa\\xc7f\\xd4f"
@@ -679,17 +714,17 @@
             "\\x1fb94-\\x1fbca]";
     }
 
-    static const char *separator_line()
+    static const char *Zl()
     {
         return "[\\x2028]";
     }
 
-    static const char *separator_paragraph()
+    static const char *Zp()
     {
         return "[\\x2029]";
     }
 
-    static const char *separator_space()
+    static const char *Zs()
     {
         return "[\\x20\\xa0\\x1680\\x2000-\\x200a\\x202f\\x205f\\x3000]";
     }
