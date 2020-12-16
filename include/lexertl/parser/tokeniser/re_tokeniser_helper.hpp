@@ -1180,7 +1180,7 @@ namespace lexertl
                         return str_ = entry_->_func();
                 }
 
-                if (str_ == nullptr)
+                if (str_ == 0)
                 {
                     std::ostringstream ss_;
 
