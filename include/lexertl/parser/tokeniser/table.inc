@@ -4,6 +4,7 @@
     { "Co", Co },
     { "Cs", Cs },
     { "L", L },
+    { "LC", LC },
     { "Ll", Ll },
     { "Lm", Lm },
     { "Lo", Lo },

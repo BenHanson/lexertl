@@ -9,6 +9,11 @@
         return "[\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]";
     }
 
+    static const char* LC()
+    {
+        return "[\\p{Ll}\\p{Lt}\\p{Lu}]";
+    }
+
     static const char* M()
     {
         return "[\\p{Mc}\\p{Me}\\p{Mn}]";
