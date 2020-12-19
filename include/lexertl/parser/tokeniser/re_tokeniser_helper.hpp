@@ -1192,8 +1192,9 @@ namespace lexertl
                 return str_;
             }
 
-#include "blocks.hpp"
 #include "unicode.hpp"
+#include "blocks.hpp"
+#include "scripts.hpp"
 
             template<typename state_type>
             static input_char_type decode_octal(state_type& state_)
