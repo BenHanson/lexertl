@@ -101,6 +101,11 @@ namespace lexertl
             return temp_;
         }
 
+        char_iterator get() const
+        {
+            return _it;
+        }
+
     private:
         char_iterator _it;
         char_iterator _end;
