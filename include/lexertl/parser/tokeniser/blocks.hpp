@@ -919,9 +919,19 @@
         return "[\\x10530-\\x1056F]";
     }
 
+    static const char *InVithkuqi()
+    {
+        return "[\\x10570-\\x105BF]";
+    }
+
     static const char *InLinear_A()
     {
         return "[\\x10600-\\x1077F]";
+    }
+
+    static const char *InLatin_Extended_F()
+    {
+        return "[\\x10780-\\x107BF]";
     }
 
     static const char *InCypriot_Syllabary()
@@ -1042,6 +1052,11 @@
     static const char *InSogdian()
     {
         return "[\\x10F30-\\x10F6F]";
+    }
+
+    static const char *InOld_Uyghur()
+    {
+        return "[\\x10F70-\\x10FAF]";
     }
 
     static const char *InChorasmian()
@@ -1264,6 +1279,11 @@
         return "[\\x16A40-\\x16A6F]";
     }
 
+    static const char *InTangsa()
+    {
+        return "[\\x16A70-\\x16ACF]";
+    }
+
     static const char *InBassa_Vah()
     {
         return "[\\x16AD0-\\x16AFF]";
@@ -1307,6 +1327,11 @@
     static const char *InTangut_Supplement()
     {
         return "[\\x18D00-\\x18D7F]";
+    }
+
+    static const char *InKana_Extended_B()
+    {
+        return "[\\x1AFF0-\\x1AFFF]";
     }
 
     static const char *InKana_Supplement()
@@ -1384,6 +1409,11 @@
         return "[\\x1D800-\\x1DAAF]";
     }
 
+    static const char *InLatin_Extended_G()
+    {
+        return "[\\x1DF00-\\x1DFFF]";
+    }
+
     static const char *InGlagolitic_Supplement()
     {
         return "[\\x1E000-\\x1E02F]";
@@ -1402,6 +1432,11 @@
     static const char *InWancho()
     {
         return "[\\x1E2C0-\\x1E2FF]";
+    }
+
+    static const char *InEthiopic_Extended_B()
+    {
+        return "[\\x1E7E0-\\x1E7FF]";
     }
 
     static const char *InMende_Kikakui()

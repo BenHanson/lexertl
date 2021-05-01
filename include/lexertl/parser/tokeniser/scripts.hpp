@@ -6,7 +6,7 @@
 
     static const char *IsAhom()
     {
-        return "[\\x11700-\\x1171a\\x1171d-\\x1172b\\x11730-\\x1173f]";
+        return "[\\x11700-\\x1171a\\x1171d-\\x1172b\\x11730-\\x11746]";
     }
 
     static const char *IsAnatolian_Hieroglyphs()
@@ -16,19 +16,19 @@
 
     static const char *IsArabic()
     {
-        return "[\\x600-\\x604\\x606-\\x60b\\x60d-\\x61a\\x61c\\x61e"
+        return "[\\x600-\\x604\\x606-\\x60b\\x60d-\\x61a\\x61c-\\x61e"
             "\\x620-\\x63f\\x641-\\x64a\\x656-\\x66f\\x671-\\x6dc\\x6de-\\x6ff"
-            "\\x750-\\x77f\\x8a0-\\x8b4\\x8b6-\\x8c7\\x8d3-\\x8e1\\x8e3-\\x8ff"
-            "\\xfb50-\\xfbc1\\xfbd3-\\xfd3d\\xfd50-\\xfd8f\\xfd92-\\xfdc7"
-            "\\xfdf0-\\xfdfd\\xfe70-\\xfe74\\xfe76-\\xfefc\\x10e60-\\x10e7e"
-            "\\x1ee00-\\x1ee03\\x1ee05-\\x1ee1f\\x1ee21\\x1ee22\\x1ee24\\x1ee27"
-            "\\x1ee29-\\x1ee32\\x1ee34-\\x1ee37\\x1ee39\\x1ee3b\\x1ee42\\x1ee47"
-            "\\x1ee49\\x1ee4b\\x1ee4d-\\x1ee4f\\x1ee51\\x1ee52\\x1ee54\\x1ee57"
-            "\\x1ee59\\x1ee5b\\x1ee5d\\x1ee5f\\x1ee61\\x1ee62\\x1ee64"
-            "\\x1ee67-\\x1ee6a\\x1ee6c-\\x1ee72\\x1ee74-\\x1ee77"
-            "\\x1ee79-\\x1ee7c\\x1ee7e\\x1ee80-\\x1ee89\\x1ee8b-\\x1ee9b"
-            "\\x1eea1-\\x1eea3\\x1eea5-\\x1eea9\\x1eeab-\\x1eebb"
-            "\\x1eef0\\x1eef1]";
+            "\\x750-\\x77f\\x870-\\x88e\\x890\\x891\\x898-\\x8e1\\x8e3-\\x8ff"
+            "\\xfb50-\\xfbc2\\xfbd3-\\xfd3d\\xfd40-\\xfd8f\\xfd92-\\xfdc7"
+            "\\xfdcf\\xfdf0-\\xfdff\\xfe70-\\xfe74\\xfe76-\\xfefc"
+            "\\x10e60-\\x10e7e\\x1ee00-\\x1ee03\\x1ee05-\\x1ee1f"
+            "\\x1ee21\\x1ee22\\x1ee24\\x1ee27\\x1ee29-\\x1ee32"
+            "\\x1ee34-\\x1ee37\\x1ee39\\x1ee3b\\x1ee42\\x1ee47\\x1ee49\\x1ee4b"
+            "\\x1ee4d-\\x1ee4f\\x1ee51\\x1ee52\\x1ee54\\x1ee57\\x1ee59\\x1ee5b"
+            "\\x1ee5d\\x1ee5f\\x1ee61\\x1ee62\\x1ee64\\x1ee67-\\x1ee6a"
+            "\\x1ee6c-\\x1ee72\\x1ee74-\\x1ee77\\x1ee79-\\x1ee7c\\x1ee7e"
+            "\\x1ee80-\\x1ee89\\x1ee8b-\\x1ee9b\\x1eea1-\\x1eea3"
+            "\\x1eea5-\\x1eea9\\x1eeab-\\x1eebb\\x1eef0\\x1eef1]";
     }
 
     static const char *IsArmenian()
@@ -43,7 +43,7 @@
 
     static const char *IsBalinese()
     {
-        return "[\\x1b00-\\x1b4b\\x1b50-\\x1b7c]";
+        return "[\\x1b00-\\x1b4c\\x1b50-\\x1b7e]";
     }
 
     static const char *IsBamum()
@@ -81,7 +81,7 @@
 
     static const char *IsBrahmi()
     {
-        return "[\\x11000-\\x1104d\\x11052-\\x1106f\\x1107f]";
+        return "[\\x11000-\\x1104d\\x11052-\\x11075\\x1107f]";
     }
 
     static const char *IsBraille()
@@ -101,7 +101,7 @@
 
     static const char *IsCanadian_Aboriginal()
     {
-        return "[\\x1400-\\x167f\\x18b0-\\x18f5]";
+        return "[\\x1400-\\x167f\\x18b0-\\x18f5\\x11ab0-\\x11abf]";
     }
 
     static const char *IsCarian()
@@ -143,11 +143,11 @@
             "\\xfd5-\\xfd8\\x10fb\\x16eb-\\x16ed\\x1735\\x1736\\x1802\\x1803"
             "\\x1805\\x1cd3\\x1ce1\\x1ce9-\\x1cec\\x1cee-\\x1cf3"
             "\\x1cf5-\\x1cf7\\x1cfa\\x2000-\\x200b\\x200e-\\x2064"
-            "\\x2066-\\x2070\\x2074-\\x207e\\x2080-\\x208e\\x20a0-\\x20bf"
+            "\\x2066-\\x2070\\x2074-\\x207e\\x2080-\\x208e\\x20a0-\\x20c0"
             "\\x2100-\\x2125\\x2127-\\x2129\\x212c-\\x2131\\x2133-\\x214d"
             "\\x214f-\\x215f\\x2189-\\x218b\\x2190-\\x2426\\x2440-\\x244a"
             "\\x2460-\\x27ff\\x2900-\\x2b73\\x2b76-\\x2b95\\x2b97-\\x2bff"
-            "\\x2e00-\\x2e52\\x2ff0-\\x2ffb\\x3000-\\x3004\\x3006"
+            "\\x2e00-\\x2e5d\\x2ff0-\\x2ffb\\x3000-\\x3004\\x3006"
             "\\x3008-\\x3020\\x3030-\\x3037\\x303c-\\x303f\\x309b\\x309c\\x30a0"
             "\\x30fb\\x30fc\\x3190-\\x319f\\x31c0-\\x31e3\\x3220-\\x325f"
             "\\x327f-\\x32cf\\x32ff\\x3358-\\x33ff\\x4dc0-\\x4dff"
@@ -157,10 +157,10 @@
             "\\xff3b-\\xff40\\xff5b-\\xff65\\xff70\\xff9e\\xff9f"
             "\\xffe0-\\xffe6\\xffe8-\\xffee\\xfff9-\\xfffd\\x10100-\\x10102"
             "\\x10107-\\x10133\\x10137-\\x1013f\\x10190-\\x1019c"
-            "\\x101d0-\\x101fc\\x102e1-\\x102fb\\x16fe2\\x16fe3"
-            "\\x1bca0-\\x1bca3\\x1d000-\\x1d0f5\\x1d100-\\x1d126"
+            "\\x101d0-\\x101fc\\x102e1-\\x102fb\\x1bca0-\\x1bca3"
+            "\\x1cf50-\\x1cfc3\\x1d000-\\x1d0f5\\x1d100-\\x1d126"
             "\\x1d129-\\x1d166\\x1d16a-\\x1d17a\\x1d183\\x1d184"
-            "\\x1d18c-\\x1d1a9\\x1d1ae-\\x1d1e8\\x1d2e0-\\x1d2f3"
+            "\\x1d18c-\\x1d1a9\\x1d1ae-\\x1d1ea\\x1d2e0-\\x1d2f3"
             "\\x1d300-\\x1d356\\x1d360-\\x1d378\\x1d400-\\x1d454"
             "\\x1d456-\\x1d49c\\x1d49e\\x1d49f\\x1d4a2\\x1d4a5\\x1d4a6"
             "\\x1d4a9-\\x1d4ac\\x1d4ae-\\x1d4b9\\x1d4bb\\x1d4bd-\\x1d4c3"
@@ -172,14 +172,14 @@
             "\\x1f0a0-\\x1f0ae\\x1f0b1-\\x1f0bf\\x1f0c1-\\x1f0cf"
             "\\x1f0d1-\\x1f0f5\\x1f100-\\x1f1ad\\x1f1e6-\\x1f1ff"
             "\\x1f201\\x1f202\\x1f210-\\x1f23b\\x1f240-\\x1f248\\x1f250\\x1f251"
-            "\\x1f260-\\x1f265\\x1f300-\\x1f6d7\\x1f6e0-\\x1f6ec"
+            "\\x1f260-\\x1f265\\x1f300-\\x1f6d7\\x1f6dd-\\x1f6ec"
             "\\x1f6f0-\\x1f6fc\\x1f700-\\x1f773\\x1f780-\\x1f7d8"
-            "\\x1f7e0-\\x1f7eb\\x1f800-\\x1f80b\\x1f810-\\x1f847"
+            "\\x1f7e0-\\x1f7eb\\x1f7f0\\x1f800-\\x1f80b\\x1f810-\\x1f847"
             "\\x1f850-\\x1f859\\x1f860-\\x1f887\\x1f890-\\x1f8ad"
-            "\\x1f8b0\\x1f8b1\\x1f900-\\x1f978\\x1f97a-\\x1f9cb"
-            "\\x1f9cd-\\x1fa53\\x1fa60-\\x1fa6d\\x1fa70-\\x1fa74"
-            "\\x1fa78-\\x1fa7a\\x1fa80-\\x1fa86\\x1fa90-\\x1faa8"
-            "\\x1fab0-\\x1fab6\\x1fac0-\\x1fac2\\x1fad0-\\x1fad6"
+            "\\x1f8b0\\x1f8b1\\x1f900-\\x1fa53\\x1fa60-\\x1fa6d"
+            "\\x1fa70-\\x1fa74\\x1fa78-\\x1fa7c\\x1fa80-\\x1fa86"
+            "\\x1fa90-\\x1faac\\x1fab0-\\x1faba\\x1fac0-\\x1fac5"
+            "\\x1fad0-\\x1fad9\\x1fae0-\\x1fae7\\x1faf0-\\x1faf6"
             "\\x1fb00-\\x1fb92\\x1fb94-\\x1fbca\\x1fbf0-\\x1fbf9\\xe0001"
             "\\xe0020-\\xe007f]";
     }
@@ -199,6 +199,11 @@
     {
         return "[\\x10800-\\x10805\\x10808\\x1080a-\\x10835\\x10837\\x10838"
             "\\x1083c\\x1083f]";
+    }
+
+    static const char *IsCypro_Minoan()
+    {
+        return "[\\x12f90-\\x12ff2]";
     }
 
     static const char *IsCyrillic()
@@ -259,7 +264,9 @@
             "\\x135d-\\x137c\\x1380-\\x1399\\x2d80-\\x2d96\\x2da0-\\x2da6"
             "\\x2da8-\\x2dae\\x2db0-\\x2db6\\x2db8-\\x2dbe\\x2dc0-\\x2dc6"
             "\\x2dc8-\\x2dce\\x2dd0-\\x2dd6\\x2dd8-\\x2dde\\xab01-\\xab06"
-            "\\xab09-\\xab0e\\xab11-\\xab16\\xab20-\\xab26\\xab28-\\xab2e]";
+            "\\xab09-\\xab0e\\xab11-\\xab16\\xab20-\\xab26\\xab28-\\xab2e"
+            "\\x1e7e0-\\x1e7e6\\x1e7e8-\\x1e7eb\\x1e7ed\\x1e7ee"
+            "\\x1e7f0-\\x1e7fe]";
     }
 
     static const char *IsGeorgian()
@@ -270,9 +277,8 @@
 
     static const char *IsGlagolitic()
     {
-        return "[\\x2c00-\\x2c2e\\x2c30-\\x2c5e\\x1e000-\\x1e006"
-            "\\x1e008-\\x1e018\\x1e01b-\\x1e021\\x1e023\\x1e024"
-            "\\x1e026-\\x1e02a]";
+        return "[\\x2c00-\\x2c5f\\x1e000-\\x1e006\\x1e008-\\x1e018"
+            "\\x1e01b-\\x1e021\\x1e023\\x1e024\\x1e026-\\x1e02a]";
     }
 
     static const char *IsGothic()
@@ -325,10 +331,11 @@
     static const char *IsHan()
     {
         return "[\\x2e80-\\x2e99\\x2e9b-\\x2ef3\\x2f00-\\x2fd5\\x3005\\x3007"
-            "\\x3021-\\x3029\\x3038-\\x303b\\x3400-\\x4dbf\\x4e00-\\x9ffc"
-            "\\xf900-\\xfa6d\\xfa70-\\xfad9\\x16ff0\\x16ff1\\x20000-\\x2a6dd"
-            "\\x2a700-\\x2b734\\x2b740-\\x2b81d\\x2b820-\\x2cea1"
-            "\\x2ceb0-\\x2ebe0\\x2f800-\\x2fa1d\\x30000-\\x3134a]";
+            "\\x3021-\\x3029\\x3038-\\x303b\\x3400-\\x4dbf\\x4e00-\\x9fff"
+            "\\xf900-\\xfa6d\\xfa70-\\xfad9\\x16fe2\\x16fe3\\x16ff0\\x16ff1"
+            "\\x20000-\\x2a6df\\x2a700-\\x2b738\\x2b740-\\x2b81d"
+            "\\x2b820-\\x2cea1\\x2ceb0-\\x2ebe0\\x2f800-\\x2fa1d"
+            "\\x30000-\\x3134a]";
     }
 
     static const char *IsHangul()
@@ -363,7 +370,7 @@
 
     static const char *IsHiragana()
     {
-        return "[\\x3041-\\x3096\\x309d-\\x309f\\x1b001-\\x1b11e"
+        return "[\\x3041-\\x3096\\x309d-\\x309f\\x1b001-\\x1b11f"
             "\\x1b150-\\x1b152\\x1f200]";
     }
 
@@ -375,12 +382,12 @@
     static const char *IsInherited()
     {
         return "[\\x300-\\x36f\\x485\\x486\\x64b-\\x655\\x670\\x951-\\x954"
-            "\\x1ab0-\\x1ac0\\x1cd0-\\x1cd2\\x1cd4-\\x1ce0\\x1ce2-\\x1ce8"
-            "\\x1ced\\x1cf4\\x1cf8\\x1cf9\\x1dc0-\\x1df9\\x1dfb-\\x1dff"
-            "\\x200c\\x200d\\x20d0-\\x20f0\\x302a-\\x302d\\x3099\\x309a"
-            "\\xfe00-\\xfe0f\\xfe20-\\xfe2d\\x101fd\\x102e0\\x1133b"
-            "\\x1d167-\\x1d169\\x1d17b-\\x1d182\\x1d185-\\x1d18b"
-            "\\x1d1aa-\\x1d1ad\\xe0100-\\xe01ef]";
+            "\\x1ab0-\\x1ace\\x1cd0-\\x1cd2\\x1cd4-\\x1ce0\\x1ce2-\\x1ce8"
+            "\\x1ced\\x1cf4\\x1cf8\\x1cf9\\x1dc0-\\x1dff\\x200c\\x200d"
+            "\\x20d0-\\x20f0\\x302a-\\x302d\\x3099\\x309a\\xfe00-\\xfe0f"
+            "\\xfe20-\\xfe2d\\x101fd\\x102e0\\x1133b\\x1cf00-\\x1cf2d"
+            "\\x1cf30-\\x1cf46\\x1d167-\\x1d169\\x1d17b-\\x1d182"
+            "\\x1d185-\\x1d18b\\x1d1aa-\\x1d1ad\\xe0100-\\xe01ef]";
     }
 
     static const char *IsInscriptional_Pahlavi()
@@ -400,20 +407,21 @@
 
     static const char *IsKaithi()
     {
-        return "[\\x11080-\\x110c1\\x110cd]";
+        return "[\\x11080-\\x110c2\\x110cd]";
     }
 
     static const char *IsKannada()
     {
         return "[\\xc80-\\xc8c\\xc8e-\\xc90\\xc92-\\xca8\\xcaa-\\xcb3"
             "\\xcb5-\\xcb9\\xcbc-\\xcc4\\xcc6-\\xcc8\\xcca-\\xccd\\xcd5\\xcd6"
-            "\\xcde\\xce0-\\xce3\\xce6-\\xcef\\xcf1\\xcf2]";
+            "\\xcdd\\xcde\\xce0-\\xce3\\xce6-\\xcef\\xcf1\\xcf2]";
     }
 
     static const char *IsKatakana()
     {
         return "[\\x30a1-\\x30fa\\x30fd-\\x30ff\\x31f0-\\x31ff\\x32d0-\\x32fe"
-            "\\x3300-\\x3357\\xff66-\\xff6f\\xff71-\\xff9d\\x1b000"
+            "\\x3300-\\x3357\\xff66-\\xff6f\\xff71-\\xff9d\\x1aff0-\\x1aff3"
+            "\\x1aff5-\\x1affb\\x1affd\\x1affe\\x1b000\\x1b120-\\x1b122"
             "\\x1b164-\\x1b167]";
     }
 
@@ -463,9 +471,11 @@
             "\\xf8-\\x2b8\\x2e0-\\x2e4\\x1d00-\\x1d25\\x1d2c-\\x1d5c"
             "\\x1d62-\\x1d65\\x1d6b-\\x1d77\\x1d79-\\x1dbe\\x1e00-\\x1eff"
             "\\x2071\\x207f\\x2090-\\x209c\\x212a\\x212b\\x2132\\x214e"
-            "\\x2160-\\x2188\\x2c60-\\x2c7f\\xa722-\\xa787\\xa78b-\\xa7bf"
-            "\\xa7c2-\\xa7ca\\xa7f5-\\xa7ff\\xab30-\\xab5a\\xab5c-\\xab64"
-            "\\xab66-\\xab69\\xfb00-\\xfb06\\xff21-\\xff3a\\xff41-\\xff5a]";
+            "\\x2160-\\x2188\\x2c60-\\x2c7f\\xa722-\\xa787\\xa78b-\\xa7ca"
+            "\\xa7d0\\xa7d1\\xa7d3\\xa7d5-\\xa7d9\\xa7f2-\\xa7ff"
+            "\\xab30-\\xab5a\\xab5c-\\xab64\\xab66-\\xab69\\xfb00-\\xfb06"
+            "\\xff21-\\xff3a\\xff41-\\xff5a\\x10780-\\x10785\\x10787-\\x107b0"
+            "\\x107b2-\\x107ba\\x1df00-\\x1df1e]";
     }
 
     static const char *IsLepcha()
@@ -580,8 +590,8 @@
 
     static const char *IsMongolian()
     {
-        return "[\\x1800\\x1801\\x1804\\x1806-\\x180e\\x1810-\\x1819"
-            "\\x1820-\\x1878\\x1880-\\x18aa\\x11660-\\x1166c]";
+        return "[\\x1800\\x1801\\x1804\\x1806-\\x1819\\x1820-\\x1878"
+            "\\x1880-\\x18aa\\x11660-\\x1166c]";
     }
 
     static const char *IsMro()
@@ -684,6 +694,11 @@
     static const char *IsOld_Turkic()
     {
         return "[\\x10c00-\\x10c48]";
+    }
+
+    static const char *IsOld_Uyghur()
+    {
+        return "[\\x10f70-\\x10f89]";
     }
 
     static const char *IsOriya()
@@ -814,7 +829,7 @@
 
     static const char *IsTagalog()
     {
-        return "[\\x1700-\\x170c\\x170e-\\x1714]";
+        return "[\\x1700-\\x1715\\x171f]";
     }
 
     static const char *IsTagbanwa()
@@ -840,7 +855,7 @@
 
     static const char *IsTakri()
     {
-        return "[\\x11680-\\x116b8\\x116c0-\\x116c9]";
+        return "[\\x11680-\\x116b9\\x116c0-\\x116c9]";
     }
 
     static const char *IsTamil()
@@ -849,6 +864,11 @@
             "\\xb99\\xb9a\\xb9c\\xb9e\\xb9f\\xba3\\xba4\\xba8-\\xbaa"
             "\\xbae-\\xbb9\\xbbe-\\xbc2\\xbc6-\\xbc8\\xbca-\\xbcd\\xbd0\\xbd7"
             "\\xbe6-\\xbfa\\x11fc0-\\x11ff1\\x11fff]";
+    }
+
+    static const char *IsTangsa()
+    {
+        return "[\\x16a70-\\x16abe\\x16ac0-\\x16ac9]";
     }
 
     static const char *IsTangut()
@@ -860,8 +880,8 @@
     static const char *IsTelugu()
     {
         return "[\\xc00-\\xc0c\\xc0e-\\xc10\\xc12-\\xc28\\xc2a-\\xc39"
-            "\\xc3d-\\xc44\\xc46-\\xc48\\xc4a-\\xc4d\\xc55\\xc56\\xc58-\\xc5a"
-            "\\xc60-\\xc63\\xc66-\\xc6f\\xc77-\\xc7f]";
+            "\\xc3c-\\xc44\\xc46-\\xc48\\xc4a-\\xc4d\\xc55\\xc56\\xc58-\\xc5a"
+            "\\xc5d\\xc60-\\xc63\\xc66-\\xc6f\\xc77-\\xc7f]";
     }
 
     static const char *IsThaana()
@@ -903,6 +923,13 @@
     static const char *IsVai()
     {
         return "[\\xa500-\\xa62b]";
+    }
+
+    static const char *IsVithkuqi()
+    {
+        return "[\\x10570-\\x1057a\\x1057c-\\x1058a\\x1058c-\\x10592"
+            "\\x10594\\x10595\\x10597-\\x105a1\\x105a3-\\x105b1"
+            "\\x105b3-\\x105b9\\x105bb\\x105bc]";
     }
 
     static const char *IsWancho()
