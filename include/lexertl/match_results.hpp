@@ -92,6 +92,11 @@ namespace lexertl
             state = 0;
         }
 
+        std::size_t size() const
+        {
+            return second - first;
+        }
+
         static id_type npos()
         {
             return static_cast<id_type>(~0);
