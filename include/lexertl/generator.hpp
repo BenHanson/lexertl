@@ -35,7 +35,7 @@ namespace lexertl
 
         static void build(const rules& rules_, sm& sm_)
         {
-            const std::size_t size_ = rules_.statemap().size();
+            const id_type size_ = static_cast<id_type>(rules_.statemap().size());
             // Strong exception guarantee
             // http://www.boost.org/community/exception_safety.html
             internals internals_;
@@ -74,7 +74,7 @@ namespace lexertl
                         internals_._dfa_alphabet[index_] >= sm_traits::npos())
                     {
                         // Overflow
-                        throw runtime_error("The data type you have chosen "
+                        throw runtime_error("The id_type you have chosen "
                             "cannot hold this many DFA rows.");
                     }
                 }
@@ -226,7 +226,7 @@ namespace lexertl
             if (dfa_alphabet_ > sm_traits::npos())
             {
                 // Overflow
-                throw runtime_error("The data type you have chosen cannot hold "
+                throw runtime_error("The id_type you have chosen cannot hold "
                     "the dfa alphabet.");
             }
 

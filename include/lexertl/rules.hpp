@@ -214,7 +214,7 @@ namespace lexertl
             if (_next_dfas.size() > npos())
             {
                 // Overflow
-                throw runtime_error("The data type you have chosen cannot hold "
+                throw runtime_error("The id_type you have chosen cannot hold "
                     "this many lexer start states.");
             }
 
@@ -934,7 +934,7 @@ namespace lexertl
 
             if (star_)
             {
-                const std::size_t size_ = _statemap.size();
+                const id_type size_ = static_cast<id_type>(_statemap.size());
 
                 for (id_type i_ = 0; i_ < size_; ++i_)
                 {
