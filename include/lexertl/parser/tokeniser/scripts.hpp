@@ -21,14 +21,15 @@
             "\\x750-\\x77f\\x870-\\x88e\\x890\\x891\\x898-\\x8e1\\x8e3-\\x8ff"
             "\\xfb50-\\xfbc2\\xfbd3-\\xfd3d\\xfd40-\\xfd8f\\xfd92-\\xfdc7"
             "\\xfdcf\\xfdf0-\\xfdff\\xfe70-\\xfe74\\xfe76-\\xfefc"
-            "\\x10e60-\\x10e7e\\x1ee00-\\x1ee03\\x1ee05-\\x1ee1f"
-            "\\x1ee21\\x1ee22\\x1ee24\\x1ee27\\x1ee29-\\x1ee32"
-            "\\x1ee34-\\x1ee37\\x1ee39\\x1ee3b\\x1ee42\\x1ee47\\x1ee49\\x1ee4b"
-            "\\x1ee4d-\\x1ee4f\\x1ee51\\x1ee52\\x1ee54\\x1ee57\\x1ee59\\x1ee5b"
-            "\\x1ee5d\\x1ee5f\\x1ee61\\x1ee62\\x1ee64\\x1ee67-\\x1ee6a"
-            "\\x1ee6c-\\x1ee72\\x1ee74-\\x1ee77\\x1ee79-\\x1ee7c\\x1ee7e"
-            "\\x1ee80-\\x1ee89\\x1ee8b-\\x1ee9b\\x1eea1-\\x1eea3"
-            "\\x1eea5-\\x1eea9\\x1eeab-\\x1eebb\\x1eef0\\x1eef1]";
+            "\\x10e60-\\x10e7e\\x10efd-\\x10eff\\x1ee00-\\x1ee03"
+            "\\x1ee05-\\x1ee1f\\x1ee21\\x1ee22\\x1ee24\\x1ee27"
+            "\\x1ee29-\\x1ee32\\x1ee34-\\x1ee37\\x1ee39\\x1ee3b\\x1ee42\\x1ee47"
+            "\\x1ee49\\x1ee4b\\x1ee4d-\\x1ee4f\\x1ee51\\x1ee52\\x1ee54\\x1ee57"
+            "\\x1ee59\\x1ee5b\\x1ee5d\\x1ee5f\\x1ee61\\x1ee62\\x1ee64"
+            "\\x1ee67-\\x1ee6a\\x1ee6c-\\x1ee72\\x1ee74-\\x1ee77"
+            "\\x1ee79-\\x1ee7c\\x1ee7e\\x1ee80-\\x1ee89\\x1ee8b-\\x1ee9b"
+            "\\x1eea1-\\x1eea3\\x1eea5-\\x1eea9\\x1eeab-\\x1eebb"
+            "\\x1eef0\\x1eef1]";
     }
 
     static const char *IsArmenian()
@@ -160,26 +161,26 @@
             "\\x101d0-\\x101fc\\x102e1-\\x102fb\\x1bca0-\\x1bca3"
             "\\x1cf50-\\x1cfc3\\x1d000-\\x1d0f5\\x1d100-\\x1d126"
             "\\x1d129-\\x1d166\\x1d16a-\\x1d17a\\x1d183\\x1d184"
-            "\\x1d18c-\\x1d1a9\\x1d1ae-\\x1d1ea\\x1d2e0-\\x1d2f3"
-            "\\x1d300-\\x1d356\\x1d360-\\x1d378\\x1d400-\\x1d454"
-            "\\x1d456-\\x1d49c\\x1d49e\\x1d49f\\x1d4a2\\x1d4a5\\x1d4a6"
-            "\\x1d4a9-\\x1d4ac\\x1d4ae-\\x1d4b9\\x1d4bb\\x1d4bd-\\x1d4c3"
-            "\\x1d4c5-\\x1d505\\x1d507-\\x1d50a\\x1d50d-\\x1d514"
-            "\\x1d516-\\x1d51c\\x1d51e-\\x1d539\\x1d53b-\\x1d53e"
-            "\\x1d540-\\x1d544\\x1d546\\x1d54a-\\x1d550\\x1d552-\\x1d6a5"
-            "\\x1d6a8-\\x1d7cb\\x1d7ce-\\x1d7ff\\x1ec71-\\x1ecb4"
-            "\\x1ed01-\\x1ed3d\\x1f000-\\x1f02b\\x1f030-\\x1f093"
-            "\\x1f0a0-\\x1f0ae\\x1f0b1-\\x1f0bf\\x1f0c1-\\x1f0cf"
-            "\\x1f0d1-\\x1f0f5\\x1f100-\\x1f1ad\\x1f1e6-\\x1f1ff"
-            "\\x1f201\\x1f202\\x1f210-\\x1f23b\\x1f240-\\x1f248\\x1f250\\x1f251"
-            "\\x1f260-\\x1f265\\x1f300-\\x1f6d7\\x1f6dd-\\x1f6ec"
-            "\\x1f6f0-\\x1f6fc\\x1f700-\\x1f773\\x1f780-\\x1f7d8"
-            "\\x1f7e0-\\x1f7eb\\x1f7f0\\x1f800-\\x1f80b\\x1f810-\\x1f847"
-            "\\x1f850-\\x1f859\\x1f860-\\x1f887\\x1f890-\\x1f8ad"
-            "\\x1f8b0\\x1f8b1\\x1f900-\\x1fa53\\x1fa60-\\x1fa6d"
-            "\\x1fa70-\\x1fa74\\x1fa78-\\x1fa7c\\x1fa80-\\x1fa86"
-            "\\x1fa90-\\x1faac\\x1fab0-\\x1faba\\x1fac0-\\x1fac5"
-            "\\x1fad0-\\x1fad9\\x1fae0-\\x1fae7\\x1faf0-\\x1faf6"
+            "\\x1d18c-\\x1d1a9\\x1d1ae-\\x1d1ea\\x1d2c0-\\x1d2d3"
+            "\\x1d2e0-\\x1d2f3\\x1d300-\\x1d356\\x1d360-\\x1d378"
+            "\\x1d400-\\x1d454\\x1d456-\\x1d49c\\x1d49e\\x1d49f\\x1d4a2"
+            "\\x1d4a5\\x1d4a6\\x1d4a9-\\x1d4ac\\x1d4ae-\\x1d4b9\\x1d4bb"
+            "\\x1d4bd-\\x1d4c3\\x1d4c5-\\x1d505\\x1d507-\\x1d50a"
+            "\\x1d50d-\\x1d514\\x1d516-\\x1d51c\\x1d51e-\\x1d539"
+            "\\x1d53b-\\x1d53e\\x1d540-\\x1d544\\x1d546\\x1d54a-\\x1d550"
+            "\\x1d552-\\x1d6a5\\x1d6a8-\\x1d7cb\\x1d7ce-\\x1d7ff"
+            "\\x1ec71-\\x1ecb4\\x1ed01-\\x1ed3d\\x1f000-\\x1f02b"
+            "\\x1f030-\\x1f093\\x1f0a0-\\x1f0ae\\x1f0b1-\\x1f0bf"
+            "\\x1f0c1-\\x1f0cf\\x1f0d1-\\x1f0f5\\x1f100-\\x1f1ad"
+            "\\x1f1e6-\\x1f1ff\\x1f201\\x1f202\\x1f210-\\x1f23b"
+            "\\x1f240-\\x1f248\\x1f250\\x1f251\\x1f260-\\x1f265"
+            "\\x1f300-\\x1f6d7\\x1f6dc-\\x1f6ec\\x1f6f0-\\x1f6fc"
+            "\\x1f700-\\x1f776\\x1f77b-\\x1f7d9\\x1f7e0-\\x1f7eb\\x1f7f0"
+            "\\x1f800-\\x1f80b\\x1f810-\\x1f847\\x1f850-\\x1f859"
+            "\\x1f860-\\x1f887\\x1f890-\\x1f8ad\\x1f8b0\\x1f8b1"
+            "\\x1f900-\\x1fa53\\x1fa60-\\x1fa6d\\x1fa70-\\x1fa7c"
+            "\\x1fa80-\\x1fa88\\x1fa90-\\x1fabd\\x1fabf-\\x1fac5"
+            "\\x1face-\\x1fadb\\x1fae0-\\x1fae8\\x1faf0-\\x1faf8"
             "\\x1fb00-\\x1fb92\\x1fb94-\\x1fbca\\x1fbf0-\\x1fbf9\\xe0001"
             "\\xe0020-\\xe007f]";
     }
@@ -209,7 +210,8 @@
     static const char *IsCyrillic()
     {
         return "[\\x400-\\x484\\x487-\\x52f\\x1c80-\\x1c88\\x1d2b\\x1d78"
-            "\\x2de0-\\x2dff\\xa640-\\xa69f\\xfe2e\\xfe2f]";
+            "\\x2de0-\\x2dff\\xa640-\\xa69f\\xfe2e\\xfe2f\\x1e030-\\x1e06d"
+            "\\x1e08f]";
     }
 
     static const char *IsDeseret()
@@ -219,7 +221,8 @@
 
     static const char *IsDevanagari()
     {
-        return "[\\x900-\\x950\\x955-\\x963\\x966-\\x97f\\xa8e0-\\xa8ff]";
+        return "[\\x900-\\x950\\x955-\\x963\\x966-\\x97f\\xa8e0-\\xa8ff"
+            "\\x11b00-\\x11b09]";
     }
 
     static const char *IsDives_Akuru()
@@ -242,7 +245,7 @@
 
     static const char *IsEgyptian_Hieroglyphs()
     {
-        return "[\\x13000-\\x1342e\\x13430-\\x13438]";
+        return "[\\x13000-\\x13455]";
     }
 
     static const char *IsElbasan()
@@ -335,7 +338,7 @@
             "\\xf900-\\xfa6d\\xfa70-\\xfad9\\x16fe2\\x16fe3\\x16ff0\\x16ff1"
             "\\x20000-\\x2a6df\\x2a700-\\x2b738\\x2b740-\\x2b81d"
             "\\x2b820-\\x2cea1\\x2ceb0-\\x2ebe0\\x2f800-\\x2fa1d"
-            "\\x30000-\\x3134a]";
+            "\\x30000-\\x3134a\\x31350-\\x323af]";
     }
 
     static const char *IsHangul()
@@ -370,7 +373,7 @@
 
     static const char *IsHiragana()
     {
-        return "[\\x3041-\\x3096\\x309d-\\x309f\\x1b001-\\x1b11f"
+        return "[\\x3041-\\x3096\\x309d-\\x309f\\x1b001-\\x1b11f\\x1b132"
             "\\x1b150-\\x1b152\\x1f200]";
     }
 
@@ -414,15 +417,20 @@
     {
         return "[\\xc80-\\xc8c\\xc8e-\\xc90\\xc92-\\xca8\\xcaa-\\xcb3"
             "\\xcb5-\\xcb9\\xcbc-\\xcc4\\xcc6-\\xcc8\\xcca-\\xccd\\xcd5\\xcd6"
-            "\\xcdd\\xcde\\xce0-\\xce3\\xce6-\\xcef\\xcf1\\xcf2]";
+            "\\xcdd\\xcde\\xce0-\\xce3\\xce6-\\xcef\\xcf1-\\xcf3]";
     }
 
     static const char *IsKatakana()
     {
         return "[\\x30a1-\\x30fa\\x30fd-\\x30ff\\x31f0-\\x31ff\\x32d0-\\x32fe"
             "\\x3300-\\x3357\\xff66-\\xff6f\\xff71-\\xff9d\\x1aff0-\\x1aff3"
-            "\\x1aff5-\\x1affb\\x1affd\\x1affe\\x1b000\\x1b120-\\x1b122"
+            "\\x1aff5-\\x1affb\\x1affd\\x1affe\\x1b000\\x1b120-\\x1b122\\x1b155"
             "\\x1b164-\\x1b167]";
+    }
+
+    static const char *IsKawi()
+    {
+        return "[\\x11f00-\\x11f10\\x11f12-\\x11f3a\\x11f3e-\\x11f59]";
     }
 
     static const char *IsKayah_Li()
@@ -450,7 +458,7 @@
 
     static const char *IsKhojki()
     {
-        return "[\\x11200-\\x11211\\x11213-\\x1123e]";
+        return "[\\x11200-\\x11211\\x11213-\\x11241]";
     }
 
     static const char *IsKhudawadi()
@@ -461,7 +469,7 @@
     static const char *IsLao()
     {
         return "[\\xe81\\xe82\\xe84\\xe86-\\xe8a\\xe8c-\\xea3\\xea5"
-            "\\xea7-\\xebd\\xec0-\\xec4\\xec6\\xec8-\\xecd\\xed0-\\xed9"
+            "\\xea7-\\xebd\\xec0-\\xec4\\xec6\\xec8-\\xece\\xed0-\\xed9"
             "\\xedc-\\xedf]";
     }
 
@@ -475,7 +483,7 @@
             "\\xa7d0\\xa7d1\\xa7d3\\xa7d5-\\xa7d9\\xa7f2-\\xa7ff"
             "\\xab30-\\xab5a\\xab5c-\\xab64\\xab66-\\xab69\\xfb00-\\xfb06"
             "\\xff21-\\xff3a\\xff41-\\xff5a\\x10780-\\x10785\\x10787-\\x107b0"
-            "\\x107b2-\\x107ba\\x1df00-\\x1df1e]";
+            "\\x107b2-\\x107ba\\x1df00-\\x1df1e\\x1df25-\\x1df2a]";
     }
 
     static const char *IsLepcha()
@@ -613,6 +621,11 @@
     static const char *IsNabataean()
     {
         return "[\\x10880-\\x1089e\\x108a7-\\x108af]";
+    }
+
+    static const char *IsNag_Mundari()
+    {
+        return "[\\x1e4d0-\\x1e4f9]";
     }
 
     static const char *IsNandinagari()

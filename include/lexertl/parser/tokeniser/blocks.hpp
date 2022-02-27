@@ -1044,6 +1044,11 @@
         return "[\\x10E80-\\x10EBF]";
     }
 
+    static const char *InArabic_Extended_C()
+    {
+        return "[\\x10EC0-\\x10EFF]";
+    }
+
     static const char *InOld_Sogdian()
     {
         return "[\\x10F00-\\x10F2F]";
@@ -1199,6 +1204,11 @@
         return "[\\x11AC0-\\x11AFF]";
     }
 
+    static const char *InDevanagari_Extended_A()
+    {
+        return "[\\x11B00-\\x11B5F]";
+    }
+
     static const char *InBhaiksuki()
     {
         return "[\\x11C00-\\x11C6F]";
@@ -1222,6 +1232,11 @@
     static const char *InMakasar()
     {
         return "[\\x11EE0-\\x11EFF]";
+    }
+
+    static const char *InKawi()
+    {
+        return "[\\x11F00-\\x11F5F]";
     }
 
     static const char *InLisu_Supplement()
@@ -1261,7 +1276,7 @@
 
     static const char *InEgyptian_Hieroglyph_Format_Controls()
     {
-        return "[\\x13430-\\x1343F]";
+        return "[\\x13430-\\x1345F]";
     }
 
     static const char *InAnatolian_Hieroglyphs()
@@ -1384,6 +1399,11 @@
         return "[\\x1D200-\\x1D24F]";
     }
 
+    static const char *InKaktovik_Numerals()
+    {
+        return "[\\x1D2C0-\\x1D2DF]";
+    }
+
     static const char *InMayan_Numerals()
     {
         return "[\\x1D2E0-\\x1D2FF]";
@@ -1419,6 +1439,11 @@
         return "[\\x1E000-\\x1E02F]";
     }
 
+    static const char *InCyrillic_Extended_D()
+    {
+        return "[\\x1E030-\\x1E08F]";
+    }
+
     static const char *InNyiakeng_Puachue_Hmong()
     {
         return "[\\x1E100-\\x1E14F]";
@@ -1432,6 +1457,11 @@
     static const char *InWancho()
     {
         return "[\\x1E2C0-\\x1E2FF]";
+    }
+
+    static const char *InNag_Mundari()
+    {
+        return "[\\x1E4D0-\\x1E4FF]";
     }
 
     static const char *InEthiopic_Extended_B()
@@ -1577,6 +1607,11 @@
     static const char *InCJK_Unified_Ideographs_Extension_G()
     {
         return "[\\x30000-\\x3134F]";
+    }
+
+    static const char *InCJK_Unified_Ideographs_Extension_H()
+    {
+        return "[\\x31350-\\x323AF]";
     }
 
     static const char *InTags()
