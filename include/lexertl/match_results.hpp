@@ -92,7 +92,7 @@ namespace lexertl
             state = 0;
         }
 
-        std::size_t size() const
+        std::size_t length() const
         {
             return second - first;
         }
