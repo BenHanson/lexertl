@@ -48,7 +48,7 @@
     {
         return "[\\xad\\x600-\\x605\\x61c\\x6dd\\x70f\\x890\\x891\\x8e2\\x180e"
             "\\x200b-\\x200f\\x202a-\\x202e\\x2060-\\x2064\\x2066-\\x206f"
-            "\\xfeff\\xfff9-\\xfffb\\x110bd\\x110cd\\x13430-\\x13440"
+            "\\xfeff\\xfff9-\\xfffb\\x110bd\\x110cd\\x13430-\\x1343f"
             "\\x1bca0-\\x1bca3\\x1d173-\\x1d17a\\xe0001\\xe0020-\\xe007f]";
     }
 
@@ -290,7 +290,7 @@
             "\\x1ee67-\\x1ee6a\\x1ee6c-\\x1ee72\\x1ee74-\\x1ee77"
             "\\x1ee79-\\x1ee7c\\x1ee7e\\x1ee80-\\x1ee89\\x1ee8b-\\x1ee9b"
             "\\x1eea1-\\x1eea3\\x1eea5-\\x1eea9\\x1eeab-\\x1eebb\\x20000"
-            "\\x2a6df\\x2a700\\x2b738\\x2b740\\x2b81d\\x2b820\\x2cea1\\x2ceb0"
+            "\\x2a6df\\x2a700\\x2b739\\x2b740\\x2b81d\\x2b820\\x2cea1\\x2ceb0"
             "\\x2ebe0\\x2f800-\\x2fa1d\\x30000\\x3134a\\x31350\\x323af]";
     }
 
@@ -496,7 +496,7 @@
             "\\x11c92-\\x11ca7\\x11caa-\\x11cb0\\x11cb2\\x11cb3\\x11cb5\\x11cb6"
             "\\x11d31-\\x11d36\\x11d3a\\x11d3c\\x11d3d\\x11d3f-\\x11d45\\x11d47"
             "\\x11d90\\x11d91\\x11d95\\x11d97\\x11ef3\\x11ef4\\x11f00\\x11f01"
-            "\\x11f36-\\x11f3a\\x11f40\\x11f42\\x13447-\\x13455"
+            "\\x11f36-\\x11f3a\\x11f40\\x11f42\\x13440\\x13447-\\x13455"
             "\\x16af0-\\x16af4\\x16b30-\\x16b36\\x16f4f\\x16f8f-\\x16f92"
             "\\x16fe4\\x1bc9d\\x1bc9e\\x1cf00-\\x1cf2d\\x1cf30-\\x1cf46"
             "\\x1d167-\\x1d169\\x1d17b-\\x1d182\\x1d185-\\x1d18b"
