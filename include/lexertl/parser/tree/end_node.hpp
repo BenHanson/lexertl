@@ -1,5 +1,5 @@
 // end_node.hpp
-// Copyright (c) 2005-2020 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2023 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -27,14 +27,15 @@ namespace lexertl
 
             basic_end_node(const id_type id_, const id_type user_id_,
                 const id_type next_dfa_, const id_type push_dfa_,
-                const bool pop_dfa_) :
+                const bool pop_dfa_, const bool greedy_) :
                 node(false),
                 _id(id_),
                 _user_id(user_id_),
                 _next_dfa(next_dfa_),
                 _push_dfa(push_dfa_),
                 _pop_dfa(pop_dfa_),
-                _followpos()
+                _followpos(),
+                _greedy(greedy_)
             {
                 node::_firstpos.push_back(this);
                 node::_lastpos.push_back(this);
@@ -53,6 +54,11 @@ namespace lexertl
                 bool_stack&/*perform_op_stack_*/) const
             {
                 return false;
+            }
+
+            virtual bool greedy() const
+            {
+                return _greedy;
             }
 
             virtual const node_vector& followpos() const
@@ -103,6 +109,7 @@ namespace lexertl
             id_type _next_dfa;
             id_type _push_dfa;
             bool _pop_dfa;
+            bool _greedy;
             node_vector _followpos;
 
             virtual void copy_node(node_ptr_vector&/*node_ptr_vector_*/,

@@ -1,5 +1,5 @@
 // dot.hpp
-// Copyright (c) 2005-2020 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2023 Ben Hanson (http://www.benhanson.net/)
 // Copyright (c) 2013 Autodesk, Inc. All rights reserved.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying

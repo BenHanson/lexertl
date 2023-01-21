@@ -1,5 +1,5 @@
 // equivset.hpp
-// Copyright (c) 2005-2020 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2023 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -59,7 +59,32 @@ namespace lexertl
                     // Note that the LHS takes priority in order to
                     // respect rule ordering priority in the lex spec.
                     overlap_._id = _id;
-                    overlap_._greedy = _greedy;
+
+                    if (_greedy)
+                        overlap_._greedy = true;
+                    else
+                    {
+                        bool greedy_ = false;
+                        typename node_vector::const_iterator rhs_iter_ =
+                            rhs_._followpos.begin();
+                        typename node_vector::const_iterator rhs_end_ =
+                            rhs_._followpos.end();
+
+                        for (; rhs_iter_ != rhs_end_; ++rhs_iter_)
+                        {
+                            // If a 'hard greedy' transition is present,
+                            // then respect that above all else.
+                            if ((*rhs_iter_)->what_type() == node::LEAF &&
+                                (*rhs_iter_)->greedy() && (*rhs_iter_)->set_greedy())
+                            {
+                                greedy_ = true;
+                                break;
+                            }
+                        }
+
+                        overlap_._greedy = greedy_;
+                    }
+
                     overlap_._followpos = _followpos;
 
                     typename node_vector::const_iterator overlap_begin_ =

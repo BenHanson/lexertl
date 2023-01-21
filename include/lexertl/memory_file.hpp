@@ -1,5 +1,5 @@
 // memory_file.hpp
-// Copyright (c) 2015-2020 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2015-2023 Ben Hanson (http://www.benhanson.net/)
 // Inspired by http://en.wikibooks.org/wiki/Optimizing_C%2B%2B/
 // General_optimization_techniques/Input/Output#Memory-mapped_file
 //

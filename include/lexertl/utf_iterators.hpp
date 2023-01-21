@@ -1,5 +1,5 @@
 // utf_iterators.hpp
-// Copyright (c) 2012-2020 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2012-2023 Ben Hanson (http://www.benhanson.net/)
 // Inspired by http://utfcpp.sourceforge.net/
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -45,6 +45,11 @@ namespace lexertl
         char_type operator *() const
         {
             return _char;
+        }
+
+        bool operator >(const basic_utf8_in_iterator& rhs_) const
+        {
+            return _it > rhs_._it;
         }
 
         bool operator ==(const basic_utf8_in_iterator& rhs_) const

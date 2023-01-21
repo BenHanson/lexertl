@@ -1,5 +1,5 @@
 // parser.hpp
-// Copyright (c) 2005-2020 Ben Hanson (http://www.benhanson.net/)
+// Copyright (c) 2005-2023 Ben Hanson (http://www.benhanson.net/)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -150,12 +150,26 @@ namespace lexertl
                 assert(_tree_node_stack.size() == 1);
 
                 node* lhs_node_ = _tree_node_stack.top();
+                bool non_greedy_ = false;
 
                 _tree_node_stack.pop();
                 _node_ptr_vector->push_back(static_cast<end_node*>(0));
+                iter_ = regex_.begin();
+
+                for (; iter_ != end_; ++iter_)
+                {
+                    if (iter_->_type == detail::AOPT ||
+                        iter_->_type == detail::AZEROORMORE ||
+                        iter_->_type == detail::AONEORMORE ||
+                        iter_->_type == detail::AREPEATN)
+                    {
+                        non_greedy_ = true;
+                        break;
+                    }
+                }
 
                 node* rhs_node_ = new end_node(id_, user_id_, next_dfa_,
-                    push_dfa_, pop_dfa_);
+                    push_dfa_, pop_dfa_, !non_greedy_);
 
                 _node_ptr_vector->back() = rhs_node_;
                 _node_ptr_vector->push_back(static_cast<sequence_node*>(0));
