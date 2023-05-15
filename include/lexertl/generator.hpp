@@ -35,7 +35,8 @@ namespace lexertl
 
         static void build(const rules& rules_, sm& sm_)
         {
-            const id_type size_ = static_cast<id_type>(rules_.statemap().size());
+            const id_type size_ =
+                static_cast<id_type>(rules_.statemap().size());
             // Strong exception guarantee
             // http://www.boost.org/community/exception_safety.html
             internals internals_;
@@ -263,8 +264,11 @@ namespace lexertl
                             dfa_alphabet_);
 
                         // Prune abstemious transitions from end states.
-                        if (*ptr_ && !(*ptr_ & greedy_bit) && !equivset_->_greedy)
+                        if (*ptr_ && !(*ptr_ & greedy_bit) &&
+                            !equivset_->_greedy)
+                        {
                             continue;
+                        }
 
                         set_transitions(transition_, equivset_, dfa_, ptr_,
                             index_, eol_set_);

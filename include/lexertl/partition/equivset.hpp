@@ -75,7 +75,8 @@ namespace lexertl
                             // If a 'hard greedy' transition is present,
                             // then respect that above all else.
                             if ((*rhs_iter_)->what_type() == node::LEAF &&
-                                (*rhs_iter_)->greedy() && (*rhs_iter_)->set_greedy())
+                                (*rhs_iter_)->greedy() &&
+                                (*rhs_iter_)->set_greedy())
                             {
                                 greedy_ = true;
                                 break;

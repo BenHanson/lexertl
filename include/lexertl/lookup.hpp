@@ -9,7 +9,7 @@
 #include <assert.h>
 #include "bool.hpp"
 #include "match_results.hpp"
-#include "state_machine.hpp"
+#include "runtime_error.hpp"
 
 namespace lexertl
 {
