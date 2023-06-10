@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\containers">
+      <UniqueIdentifier>{b0781fda-80ac-4fd2-ba08-5392ab9446db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\parser">
+      <UniqueIdentifier>{82c7e73e-4fc6-4c42-a6bb-39999ab7411b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\partition">
+      <UniqueIdentifier>{d854a006-5e78-4428-8ede-df9524f1e642}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\parser\tokeniser">
+      <UniqueIdentifier>{e9faafaa-a507-476b-b0f7-446240ade244}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\parser\tree">
+      <UniqueIdentifier>{9ebbd713-d860-4bde-a037-a3033c3eccec}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bitvector.cpp">
+      <Filter>Source Files\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ptr_list.cpp">
+      <Filter>Source Files\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ptr_map.cpp">
+      <Filter>Source Files\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ptr_stack.cpp">
+      <Filter>Source Files\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="ptr_vector.cpp">
+      <Filter>Source Files\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="blocks.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="re_token.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="re_tokeniser.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="re_tokeniser_helper.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="re_tokeniser_state.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="unicode.cpp">
+      <Filter>Source Files\parser\tokeniser</Filter>
+    </ClCompile>
+    <ClCompile Include="end_node.cpp">
+      <Filter>Source Files\parser\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="iteration_node.cpp">
+      <Filter>Source Files\parser\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="leaf_node.cpp">
+      <Filter>Source Files\parser\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="node.cpp">
+      <Filter>Source Files\parser\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="selection_node.cpp">
+      <Filter>Source Files\parser\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="sequence_node.cpp">
+      <Filter>Source Files\parser\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Source Files\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="charset.cpp">
+      <Filter>Source Files\partition</Filter>
+    </ClCompile>
+    <ClCompile Include="equivset.cpp">
+      <Filter>Source Files\partition</Filter>
+    </ClCompile>
+    <ClCompile Include="bool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="char_traits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="compile_assert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enums.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="generate_cpp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="internals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="is_same.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lookup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="match_results.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory_file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="narrow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="replace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime_error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serialise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="size_t.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sm_to_csm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sm_traits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="state_machine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stream_shared_iterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="string_token.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utf_iterators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
