@@ -7,6 +7,7 @@
 #define LEXERTL_EQUIVSET_HPP
 
 #include <algorithm>
+#include <iterator>
 #include "../parser/tree/node.hpp"
 #include <set>
 
