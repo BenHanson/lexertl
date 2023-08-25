@@ -175,8 +175,7 @@ namespace lexertl
                             token_._type = OR;
                             break;
                         case '^':
-                            if (!state_._macro_name &&
-                                state_._curr - 1 == state_._start)
+                            if (state_._curr - 1 == state_._start)
                             {
                                 token_._type = BOL;
                             }
@@ -188,8 +187,7 @@ namespace lexertl
 
                             break;
                         case '$':
-                            if (!state_._macro_name &&
-                                state_._curr == state_._end)
+                            if (state_._curr == state_._end)
                             {
                                 token_._type = EOL;
                             }
