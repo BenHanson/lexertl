@@ -874,9 +874,18 @@ namespace lexertl
                     ++temp_;
                 }
 
-                if (*temp_) push_dfa_ = temp_ + 1;
+                if (*temp_)
+                    push_dfa_ = temp_ + 1;
 
                 validate(new_dfa_, *temp_ ? temp_ : 0);
+
+                if (!push_ && push_dfa_)
+                {
+                    std::ostringstream ss_;
+
+                    ss_ << "Exit state is missing '>' for rule id " << id_ << '.';
+                    throw std::runtime_error(ss_.str());
+                }
 
                 if (push_dfa_)
                 {
