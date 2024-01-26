@@ -884,7 +884,7 @@ namespace lexertl
                     std::ostringstream ss_;
 
                     ss_ << "Exit state is missing '>' for rule id " << id_ << '.';
-                    throw std::runtime_error(ss_.str());
+                    throw runtime_error(ss_.str());
                 }
 
                 if (push_dfa_)
