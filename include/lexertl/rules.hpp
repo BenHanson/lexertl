@@ -260,8 +260,14 @@ namespace lexertl
         }
 
         // Add rule to INITIAL
+        // Separate overloads to support python bindings
+        void push(const rules_char_type* regex_, const id_type id_)
+        {
+            push(string(regex_), id_, npos());
+        }
+
         void push(const rules_char_type* regex_, const id_type id_,
-            const id_type user_id_ = npos())
+            const id_type user_id_)
         {
             push(string(regex_), id_, user_id_);
         }
