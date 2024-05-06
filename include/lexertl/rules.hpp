@@ -77,6 +77,11 @@ namespace lexertl
             push_state(initial());
         }
 
+        // Added to support python bindings
+        virtual ~basic_rules()
+        {
+        }
+
         void clear()
         {
             _statemap.clear();
@@ -127,7 +132,7 @@ namespace lexertl
             return static_cast<id_type>(~1);
         }
 
-        id_type eoi() const
+        static id_type eoi()
         {
             return 0;
         }
@@ -334,9 +339,17 @@ namespace lexertl
         }
 
         // Add rule with id
+        // Separate overloads to support python bindings
+         void push(const rules_char_type* curr_dfa_,
+            const rules_char_type* regex_, const id_type id_,
+            const rules_char_type* new_dfa_)
+        {
+            push(curr_dfa_, string(regex_), id_, new_dfa_, npos());
+        }
+
         void push(const rules_char_type* curr_dfa_,
             const rules_char_type* regex_, const id_type id_,
-            const rules_char_type* new_dfa_, const id_type user_id_ = npos())
+            const rules_char_type* new_dfa_, const id_type user_id_)
         {
             push(curr_dfa_, string(regex_), id_, new_dfa_, user_id_);
         }
