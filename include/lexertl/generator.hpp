@@ -42,6 +42,7 @@ namespace lexertl
             internals internals_;
             sm temp_sm_;
             node_ptr_vector node_ptr_vector_;
+            std::set<id_type> used_ids_;
 
             internals_._eoi = rules_.eoi();
             internals_.add_states(size_);
@@ -69,7 +70,7 @@ namespace lexertl
                         charset_map_, cr_id_, nl_id_);
 
                     build_dfa(charset_map_, root_, internals_, temp_sm_, index_,
-                        cr_id_, nl_id_);
+                        cr_id_, nl_id_, rules_.flags(), rules_.ids(), used_ids_);
 
                     if (internals_._dfa[index_].size() /
                         internals_._dfa_alphabet[index_] >= sm_traits::npos())
@@ -168,6 +169,7 @@ namespace lexertl
         typedef detail::basic_internals<id_type> internals;
         typedef typename std::set<id_type> id_type_set;
         typedef typename internals::id_type_vector id_type_vector;
+        typedef typename rules::id_vector_deque id_vector_deque;
         typedef typename charset::index_set index_set;
         typedef std::vector<index_set> index_set_vector;
         typedef bool_<sm_traits::is_dfa> is_dfa;
@@ -182,7 +184,9 @@ namespace lexertl
 
         static void build_dfa(const charset_map& charset_map_,
             const node* root_, internals& internals_, sm& sm_,
-            const id_type dfa_index_, id_type& cr_id_, id_type& nl_id_)
+            const id_type dfa_index_, id_type& cr_id_, id_type& nl_id_,
+            const std::size_t flags_, const id_vector_deque& ids_vector_,
+            std::set<id_type>& used_ids_)
         {
             // partitioned charset list
             charset_list charset_list_;
@@ -236,7 +240,7 @@ namespace lexertl
             // 'jam' state
             dfa_.resize(dfa_alphabet_, 0);
             closure(followpos_, seen_sets_, seen_vectors_, hash_vector_,
-                static_cast<id_type>(dfa_alphabet_), dfa_);
+                static_cast<id_type>(dfa_alphabet_), dfa_, flags_, used_ids_);
 
             // Loop over states
             for (id_type index_ = 0; index_ < static_cast<id_type>
@@ -256,7 +260,7 @@ namespace lexertl
                     const id_type transition_ = closure
                     (&equivset_->_followpos, seen_sets_, seen_vectors_,
                         hash_vector_, static_cast<id_type>(dfa_alphabet_),
-                        dfa_);
+                        dfa_, flags_, used_ids_);
 
                     if (transition_ != sm_traits::npos())
                     {
@@ -276,6 +280,7 @@ namespace lexertl
                 }
             }
 
+            check_suppressed(flags_, ids_vector_, used_ids_);
             fix_clashes(eol_set_, cr_id_, nl_id_, zero_id_, dfa_, dfa_alphabet_,
                 compressed());
             append_dfa(charset_list_, internals_, sm_, dfa_index_, lookup());
@@ -304,6 +309,37 @@ namespace lexertl
                 else
                 {
                     ptr_[i_ + transitions_index] = transition_;
+                }
+            }
+        }
+
+        static void check_suppressed(const std::size_t flags_,
+            const id_vector_deque& ids_vector_, std::set<id_type>& used_ids_)
+        {
+            if (!(flags_ & allow_suppressed_rules))
+            {
+                typename id_vector_deque::const_iterator ids_vv_iter_ =
+                    ids_vector_.begin();
+                typename id_vector_deque::const_iterator ids_vv_end_ =
+                    ids_vector_.end();
+
+                for (; ids_vv_iter_ != ids_vv_end_; ++ids_vv_iter_)
+                {
+                    typename rules::id_vector::const_iterator ids_v_iter_ =
+                        ids_vv_iter_->begin();
+                    typename rules::id_vector::const_iterator ids_v_end_ =
+                        ids_vv_iter_->end();
+
+                    for (; ids_v_iter_ != ids_v_end_; ++ids_v_iter_)
+                    {
+                        if (used_ids_.find(*ids_v_iter_) == used_ids_.end())
+                        {
+                            std::ostringstream ss;
+
+                            ss << "Rule " << *ids_v_iter_ << " cannot be matched.";
+                            throw runtime_error(ss.str());
+                        }
+                    }
                 }
             }
         }
@@ -631,7 +667,8 @@ namespace lexertl
         static id_type closure(const node_vector* followpos_,
             node_set_vector& seen_sets_, node_vector_vector& seen_vectors_,
             size_t_vector& hash_vector_, const id_type size_,
-            id_type_vector& dfa_)
+            id_type_vector& dfa_, const std::size_t flags_,
+            std::set<id_type>& used_ids_)
         {
             bool end_state_ = false;
             id_type id_ = 0;
@@ -654,7 +691,7 @@ namespace lexertl
             {
                 closure_ex(*iter_, end_state_, id_, user_id_, next_dfa_,
                     push_dfa_, pop_dfa_, set_ptr_.get(),
-                    vector_ptr_.get(), hash_, greedy_);
+                    vector_ptr_.get(), hash_, greedy_, flags_, used_ids_);
             }
 
             bool found_ = false;
@@ -712,7 +749,8 @@ namespace lexertl
         static void closure_ex(node* node_, bool& end_state_,
             id_type& id_, id_type& user_id_, id_type& next_dfa_,
             id_type& push_dfa_, bool& pop_dfa_, node_set* set_ptr_,
-            node_vector* vector_ptr_, std::size_t& hash_, bool& greedy_)
+            node_vector* vector_ptr_, std::size_t& hash_, bool& greedy_,
+            const std::size_t flags_, std::set<id_type>& used_ids_)
         {
             const bool temp_end_state_ = node_->end_state();
 
@@ -727,6 +765,9 @@ namespace lexertl
                     push_dfa_ = node_->push_dfa();
                     pop_dfa_ = node_->pop_dfa();
                     greedy_ = node_->greedy();
+
+                    if (!(flags_ & allow_suppressed_rules))
+                        used_ids_.insert(id_);
                 }
             }
 

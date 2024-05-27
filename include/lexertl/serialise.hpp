@@ -116,13 +116,13 @@ namespace lexertl
         stream_ >> num_;
 
         if (num_ != sizeof(char_type))
-            throw runtime_error("char_type mismatch in lexertl::load()");
+            throw runtime_error("char_type mismatch in lexertl::load().");
 
         // sizeof(id_type)
         stream_ >> num_;
 
         if (num_ != sizeof(id_type))
-            throw runtime_error("id_type mismatch in lexertl::load()");
+            throw runtime_error("id_type mismatch in lexertl::load().");
 
         stream_ >> internals_._eoi;
         stream_ >> num_;

@@ -560,14 +560,14 @@ namespace lexertl
                         const token& second_ =
                             iter_->second[iter_->second.size() - 2];
                         const bool bol_ = tokens_.size() == 1 &&
-                            first_._type == detail::token_type::BOL;
+                            first_._type == detail::BOL;
                         const bool caret_ =
-                            !bol_ && first_._type == detail::token_type::BOL;
+                            !bol_ && first_._type == detail::BOL;
                         const bool eol_ =
                             state_._curr == regex_.c_str() + regex_.size() &&
-                            second_._type == detail::token_type::EOL;
+                            second_._type == detail::EOL;
                         const bool dollar_ =
-                            !eol_ && second_._type == detail::token_type::EOL;
+                            !eol_ && second_._type == detail::EOL;
 
                         if (diff_)
                         {

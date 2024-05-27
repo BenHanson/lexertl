@@ -11,7 +11,7 @@ namespace lexertl
 {
     enum regex_flags {
         icase = 1, dot_not_newline = 2, dot_not_cr_lf = 4,
-        skip_ws = 8, match_zero_len = 16
+        skip_ws = 8, match_zero_len = 16, allow_suppressed_rules = 32
     };
     // 0 = end state, 1 = id, 2 = user id, 3 = push_dfa_index
     // 4 = next dfa, 5 = dead state, 6 = dfa_start

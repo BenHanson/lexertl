@@ -309,7 +309,7 @@ namespace lexertl
                 {
                     if (results_.stack.empty())
                         throw runtime_error("Stack underflow in "
-                            "lookup_state::pop()");
+                            "lookup_state::pop().");
 
                     _multi_state_state._start_state =
                         results_.stack.top().first;
