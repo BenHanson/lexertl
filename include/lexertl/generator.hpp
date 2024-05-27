@@ -70,7 +70,7 @@ namespace lexertl
                         charset_map_, cr_id_, nl_id_);
 
                     build_dfa(charset_map_, root_, internals_, temp_sm_, index_,
-                        cr_id_, nl_id_, rules_.flags(), rules_.ids(), used_ids_);
+                        cr_id_, nl_id_, rules_.flags(), used_ids_);
 
                     if (internals_._dfa[index_].size() /
                         internals_._dfa_alphabet[index_] >= sm_traits::npos())
@@ -82,6 +82,7 @@ namespace lexertl
                 }
             }
 
+            check_suppressed(rules_.flags(), rules_.ids(), used_ids_);
             // If you get a compile error here the id_type from rules and
             // state machine do no match.
             create(internals_, temp_sm_, rules_.features(), lookup());
@@ -185,8 +186,7 @@ namespace lexertl
         static void build_dfa(const charset_map& charset_map_,
             const node* root_, internals& internals_, sm& sm_,
             const id_type dfa_index_, id_type& cr_id_, id_type& nl_id_,
-            const std::size_t flags_, const id_vector_deque& ids_vector_,
-            std::set<id_type>& used_ids_)
+            const std::size_t flags_, std::set<id_type>& used_ids_)
         {
             // partitioned charset list
             charset_list charset_list_;
@@ -280,7 +280,6 @@ namespace lexertl
                 }
             }
 
-            check_suppressed(flags_, ids_vector_, used_ids_);
             fix_clashes(eol_set_, cr_id_, nl_id_, zero_id_, dfa_, dfa_alphabet_,
                 compressed());
             append_dfa(charset_list_, internals_, sm_, dfa_index_, lookup());
