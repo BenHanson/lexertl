@@ -1141,7 +1141,7 @@ namespace lexertl
                 }
 
                 const typename state_type::char_type* start_ = state_._curr;
-                const std::size_t idx = state_.index();
+                const std::size_t idx_ = state_.index();
 
                 do
                 {
@@ -1185,7 +1185,7 @@ namespace lexertl
                 {
                     std::ostringstream ss_;
 
-                    ss_ << "Syntax error following \\p{ at index " << idx;
+                    ss_ << "Syntax error following \\p{ at index " << idx_;
                     state_.error(ss_);
                     throw runtime_error(ss_.str());
                 }

@@ -154,6 +154,15 @@ namespace lexertl
 #endif
             }
 
+            virtual id_type unique_id() const
+            {
+                throw runtime_error("Internal error node::unique_id().");
+#ifdef __SUNPRO_CC
+                // Stop bogus Solaris compiler warning
+                return id_type();
+#endif
+            }
+
             virtual id_type next_dfa() const
             {
                 throw runtime_error("Internal error node::next_dfa().");
@@ -214,7 +223,7 @@ namespace lexertl
                 throw runtime_error("Internal error node::followpos().");
 #ifdef __SUNPRO_CC
                 // Stop bogus Solaris compiler warning
-                return firstpos;
+                return _firstpos;
 #endif
             }
 
@@ -223,7 +232,7 @@ namespace lexertl
                 throw runtime_error("Internal error node::followpos().");
 #ifdef __SUNPRO_CC
                 // Stop bogus Solaris compiler warning
-                return firstpos;
+                return _firstpos;
 #endif
             }
 

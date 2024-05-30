@@ -549,16 +549,16 @@ namespace lexertl
 
         value_type operator *() const
         {
-            value_type val = *_it;
-            char* first = reinterpret_cast<char*>(&val);
-            char* second = reinterpret_cast<char*>(&val + 1) - 1;
+            value_type val_ = *_it;
+            char* first_ = reinterpret_cast<char*>(&val_);
+            char* second_ = reinterpret_cast<char*>(&val_ + 1) - 1;
 
-            for (; first < second; ++first, --second)
+            for (; first_ < second_; ++first_, --second_)
             {
-                std::swap(*first, *second);
+                std::swap(*first_, *second_);
             }
 
-            return val;
+            return val_;
         }
 
         bool operator ==(const basic_flip_iterator& rhs_) const
