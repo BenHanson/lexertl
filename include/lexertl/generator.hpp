@@ -327,7 +327,7 @@ namespace lexertl
                         std::ostringstream ss_;
 
                         ss_ << "The following regex cannot be matched: " <<
-                            regex_from_idx(id_ - 1, rules_.regex_strings());
+                            regex_from_idx(id_, rules_.regex_strings());
                         throw runtime_error(ss_.str());
                     }
                 }
