@@ -88,8 +88,8 @@ namespace lexertl
             node* parse(const token_deque& regex_, const id_type id_,
                 const id_type user_id_, const id_type unique_id_,
                 const id_type next_dfa_, const id_type push_dfa_,
-                const bool pop_dfa_, const std::size_t flags_,
-                id_type& cr_id_, id_type& nl_id_, const bool seen_bol_)
+                const bool pop_dfa_, id_type& cr_id_, id_type& nl_id_,
+                const bool seen_bol_)
             {
                 typename token_deque::const_iterator iter_ = regex_.begin();
                 typename token_deque::const_iterator end_ = regex_.end();
@@ -180,33 +180,6 @@ namespace lexertl
                 if (seen_bol_)
                 {
                     fixup_bol(root_);
-                }
-
-                if ((flags_ & match_zero_len) == 0)
-                {
-                    const typename node::node_vector& firstpos_ =
-                        root_->firstpos();
-                    typename node::node_vector::const_iterator i_ =
-                        firstpos_.begin();
-                    typename node::node_vector::const_iterator e_ =
-                        firstpos_.end();
-
-                    for (; i_ != e_; ++i_)
-                    {
-                        const node* node_ = *i_;
-
-                        if (node_->end_state())
-                        {
-                            std::ostringstream ss_;
-
-                            ss_ << "Rules that match zero characters are not "
-                                "allowed as this can cause an infinite loop "
-                                "in user code. The match_zero_len flag "
-                                "overrides this check. Rule id " <<
-                                id_ << '.';
-                            throw runtime_error(ss_.str());
-                        }
-                    }
                 }
 
                 return root_;
