@@ -924,6 +924,11 @@
         return "[\\x10570-\\x105BF]";
     }
 
+    static const char *InTodhri()
+    {
+        return "[\\x105C0-\\x105FF]";
+    }
+
     static const char *InLinear_A()
     {
         return "[\\x10600-\\x1077F]";
@@ -1034,6 +1039,11 @@
         return "[\\x10D00-\\x10D3F]";
     }
 
+    static const char *InGaray()
+    {
+        return "[\\x10D40-\\x10D8F]";
+    }
+
     static const char *InRumi_Numeral_Symbols()
     {
         return "[\\x10E60-\\x10E7F]";
@@ -1129,6 +1139,11 @@
         return "[\\x11300-\\x1137F]";
     }
 
+    static const char *InTulu_Tigalari()
+    {
+        return "[\\x11380-\\x113FF]";
+    }
+
     static const char *InNewa()
     {
         return "[\\x11400-\\x1147F]";
@@ -1157,6 +1172,11 @@
     static const char *InTakri()
     {
         return "[\\x11680-\\x116CF]";
+    }
+
+    static const char *InMyanmar_Extended_C()
+    {
+        return "[\\x116D0-\\x116FF]";
     }
 
     static const char *InAhom()
@@ -1207,6 +1227,11 @@
     static const char *InDevanagari_Extended_A()
     {
         return "[\\x11B00-\\x11B5F]";
+    }
+
+    static const char *InSunuwar()
+    {
+        return "[\\x11BC0-\\x11BFF]";
     }
 
     static const char *InBhaiksuki()
@@ -1279,9 +1304,19 @@
         return "[\\x13430-\\x1345F]";
     }
 
+    static const char *InEgyptian_Hieroglyphs_Extended_A()
+    {
+        return "[\\x13460-\\x143FF]";
+    }
+
     static const char *InAnatolian_Hieroglyphs()
     {
         return "[\\x14400-\\x1467F]";
+    }
+
+    static const char *InGurung_Khema()
+    {
+        return "[\\x16100-\\x1613F]";
     }
 
     static const char *InBamum_Supplement()
@@ -1307,6 +1342,11 @@
     static const char *InPahawh_Hmong()
     {
         return "[\\x16B00-\\x16B8F]";
+    }
+
+    static const char *InKirat_Rai()
+    {
+        return "[\\x16D40-\\x16D7F]";
     }
 
     static const char *InMedefaidrin()
@@ -1377,6 +1417,11 @@
     static const char *InShorthand_Format_Controls()
     {
         return "[\\x1BCA0-\\x1BCAF]";
+    }
+
+    static const char *InSymbols_for_Legacy_Computing_Supplement()
+    {
+        return "[\\x1CC00-\\x1CEBF]";
     }
 
     static const char *InZnamenny_Musical_Notation()
@@ -1462,6 +1507,11 @@
     static const char *InNag_Mundari()
     {
         return "[\\x1E4D0-\\x1E4FF]";
+    }
+
+    static const char *InOl_Onal()
+    {
+        return "[\\x1E5D0-\\x1E5FF]";
     }
 
     static const char *InEthiopic_Extended_B()
@@ -1597,6 +1647,11 @@
     static const char *InCJK_Unified_Ideographs_Extension_F()
     {
         return "[\\x2CEB0-\\x2EBEF]";
+    }
+
+    static const char *InCJK_Unified_Ideographs_Extension_I()
+    {
+        return "[\\x2EBF0-\\x2EE5F]";
     }
 
     static const char *InCJK_Compatibility_Ideographs_Supplement()
