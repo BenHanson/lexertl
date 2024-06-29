@@ -261,10 +261,15 @@ namespace lexertl
                     iter_ != end_; ++iter_)
                 {
                     equivset* equivset_ = *iter_;
-                    const id_type transition_ = closure
-                    (&equivset_->_followpos, seen_sets_, seen_vectors_,
-                        hash_vector_, static_cast<id_type>(dfa_alphabet_),
-                        dfa_, flags_, used_ids_);
+
+                    prune_eol_clashes(equivset_->_followpos, nl_id_,
+                        set_mapping_);
+
+                    const id_type transition_ =
+                        closure(&equivset_->_followpos, seen_sets_,
+                            seen_vectors_, hash_vector_,
+                            static_cast<id_type>(dfa_alphabet_), dfa_, flags_,
+                            used_ids_);
 
                     if (transition_ != sm_traits::npos())
                     {
@@ -287,6 +292,145 @@ namespace lexertl
             fix_clashes(eol_set_, cr_id_, nl_id_, zero_id_, dfa_, dfa_alphabet_,
                 compressed());
             append_dfa(charset_list_, internals_, sm_, dfa_index_, lookup());
+        }
+
+        // Removing clashes will cause an error about rules that cannot match,
+        // unless this has been suppressed (bad idea).
+        // Because of this we don't worry about end_states that are part of a
+        // followset that have other transitions as we should error out anyway
+        // (i.e. we could be supressing other paths that have nothing to do
+        // with the end_states we are interested in).
+        static void prune_eol_clashes(typename equivset::node_vector& followpos_,
+            const id_type nl_id_, const index_set_vector& set_mapping_)
+        {
+            typename equivset::node_vector::iterator iter_ = followpos_.begin();
+            typename equivset::node_vector::iterator end_ = followpos_.end();
+
+            for (; iter_ != end_; ++iter_)
+            {
+                const node* node_ = *iter_;
+
+                if (!node_->end_state())
+                {
+                    if (node_->token() == parser::eol_token())
+                    {
+                        prune_NL(iter_, end_, followpos_, nl_id_, set_mapping_);
+                    }
+                    else
+                    {
+                        prune_eol(iter_, end_, followpos_, nl_id_, set_mapping_);
+                    }
+                }
+            }
+        }
+
+        static void prune_NL(typename equivset::node_vector::iterator& iter_,
+            typename equivset::node_vector::iterator& end_,
+            typename equivset::node_vector& followpos_, const id_type nl_id_,
+            const index_set_vector& set_mapping_)
+        {
+            // Search for NL followed by end state
+            typename equivset::node_vector::iterator nl_iter_ = iter_;
+
+            ++nl_iter_;
+
+            while (nl_iter_ != end_)
+            {
+                node* node_ = *nl_iter_;
+
+                if (node_->end_state())
+                {
+                    ++nl_iter_;
+                    continue;
+                }
+
+                const index_set& set_ = set_mapping_[node_->token()];
+
+                if (set_.find(nl_id_) != set_.end())
+                {
+                    const typename node::node_vector& nl_followpos_ =
+                        node_->followpos();
+                    typename node::node_vector::const_iterator temp_iter_ =
+                        nl_followpos_.begin();
+                    typename node::node_vector::const_iterator temp_end_ =
+                        nl_followpos_.end();
+                    bool found_ = false;
+
+                    for (; temp_iter_ != temp_end_; ++temp_iter_)
+                    {
+                        const node* nl_node_ = *temp_iter_;
+
+                        found_ = nl_node_->end_state();
+
+                        if (found_)
+                            break;
+                    }
+
+                    if (found_)
+                    {
+                        // This might be suppressing additional paths
+                        // but we should be erroring out anyway.
+                        nl_iter_ = followpos_.erase(nl_iter_);
+                        end_ = followpos_.end();
+                        continue;
+                    }
+                }
+
+                ++nl_iter_;
+            }
+        }
+
+        static void prune_eol(typename equivset::node_vector::iterator& iter_,
+            typename equivset::node_vector::iterator& end_,
+            typename equivset::node_vector& followpos_, const id_type nl_id_,
+            const index_set_vector& set_mapping_)
+        {
+            const node* node_ = *iter_;
+            const index_set& set_ = set_mapping_[node_->token()];
+
+            if (set_.find(nl_id_) != set_.end())
+            {
+                const typename node::node_vector& nl_followpos_ =
+                    node_->followpos();
+                typename node::node_vector::const_iterator nl_iter_ =
+                    nl_followpos_.begin();
+                typename node::node_vector::const_iterator nl_end_ =
+                    nl_followpos_.end();
+                bool found_ = false;
+
+                for (; nl_iter_ != nl_end_; ++nl_iter_)
+                {
+                    const node* nl_node_ = *nl_iter_;
+
+                    found_ = nl_node_->end_state();
+
+                    if (found_)
+                        break;
+                }
+
+                if (found_)
+                {
+                    // Search for any EOL tokens
+                    typename equivset::node_vector::iterator nl_iter_ = iter_;
+
+                    ++nl_iter_;
+
+                    while (nl_iter_ != end_)
+                    {
+                        node_ = *nl_iter_;
+
+                        if (!node_->end_state() &&
+                            node_->token() == parser::eol_token())
+                        {
+                            nl_iter_ = followpos_.erase(nl_iter_);
+                            end_ = followpos_.end();
+                            continue;
+                        }
+
+                        ++nl_iter_;
+                    }
+                }
+            }
         }
 
         static void set_transitions(const id_type transition_,
