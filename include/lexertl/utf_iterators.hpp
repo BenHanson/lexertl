@@ -589,13 +589,13 @@ namespace lexertl
         char_iterator _it;
     };
 
-    typedef basic_utf8_in_iterator<const char*, char32_t>
+    typedef basic_utf8_in_iterator<const char*, int>
         cutf8_in_utf32_out_iterator;
-    typedef basic_utf16_in_iterator<const char16_t*, char32_t>
+    typedef basic_utf16_in_iterator<const unsigned short*, int>
         cutf16_in_utf32_out_iterator;
-    typedef basic_utf16_in_iterator<const wchar_t*, char32_t>
+    typedef basic_utf16_in_iterator<const wchar_t*, int>
         cwchar_t_in_utf32_out_iterator;
-    typedef basic_utf16_out_iterator<cutf8_in_utf32_out_iterator, char16_t>
+    typedef basic_utf16_out_iterator<cutf8_in_utf32_out_iterator, unsigned short>
         cutf8_in_utf16_out_iterator;
     typedef basic_utf16_out_iterator<cutf8_in_utf32_out_iterator, wchar_t>
         cutf8_in_wchar_t_out_iterator;
