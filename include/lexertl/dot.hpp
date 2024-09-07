@@ -11,6 +11,7 @@
 #include "rules.hpp"
 #include "state_machine.hpp"
 #include "sm_to_csm.hpp"
+#include "stream_num.hpp"
 
 namespace lexertl
 {
@@ -32,7 +33,7 @@ namespace lexertl
 
         //! Dumps a description of the finite state machine expressed in
         //! the DOT language to the given output stream.
-        static void dump(const sm& sm_, rules& rules_, ostream& stream_)
+        static void dump(const sm& sm_, const rules& rules_, ostream& stream_)
         {
             char_state_machine csm_;
 
@@ -42,14 +43,14 @@ namespace lexertl
 
         //! Dumps a description of the finite state machine expressed in
         //! the DOT language to the given output stream.
-        static void dump(const char_state_machine& csm_, rules& rules_,
+        static void dump(const char_state_machine& csm_, const rules& rules_,
             ostream& stream_)
         {
             header(stream_);
             for (std::size_t dfa_ = 0, dfas_ = csm_.size();
                 dfa_ < dfas_; ++dfa_)
             {
-                dump_ex(dfa_, csm_._sm_deque[dfa_], rules_, stream_);
+                dump_ex(dfa_, csm_._sm_deque[dfa_], rules_, dfas_, stream_);
             }
             trailer(stream_);
         }
@@ -64,7 +65,11 @@ namespace lexertl
         static string node_name(id_type dfa_id_, id_type state_id_)
         {
             stringstream namestream_;
-            namestream_ << "L" << dfa_id_ << "_S" << state_id_;
+
+            namestream_ << 'L';
+            stream_num(dfa_id_, namestream_);
+            namestream_ << "_S";
+            stream_num(state_id_, namestream_);
             return namestream_.str();
         }
 
@@ -137,8 +142,8 @@ namespace lexertl
                 {
                     out_ << '\\';
                     out_ << 'x';
-                    out_ << std::hex <<
-                        static_cast<std::size_t>(ch_);
+                    out_ << std::hex;
+                    stream_num(static_cast<std::size_t>(ch_), out_);
                 }
                 else
                 {
@@ -156,8 +161,7 @@ namespace lexertl
         // state machine in DOT.
         static void dump_ex(id_type dfa_id_,
             const typename char_state_machine::dfa& dfa_,
-            rules& rules_,
-            ostream& stream_)
+            const rules& rules_, const id_type dfas_, ostream& stream_)
         {
             const std::size_t states_ = dfa_._states.size();
             typename dfa_state::id_type_string_token_map::const_iterator iter_;
@@ -168,25 +172,33 @@ namespace lexertl
             for (std::size_t i_ = 0; i_ < states_; ++i_)
             {
                 const dfa_state& state_ = dfa_._states[i_];
-
                 const string name = node_name(dfa_id_, i_);
+
                 if (i_ == 0)
                 {
+                    const char* name_ = rules_.state(dfa_id_);
+
                     stream_ << "    " << name <<
-                        " [shape = doublecircle, xlabel=\"" <<
-                        rules_.state(dfa_id_) << "\"];" << std::endl;
+                        " [shape = circle, xlabel=\"";
+
+                    if (name_)
+                        stream_ << name_;
+                    else
+                        stream_ << dfa_id_;
+
+                    stream_ << "\"];" << std::endl;
                 }
                 else if (state_._end_state)
                 {
                     stream_ << "    " << name <<
-                        " [shape = doublecircle, xlabel=\"id =" <<
-                        static_cast<std::size_t>(state_._id) << "\"];" <<
-                        std::endl;
+                        " [shape = doublecircle, xlabel=\"id = ";
+                    stream_num(static_cast<std::size_t>(state_._id), stream_);
+                    stream_ << "\"];" << std::endl;
                 }
                 else
                 {
-                    stream_ << "    " << name <<
-                        " [shape = circle];" << std::endl;
+                    stream_ << "    " << name << " [shape = circle];" <<
+                        std::endl;
                 }
             }
 
@@ -205,7 +217,7 @@ namespace lexertl
                 {
                     const string dst_name = node_name(dfa_id_, iter_->first);
                     stream_ << "    " << src_name << " -> " << dst_name <<
-                        " [label = \"";
+                        " [label = <<TABLE BORDER=\"0\" CELLBORDER=\"0\"><TR><TD>";
 
                     string_token token_ = iter_->second;
 
@@ -217,50 +229,54 @@ namespace lexertl
                         negated(stream_);
                     }
 
-                    string chars_;
-                    typename string_token::range_vector::const_iterator
-                        ranges_iter_ = token_._ranges.begin();
-                    typename string_token::range_vector::const_iterator
-                        ranges_end_ = token_._ranges.end();
-
-                    for (; ranges_iter_ != ranges_end_; ++ranges_iter_)
-                    {
-                        if (ranges_iter_->first == '^' ||
-                            ranges_iter_->first == ']')
-                        {
-                            stream_ << "\\\\";
-                        }
-
-                        chars_ = double_escape_char(ranges_iter_->first);
-
-                        if (ranges_iter_->first != ranges_iter_->second)
-                        {
-                            if (ranges_iter_->first + 1 < ranges_iter_->second)
-                            {
-                                chars_ += '-';
-                            }
-
-                            if (ranges_iter_->second == '^' ||
-                                ranges_iter_->second == ']')
-                            {
-                                stream_ << "\\\\";
-                            }
-
-                            chars_ += double_escape_char(ranges_iter_->second);
-                        }
-
-                        stream_ << chars_;
-                    }
-
+                    dump_ranges(token_, stream_);
                     close_bracket(stream_);
-                    stream_ << "\"];" << std::endl;
+                    stream_ << "</TD></TR></TABLE>>];" << std::endl;
                 }
 
-                if (state_._end_state) {
+                if (dfas_ > 1 && state_._end_state) {
                     const string dst_name = node_name(state_._next_dfa, 0);
                     stream_ << "    " << src_name << " -> " << dst_name
                         << " [style = \"dashed\"];" << std::endl;
                 }
+            }
+        }
+
+        static void dump_ranges(const string_token& token_, ostream& stream_)
+        {
+            string chars_;
+            typename string_token::range_vector::const_iterator
+                ranges_iter_ = token_._ranges.begin();
+            typename string_token::range_vector::const_iterator
+                ranges_end_ = token_._ranges.end();
+
+            for (; ranges_iter_ != ranges_end_; ++ranges_iter_)
+            {
+                if (ranges_iter_->first == '^' ||
+                    ranges_iter_->first == ']')
+                {
+                    stream_ << "\\\\";
+                }
+
+                chars_ = double_escape_char(ranges_iter_->first);
+
+                if (ranges_iter_->first != ranges_iter_->second)
+                {
+                    if (ranges_iter_->first + 1 < ranges_iter_->second)
+                    {
+                        chars_ += '-';
+                    }
+
+                    if (ranges_iter_->second == '^' ||
+                        ranges_iter_->second == ']')
+                    {
+                        stream_ << "\\\\";
+                    }
+
+                    chars_ += double_escape_char(ranges_iter_->second);
+                }
+
+                stream_ << chars_;
             }
         }
 
