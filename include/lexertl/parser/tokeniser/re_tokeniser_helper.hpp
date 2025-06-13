@@ -51,9 +51,7 @@ namespace lexertl
             static const char* escape_sequence(state_type& state_,
                 char_type& ch_, std::size_t& str_len_)
             {
-                bool eos_ = state_.eos();
-
-                if (eos_)
+                if (state_.eos())
                 {
                     std::ostringstream ss_;
 
@@ -578,7 +576,7 @@ namespace lexertl
                 }
             }
 
-            static std::string make_alnum(std::locale& locale_)
+            static std::string make_alnum(const std::locale& locale_)
             {
                 std::string str_(1, '[');
 
@@ -595,7 +593,7 @@ namespace lexertl
                 return str_;
             }
 
-            static std::string make_alpha(std::locale& locale_)
+            static std::string make_alpha(const std::locale& locale_)
             {
                 std::string str_(1, '[');
 
@@ -768,7 +766,7 @@ namespace lexertl
                 }
             }
 
-            static std::string create_lower(std::locale& locale_)
+            static std::string create_lower(const std::locale& locale_)
             {
                 std::string str_(1, '[');
 
@@ -929,7 +927,7 @@ namespace lexertl
                 }
             }
 
-            static std::string create_upper(std::locale& locale_)
+            static std::string create_upper(const std::locale& locale_)
             {
                 std::string str_(1, '[');
 
@@ -1082,6 +1080,8 @@ namespace lexertl
                 case 'W':
                     str_ = "[^_0-9A-Za-z]";
                     break;
+                default:
+                    break;
                 }
 
                 if (str_)
@@ -1193,9 +1193,9 @@ namespace lexertl
                 return str_;
             }
 
-#include "unicode.hpp"
 #include "blocks.hpp"
 #include "scripts.hpp"
+#include "unicode.hpp"
 
             template<typename state_type>
             static input_char_type decode_octal(state_type& state_)
@@ -1344,9 +1344,9 @@ namespace lexertl
                         ch_ = *state_._curr;
 
                         // Don't consume invalid chars!
-                        if (((ch_ >= '0' && ch_ <= '9') ||
+                        if ((ch_ >= '0' && ch_ <= '9') ||
                             (ch_ >= 'a' && ch_ <= 'f') ||
-                            (ch_ >= 'A' && ch_ <= 'F')))
+                            (ch_ >= 'A' && ch_ <= 'F'))
                         {
                             state_.increment();
                         }

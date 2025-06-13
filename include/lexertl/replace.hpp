@@ -100,9 +100,9 @@ namespace lexertl
         const char_type* fmt_)
     {
         std::basic_string<char_type> ret_;
-        const char_type* end_s_ = s; while (*end_s_) ++end_s_;
+        const char_type* end_s_ = s_; while (*end_s_) ++end_s_;
         const char_type* last_ = s_;
-        lexertl::match_results<const char_type*> results(s_, end_s_);
+        lexertl::match_results<const char_type*> results_(s_, end_s_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
@@ -110,12 +110,12 @@ namespace lexertl
         while (results_.id != 0)
         {
             ret_.append(last_, results_.first);
-            ret.append(fmt_);
+            ret_.append(fmt_);
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
         }
 
-        ret.append(last_, results_.first);
+        ret_.append(last_, results_.first);
         return ret_;
     }
 }

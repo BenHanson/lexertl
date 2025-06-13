@@ -103,22 +103,22 @@ namespace lexertl
                 ++_curr;
             }
 
-            inline std::size_t index()
+            inline std::size_t index() const
             {
                 return _curr - _start;
             }
 
-            inline bool eos()
+            inline bool eos() const
             {
                 return _curr >= _end;
             }
 
-            inline void unexpected_end(std::ostringstream& ss_)
+            inline void unexpected_end(std::ostringstream& ss_) const
             {
                 ss_ << "Unexpected end of regex";
             }
 
-            inline void error(std::ostringstream& ss_)
+            inline void error(std::ostringstream& ss_) const
             {
                 ss_ << " in ";
 

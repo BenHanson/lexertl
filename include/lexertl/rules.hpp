@@ -767,6 +767,8 @@ namespace lexertl
                     case '+':
                         lhs_->_str.insert(rhs_._str);
                         break;
+                    default:
+                        break;
                     }
 
                     diff_ = 0;

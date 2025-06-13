@@ -11,7 +11,7 @@ namespace lexertl
 {
     template<typename ch_type, typename sm_type, bool comp, bool look,
         bool dfa_nfa>
-        struct basic_sm_traits
+    struct basic_sm_traits
     {
         enum
         {

@@ -12,7 +12,7 @@
 #include <cstddef>
 
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #else
 #include <fcntl.h>
 #include <unistd.h>
@@ -61,24 +61,31 @@ namespace lexertl
 
         void open(const char* pathname_)
         {
-            if (_data) close();
+            if (_data)
+            {
+                close();
+            }
 
 #ifdef _WIN32
             _fh = ::CreateFileA(pathname_, GENERIC_READ, FILE_SHARE_READ, 0,
                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-            _fmh = 0;
 
-            if (_fh != INVALID_HANDLE_VALUE)
+            if (_fh == INVALID_HANDLE_VALUE)
+                _fh = 0;
+            else
             {
                 _fmh = ::CreateFileMapping(_fh, 0, PAGE_READONLY, 0, 0, 0);
 
                 if (_fmh != 0)
                 {
-                    _data = static_cast<char_type*>(::MapViewOfFile
-                    (_fmh, FILE_MAP_READ, 0, 0, 0));
+                    _data = static_cast<char_type*>
+                        (::MapViewOfFile(_fmh, FILE_MAP_READ, 0, 0, 0));
 
                     if (_data)
-                        _size = ::GetFileSize(_fh, 0) / sizeof(char_type);
+                    {
+                        _size = ::GetFileSize(_fh, 0) /
+                            sizeof(char_type);
+                    }
                 }
             }
 #else
@@ -91,8 +98,8 @@ namespace lexertl
                 if (::fstat(_fh, &sbuf_) > -1)
                 {
                     _data = static_cast<const char_type*>
-                        (::mmap(0, sbuf_.st_size, PROT_READ, MAP_SHARED,
-                            _fh, 0));
+                        (::mmap(0, sbuf_.st_size, PROT_READ,
+                            MAP_SHARED, _fh, 0));
 
                     if (_data == MAP_FAILED)
                     {
@@ -123,19 +130,29 @@ namespace lexertl
             {
 #ifdef _WIN32
                 ::UnmapViewOfFile(_data);
-                ::CloseHandle(_fmh);
-                ::CloseHandle(_fh);
 #else
                 ::munmap(const_cast<char_type*>(_data), _size);
-                ::close(_fh);
 #endif
                 _data = 0;
                 _size = 0;
-                _fh = 0;
-#ifdef _WIN32
-                _fmh = 0;
-#endif
             }
+
+#ifdef _WIN32
+            if (_fmh)
+                ::CloseHandle(_fmh);
+
+            _fmh = 0;
+
+            if (_fh)
+                ::CloseHandle(_fh);
+
+            _fh = 0;
+#else
+            if (_fh)
+                ::close(_fh);
+
+            _fh = 0;
+#endif
         }
 
     private:
