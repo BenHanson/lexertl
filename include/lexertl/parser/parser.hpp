@@ -6,19 +6,20 @@
 #ifndef LEXERTL_PARSER_HPP
 #define LEXERTL_PARSER_HPP
 
-#include <assert.h>
-#include <algorithm>
 #include "../bool.hpp"
+#include "../containers/ptr_stack.hpp"
+#include "../runtime_error.hpp"
+#include "../size_t.hpp"
+#include "tokeniser/re_tokeniser.hpp"
 #include "tree/end_node.hpp"
 #include "tree/iteration_node.hpp"
 #include "tree/leaf_node.hpp"
-#include <map>
-#include "../containers/ptr_stack.hpp"
-#include "tokeniser/re_tokeniser.hpp"
-#include "../runtime_error.hpp"
 #include "tree/selection_node.hpp"
 #include "tree/sequence_node.hpp"
-#include "../size_t.hpp"
+
+#include <algorithm>
+#include <assert.h>
+#include <map>
 #include <vector>
 
 namespace lexertl
@@ -169,7 +170,9 @@ namespace lexertl
                 }
 
                 node* rhs_node_ = new end_node(id_, user_id_, unique_id_,
-                    next_dfa_, push_dfa_, pop_dfa_, !non_greedy_);
+                    next_dfa_, push_dfa_, pop_dfa_, non_greedy_ ?
+                    no :
+                    yes);
 
                 _node_ptr_vector->back() = rhs_node_;
                 _node_ptr_vector->push_back(static_cast<sequence_node*>(0));
@@ -288,25 +291,33 @@ namespace lexertl
                     break;
                 case OPT:
                 case AOPT:
-                    optional(rhs_->_type == OPT);
+                    optional(rhs_->_type == OPT ?
+                        hard :
+                        no);
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
                 case ZEROORMORE:
                 case AZEROORMORE:
-                    zero_or_more(rhs_->_type == ZEROORMORE);
+                    zero_or_more(rhs_->_type == ZEROORMORE ?
+                        hard :
+                        no);
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
                 case ONEORMORE:
                 case AONEORMORE:
-                    one_or_more(rhs_->_type == ONEORMORE);
+                    one_or_more(rhs_->_type == ONEORMORE ?
+                        hard :
+                        no);
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
                 case REPEATN:
                 case AREPEATN:
-                    repeatn(rhs_->_type == REPEATN, handle_->top());
+                    repeatn(rhs_->_type == REPEATN ?
+                        hard :
+                        no, handle_->top());
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
@@ -421,7 +432,8 @@ namespace lexertl
 
                 // store charset
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
-                _node_ptr_vector->back() = new leaf_node(bol_token(), true);
+                _node_ptr_vector->back() = new leaf_node(bol_token(),
+                    yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
                 _token_stack->push(static_cast<token*>(0));
                 _token_stack->top() = new token(REPEAT);
@@ -453,7 +465,8 @@ namespace lexertl
 
                 // store charset
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
-                _node_ptr_vector->back() = new leaf_node(eol_token(), true);
+                _node_ptr_vector->back() = new leaf_node(eol_token(),
+                    yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
                 _token_stack->push(static_cast<token*>(0));
                 _token_stack->top() = new token(REPEAT);
@@ -469,7 +482,8 @@ namespace lexertl
 
                 // store charset
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
-                _node_ptr_vector->back() = new leaf_node(id_, true);
+                _node_ptr_vector->back() =
+                    new leaf_node(id_, yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
                 _token_stack->push(static_cast<token*>(0));
                 _token_stack->top() = new token(REPEAT);
@@ -767,7 +781,8 @@ namespace lexertl
                 const id_type id_ = lookup(*token_);
 
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
-                _node_ptr_vector->back() = new leaf_node(id_, true);
+                _node_ptr_vector->back() =
+                    new leaf_node(id_, yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
             }
 
@@ -831,7 +846,7 @@ namespace lexertl
                 _tree_node_stack.top() = _node_ptr_vector->back();
             }
 
-            void optional(const bool greedy_)
+            void optional(const greedy_repeat greedy_)
             {
                 // perform ?
                 node* lhs_ = _tree_node_stack.top();
@@ -856,7 +871,7 @@ namespace lexertl
                 _tree_node_stack.top() = _node_ptr_vector->back();
             }
 
-            void zero_or_more(const bool greedy_)
+            void zero_or_more(const greedy_repeat greedy_)
             {
                 // perform *
                 node* ptr_ = _tree_node_stack.top();
@@ -866,7 +881,7 @@ namespace lexertl
                 _tree_node_stack.top() = _node_ptr_vector->back();
             }
 
-            void one_or_more(const bool greedy_)
+            void one_or_more(const greedy_repeat greedy_)
             {
                 // perform +
                 node* lhs_ = _tree_node_stack.top();
@@ -888,7 +903,7 @@ namespace lexertl
             // {0,1} = ?
             // {1,}  = +
             // therefore we do not check for these cases.
-            void repeatn(const bool greedy_, const token* token_)
+            void repeatn(const greedy_repeat greedy_, const token* token_)
             {
                 const rules_char_type* str_ = token_->_extra.c_str();
                 std::size_t min_ = 0;
@@ -1015,13 +1030,14 @@ namespace lexertl
                 if (!found_)
                 {
                     _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
-                    _node_ptr_vector->back() = new leaf_node(bol_token(), true);
+                    _node_ptr_vector->back() =
+                        new leaf_node(bol_token(), yes);
 
                     node* lhs_ = _node_ptr_vector->back();
 
                     _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
-                    _node_ptr_vector->back() = new leaf_node
-                    (node::null_token(), true);
+                    _node_ptr_vector->back() =
+                        new leaf_node(node::null_token(), yes);
 
                     node* rhs_ = _node_ptr_vector->back();
 

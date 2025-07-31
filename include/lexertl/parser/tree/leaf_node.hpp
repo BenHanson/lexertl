@@ -26,10 +26,9 @@ namespace lexertl
             typedef typename node::node_type node_type;
             typedef typename node::node_vector node_vector;
 
-            basic_leaf_node(const id_type token_, const bool greedy_) :
+            basic_leaf_node(const id_type token_, const greedy_repeat greedy_) :
                 node(token_ == node::null_token()),
                 _token(token_),
-                _set_greedy(!greedy_),
                 _greedy(greedy_),
                 _followpos()
             {
@@ -66,21 +65,13 @@ namespace lexertl
                 return _token;
             }
 
-            virtual bool set_greedy() const
+            virtual void greedy(const greedy_repeat greedy_)
             {
-                return _set_greedy;
-            }
-
-            virtual void greedy(const bool greedy_)
-            {
-                if (!_set_greedy)
-                {
+                if (_greedy != hard)
                     _greedy = greedy_;
-                    _set_greedy = true;
-                }
             }
 
-            virtual bool greedy() const
+            virtual greedy_repeat greedy() const
             {
                 return _greedy;
             }
@@ -97,8 +88,7 @@ namespace lexertl
 
         private:
             id_type _token;
-            bool _set_greedy;
-            bool _greedy;
+            greedy_repeat _greedy;
             node_vector _followpos;
 
             virtual void copy_node(node_ptr_vector& node_ptr_vector_,

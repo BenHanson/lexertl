@@ -199,22 +199,17 @@ namespace lexertl
 #endif
             }
 
-            virtual bool set_greedy() const
-            {
-                throw runtime_error("Internal error node::set_greedy().");
-            }
-
-            virtual void greedy(const bool /*greedy_*/)
+            virtual void greedy(const greedy_repeat /*greedy_*/)
             {
                 throw runtime_error("Internal error node::greedy(bool).");
             }
 
-            virtual bool greedy() const
+            virtual greedy_repeat greedy() const
             {
                 throw runtime_error("Internal error node::greedy().");
 #ifdef __SUNPRO_CC
                 // Stop bogus Solaris compiler warning
-                return false;
+                return greedy_repeat::no;
 #endif
             }
 

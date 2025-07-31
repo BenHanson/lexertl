@@ -920,7 +920,8 @@ namespace lexertl
                 {
                     std::ostringstream ss_;
 
-                    ss_ << "Exit state is missing '>' for rule id " << id_ << '.';
+                    ss_ << "Exit state is missing '>' for rule id " <<
+                        id_ << '.';
                     throw runtime_error(ss_.str());
                 }
 

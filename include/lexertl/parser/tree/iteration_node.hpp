@@ -24,7 +24,7 @@ namespace lexertl
             typedef typename node::node_type node_type;
             typedef typename node::node_vector node_vector;
 
-            basic_iteration_node(node* next_, const bool greedy_) :
+            basic_iteration_node(node* next_, const greedy_repeat greedy_) :
                 node(true),
                 _next(next_),
                 _greedy(greedy_)
@@ -68,7 +68,7 @@ namespace lexertl
         private:
             // Not owner of this pointer...
             node* _next;
-            bool _greedy;
+            greedy_repeat _greedy;
 
             virtual void copy_node(node_ptr_vector& node_ptr_vector_,
                 node_stack& new_node_stack_, bool_stack& perform_op_stack_,

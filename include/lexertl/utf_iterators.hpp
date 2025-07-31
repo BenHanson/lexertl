@@ -326,7 +326,7 @@ namespace lexertl
 
     private:
         char_iterator _it;
-        char_iterator _eoi = char_iterator();
+        char_iterator _eoi;
         char _bytes[4];
         unsigned char _count;
         unsigned char _index;
@@ -613,7 +613,8 @@ namespace lexertl
                 _chars[0] = static_cast<out_char>(ch_);
                 break;
             case 2:
-                _chars[0] = static_cast<out_char>(((ch_ - 0x10000) >> 10) + 0xd800u);
+                _chars[0] = static_cast<out_char>
+                    (((ch_ - 0x10000) >> 10) + 0xd800u);
                 _chars[1] = static_cast<out_char>((ch_ & 0x3ff) + 0xdc00u);
                 break;
             default:
@@ -699,7 +700,8 @@ namespace lexertl
         cutf16_in_utf32_out_iterator;
     typedef basic_utf16_in_iterator<const wchar_t*, int>
         cwchar_t_in_utf32_out_iterator;
-    typedef basic_utf16_out_iterator<cutf8_in_utf32_out_iterator, unsigned short>
+    typedef basic_utf16_out_iterator
+        <cutf8_in_utf32_out_iterator, unsigned short>
         cutf8_in_utf16_out_iterator;
     typedef basic_utf16_out_iterator<cutf8_in_utf32_out_iterator, wchar_t>
         cutf8_in_wchar_t_out_iterator;

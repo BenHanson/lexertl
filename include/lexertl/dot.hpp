@@ -217,7 +217,8 @@ namespace lexertl
                 {
                     const string dst_name = node_name(dfa_id_, iter_->first);
                     stream_ << "    " << src_name << " -> " << dst_name <<
-                        " [label = <<TABLE BORDER=\"0\" CELLBORDER=\"0\"><TR><TD>";
+                        " [label = <<TABLE BORDER=\"0\" "
+                        "CELLBORDER=\"0\"><TR><TD>";
 
                     string_token token_ = iter_->second;
 
