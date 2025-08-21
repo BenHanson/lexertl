@@ -25,7 +25,7 @@ namespace lexertl
         multi_state_bit = 16, recursive_bit = 32, advance_bit = 64
     };
     // End state flags:
-    enum { end_state_bit = 1, greedy_bit = 2, pop_dfa_bit = 4 };
+    enum { end_state_bit = 1, pop_dfa_bit = 2 };
     enum greedy_repeat {
         no, yes, hard
     };

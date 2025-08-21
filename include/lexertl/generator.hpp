@@ -187,6 +187,21 @@ namespace lexertl
         typedef typename rules::std_string_deque_deque std_string_deque_deque;
         typedef typename parser::string_token string_token;
 
+        static bool all_of(const equivset_list& equiv_list_)
+        {
+            for (typename equivset_list::list::const_iterator iter_ =
+                equiv_list_->begin(), end_ = equiv_list_->end();
+                iter_ != end_; ++iter_)
+            {
+                const equivset* equivset_ = *iter_;
+
+                if (equivset_->_greedy != no)
+                    return false;
+            }
+
+            return true;
+        }
+
         static void build_dfa(const charset_map& charset_map_,
             const node* root_, internals& internals_, sm& sm_,
             const id_type dfa_index_, id_type& cr_id_, id_type& nl_id_,
@@ -273,12 +288,13 @@ namespace lexertl
 
                     if (transition_ != sm_traits::npos())
                     {
+                        // The end state is set as part of closure(),
+                        // so wait until here to check for it.
                         id_type* ptr_ = &dfa_.front() + ((index_ + 1) *
                             dfa_alphabet_);
 
                         // Prune abstemious transitions from end states.
-                        if (*ptr_ && !(*ptr_ & greedy_bit) &&
-                            equivset_->_greedy == no)
+                        if (*ptr_ && all_of(equiv_list_))
                         {
                             continue;
                         }
@@ -1040,9 +1056,6 @@ namespace lexertl
                 if (end_state_)
                 {
                     dfa_[old_size_] |= end_state_bit;
-
-                    if (greedy_ != no)
-                        dfa_[old_size_] |= greedy_bit;
 
                     if (pop_dfa_)
                     {
