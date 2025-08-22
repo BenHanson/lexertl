@@ -209,7 +209,7 @@ namespace lexertl
                 throw runtime_error("Internal error node::greedy().");
 #ifdef __SUNPRO_CC
                 // Stop bogus Solaris compiler warning
-                return greedy_repeat::no;
+                return greedy_repeat::greedy_no;
 #endif
             }
 

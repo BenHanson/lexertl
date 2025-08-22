@@ -195,7 +195,7 @@ namespace lexertl
             {
                 const equivset* equivset_ = *iter_;
 
-                if (equivset_->_greedy != no)
+                if (equivset_->_greedy != greedy_no)
                     return false;
             }
 
@@ -294,7 +294,8 @@ namespace lexertl
                             dfa_alphabet_);
 
                         // Prune abstemious transitions from end states.
-                        if (*ptr_ && all_of(equiv_list_))
+                        if (*ptr_ && !(*ptr_ & greedy_bit) &&
+                            all_of(equiv_list_))
                         {
                             continue;
                         }
@@ -1006,7 +1007,7 @@ namespace lexertl
             id_type push_dfa_ = sm_traits::npos();
             bool pop_dfa_ = false;
             std::size_t hash_ = 0;
-            greedy_repeat greedy_ = yes;
+            greedy_repeat greedy_ = greedy_yes;
 
             if (followpos_->empty()) return sm_traits::npos();
 
@@ -1056,6 +1057,9 @@ namespace lexertl
                 if (end_state_)
                 {
                     dfa_[old_size_] |= end_state_bit;
+
+                    if (greedy_ != greedy_no)
+                        dfa_[old_size_] |= greedy_bit;
 
                     if (pop_dfa_)
                     {

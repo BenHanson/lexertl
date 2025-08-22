@@ -67,7 +67,7 @@ namespace lexertl
 
             virtual void greedy(const greedy_repeat greedy_)
             {
-                if (_greedy != hard)
+                if (_greedy != greedy_hard)
                     _greedy = greedy_;
             }
 

@@ -32,7 +32,7 @@ namespace lexertl
             basic_equivset() :
                 _index_vector(),
                 _id(0),
-                _greedy(yes),
+                _greedy(greedy_yes),
                 _followpos()
             {
             }
@@ -101,9 +101,9 @@ namespace lexertl
             void process_greedy(basic_equivset& rhs_,
                 basic_equivset& overlap_) const
             {
-                if (_greedy == no)
+                if (_greedy == greedy_no)
                 {
-                    if (rhs_._greedy == hard)
+                    if (rhs_._greedy == greedy_hard)
                         overlap_._greedy = rhs_._greedy;
                     else
                         overlap_._greedy = _greedy;

@@ -171,8 +171,8 @@ namespace lexertl
 
                 node* rhs_node_ = new end_node(id_, user_id_, unique_id_,
                     next_dfa_, push_dfa_, pop_dfa_, non_greedy_ ?
-                    no :
-                    yes);
+                    greedy_no :
+                    greedy_yes);
 
                 _node_ptr_vector->back() = rhs_node_;
                 _node_ptr_vector->push_back(static_cast<sequence_node*>(0));
@@ -292,32 +292,32 @@ namespace lexertl
                 case OPT:
                 case AOPT:
                     optional(rhs_->_type == OPT ?
-                        hard :
-                        no);
+                        greedy_hard :
+                        greedy_no);
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
                 case ZEROORMORE:
                 case AZEROORMORE:
                     zero_or_more(rhs_->_type == ZEROORMORE ?
-                        hard :
-                        no);
+                        greedy_hard :
+                        greedy_no);
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
                 case ONEORMORE:
                 case AONEORMORE:
                     one_or_more(rhs_->_type == ONEORMORE ?
-                        hard :
-                        no);
+                        greedy_hard :
+                        greedy_no);
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
                 case REPEATN:
                 case AREPEATN:
                     repeatn(rhs_->_type == REPEATN ?
-                        hard :
-                        no, handle_->top());
+                        greedy_hard :
+                        greedy_no, handle_->top());
                     _token_stack->push(static_cast<token*>(0));
                     _token_stack->top() = new token(DUP);
                     break;
@@ -433,7 +433,7 @@ namespace lexertl
                 // store charset
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
                 _node_ptr_vector->back() = new leaf_node(bol_token(),
-                    yes);
+                    greedy_yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
                 _token_stack->push(static_cast<token*>(0));
                 _token_stack->top() = new token(REPEAT);
@@ -466,7 +466,7 @@ namespace lexertl
                 // store charset
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
                 _node_ptr_vector->back() = new leaf_node(eol_token(),
-                    yes);
+                    greedy_yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
                 _token_stack->push(static_cast<token*>(0));
                 _token_stack->top() = new token(REPEAT);
@@ -483,7 +483,7 @@ namespace lexertl
                 // store charset
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
                 _node_ptr_vector->back() =
-                    new leaf_node(id_, yes);
+                    new leaf_node(id_, greedy_yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
                 _token_stack->push(static_cast<token*>(0));
                 _token_stack->top() = new token(REPEAT);
@@ -782,7 +782,7 @@ namespace lexertl
 
                 _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
                 _node_ptr_vector->back() =
-                    new leaf_node(id_, yes);
+                    new leaf_node(id_, greedy_yes);
                 _tree_node_stack.push(_node_ptr_vector->back());
             }
 
@@ -1031,13 +1031,13 @@ namespace lexertl
                 {
                     _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
                     _node_ptr_vector->back() =
-                        new leaf_node(bol_token(), yes);
+                        new leaf_node(bol_token(), greedy_yes);
 
                     node* lhs_ = _node_ptr_vector->back();
 
                     _node_ptr_vector->push_back(static_cast<leaf_node*>(0));
                     _node_ptr_vector->back() =
-                        new leaf_node(node::null_token(), yes);
+                        new leaf_node(node::null_token(), greedy_yes);
 
                     node* rhs_ = _node_ptr_vector->back();
 
