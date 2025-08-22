@@ -38,6 +38,13 @@ namespace lexertl
             {
             }
 
+            bool operator==(const basic_re_token& rhs_) const
+            {
+                return _type == rhs_._type &&
+                    _extra == rhs_._extra &&
+                    _str == rhs_._str;
+            }
+
             void clear()
             {
                 _type = BEGIN;

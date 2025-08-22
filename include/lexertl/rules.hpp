@@ -415,6 +415,11 @@ namespace lexertl
             return _statemap;
         }
 
+        const macro_map& macros() const
+        {
+            return _macro_map;
+        }
+
         const token_deque_deque_deque& regexes() const
         {
             return _regexes;
