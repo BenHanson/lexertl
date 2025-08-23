@@ -139,22 +139,8 @@ namespace lexertl
                     }
                 } while (!_token_stack->empty());
 
-                if (_tree_node_stack.empty())
-                {
-                    std::ostringstream ss_;
-
-                    ss_ << "Empty rules are not allowed in rule id " <<
-                        id_ << '.';
-                    throw runtime_error(ss_.str());
-                }
-
-                assert(_tree_node_stack.size() == 1);
-
-                node* lhs_node_ = _tree_node_stack.top();
                 bool non_greedy_ = false;
 
-                _tree_node_stack.pop();
-                _node_ptr_vector->push_back(static_cast<end_node*>(0));
                 iter_ = regex_.begin();
 
                 for (; iter_ != end_; ++iter_)
@@ -169,15 +155,28 @@ namespace lexertl
                     }
                 }
 
+                _node_ptr_vector->push_back(static_cast<end_node*>(0));
+
                 node* rhs_node_ = new end_node(id_, user_id_, unique_id_,
                     next_dfa_, push_dfa_, pop_dfa_, non_greedy_ ?
                     greedy_no :
                     greedy_yes);
 
                 _node_ptr_vector->back() = rhs_node_;
-                _node_ptr_vector->push_back(static_cast<sequence_node*>(0));
-                _node_ptr_vector->back() = new sequence_node
-                (lhs_node_, rhs_node_);
+
+                if (!_tree_node_stack.empty())
+                {
+                    assert(_tree_node_stack.size() == 1);
+
+                    node* lhs_node_ = _tree_node_stack.top();
+
+                    _tree_node_stack.pop();
+
+                    _node_ptr_vector->push_back(static_cast<sequence_node*>(0));
+                    _node_ptr_vector->back() = new sequence_node
+                    (lhs_node_, rhs_node_);
+                }
+
                 root_ = _node_ptr_vector->back();
 
                 if (seen_bol_)
