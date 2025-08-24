@@ -7,6 +7,7 @@
 #define LEXERTL_NODE_HPP
 
 #include <assert.h>
+#include "../../enums.hpp"
 #include "../../containers/ptr_vector.hpp"
 #include "../../runtime_error.hpp"
 #include "../../size_t.hpp"
