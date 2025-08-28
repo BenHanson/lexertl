@@ -6,7 +6,10 @@
 #ifndef LEXERTL_ABSTEMIOUS_HPP
 #define LEXERTL_ABSTEMIOUS_HPP
 
+#include "parser/tokeniser/re_token.hpp"
 #include "parser/tokeniser/re_tokeniser.hpp"
+
+#include <vector>
 
 namespace lexertl
 {
@@ -23,7 +26,7 @@ namespace lexertl
 			while (!indexes_.empty())
 			{
 				std::size_t start_ = indexes_.back();
-				const std::size_t idx_ = start_;
+				std::size_t idx_ = start_;
 
 				if (is_end(tokens_, idx_))
 				{
@@ -31,15 +34,15 @@ namespace lexertl
 
 					switch (op_._type)
 					{
-					case lexertl::detail::AOPT:
-					case lexertl::detail::AZEROORMORE:
+					case detail::AOPT:
+					case detail::AZEROORMORE:
 						remove_sequence(tokens_, start_, idx_);
 						break;
-					case lexertl::detail::AONEORMORE:
+					case detail::AONEORMORE:
 						tokens_.erase(tokens_.begin() + idx_);
 						break;
-					case lexertl::detail::AREPEATN:
-						op_._type = lexertl::detail::REPEATN;
+					case detail::AREPEATN:
+						op_._type = detail::REPEATN;
 						op_._extra = op_._extra.substr(0, op_._extra.find(','));
 						break;
 					default:
@@ -72,13 +75,13 @@ namespace lexertl
 
 				switch (token_._type)
 				{
-				case lexertl::detail::OR:
+				case detail::OR:
 					idx_ = end_block(tokens_, idx_ + 1);
 					break;
-				case lexertl::detail::CLOSEPAREN:
+				case detail::CLOSEPAREN:
 					++idx_;
 					break;
-				case lexertl::detail::END:
+				case detail::END:
 					return true;
 				default:
 					return false;
@@ -100,21 +103,21 @@ namespace lexertl
 
 				switch (token_._type)
 				{
-				case lexertl::detail::OR:
+				case detail::OR:
 					if (parens_ == 0)
 						return idx_;
 
 					break;
-				case lexertl::detail::OPENPAREN:
+				case detail::OPENPAREN:
 					++parens_;
 					break;
-				case lexertl::detail::CLOSEPAREN:
+				case detail::CLOSEPAREN:
 					if (parens_ == 0)
 						return idx_;
 
 					--parens_;
 					break;
-				case lexertl::detail::END:
+				case detail::END:
 					return idx_;
 				default:
 					break;
@@ -125,12 +128,12 @@ namespace lexertl
 		}
 
 		static void remove_sequence(token_deque& tokens_, std::size_t& start_,
-			const std::size_t idx_)
+			std::size_t& idx_)
 		{
 			typename token_deque::iterator iter_ = tokens_.begin() + idx_ - 1;
 
 			if (iter_->_type ==
-				lexertl::detail::CLOSEPAREN)
+				detail::CLOSEPAREN)
 			{
 				// Find beginning of block
 				std::size_t parens_ = 1;
@@ -141,10 +144,10 @@ namespace lexertl
 
 					switch (iter_->_type)
 					{
-					case lexertl::detail::OPENPAREN:
+					case detail::OPENPAREN:
 						--parens_;
 						break;
-					case lexertl::detail::CLOSEPAREN:
+					case detail::CLOSEPAREN:
 						++parens_;
 						break;
 					default:
@@ -154,12 +157,27 @@ namespace lexertl
 			}
 
 			start_ = iter_ - tokens_.begin();
+
+			// This simplistic approach works, because we know there can't be
+			// a trailing greedy operator following a close paren as we
+			// wouldn't even be in this function in that case.
+			// A trailing abstemious operator would have already had its block
+			// removed.
+			while (tokens_[start_ - 1]._type ==
+				detail::OPENPAREN &&
+				tokens_[idx_ + 1]._type == detail::CLOSEPAREN)
+			{
+				--start_;
+				--iter_;
+				++idx_;
+			}
+
 			iter_ = tokens_.erase(iter_, tokens_.begin() + idx_ + 1);
 
-			if (iter_->_type == lexertl::detail::OR)
+			if (iter_->_type == detail::OR)
 				tokens_.erase(iter_);
-			else if (iter_->_type != lexertl::detail::BEGIN &&
-				(iter_ - 1)->_type == lexertl::detail::OR)
+			else if (iter_->_type != detail::BEGIN &&
+				(iter_ - 1)->_type == detail::OR)
 			{
 				tokens_.erase(--iter_);
 			}
