@@ -6,6 +6,7 @@
 #ifndef LEXERTL_END_NODE_HPP
 #define LEXERTL_END_NODE_HPP
 
+#include "../../enums.hpp"
 #include "node.hpp"
 #include "../../size_t.hpp"
 
@@ -39,8 +40,8 @@ namespace lexertl
                 _followpos(),
                 _greedy(greedy_)
             {
-                node::_firstpos.push_back(this);
-                node::_lastpos.push_back(this);
+                node::firstpos().push_back(this);
+                node::lastpos().push_back(this);
             }
 
             virtual ~basic_end_node()

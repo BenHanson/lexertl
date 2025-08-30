@@ -7,14 +7,18 @@
 #define LEXERTL_STATE_MACHINE_HPP
 
 #include "compile_assert.hpp"
+#include "enums.hpp"
+#include "internals.hpp"
+#include "sm_traits.hpp"
+#include "string_token.hpp"
+
 // memcmp()
 #include <cstring>
 #include <deque>
-#include "internals.hpp"
 #include <map>
 #include <set>
-#include "sm_traits.hpp"
-#include "string_token.hpp"
+#include <utility>
+#include <vector>
 
 namespace lexertl
 {
@@ -74,7 +78,7 @@ namespace lexertl
             for (id_type i_ = 0; i_ < dfas_; ++i_)
             {
                 const id_type dfa_alphabet_ = _internals._dfa_alphabet[i_];
-                id_type_vector* dfa_ = _internals._dfa[i_];
+                id_type_vector* dfa_ = &_internals._dfa[i_];
 
                 if (dfa_alphabet_ != 0)
                 {
@@ -110,7 +114,7 @@ namespace lexertl
         internals _internals;
 
         void minimise_dfa(const id_type dfa_alphabet_,
-            id_type_vector& dfa_, std::size_t size_)
+            id_type_vector& dfa_, std::size_t size_) const
         {
             const id_type* first_ = &dfa_.front();
             const id_type* end_ = first_ + size_;
@@ -206,7 +210,7 @@ namespace lexertl
 
     template<typename char_type, typename id_ty = std::size_t,
         bool is_dfa = true>
-        struct basic_char_state_machine
+    struct basic_char_state_machine
     {
         typedef id_ty id_type;
         typedef basic_sm_traits<char_type, id_type, false, false, is_dfa>
@@ -242,16 +246,16 @@ namespace lexertl
             {
             }
 
-            bool operator ==(const state rhs_) const
+            friend bool operator ==(const state lhs_, const state rhs_)
             {
-                return _end_state == rhs_._end_state &&
-                    _push_pop_dfa == rhs_._push_pop_dfa &&
-                    _id == rhs_._id &&
-                    _user_id == rhs_._user_id &&
-                    _push_dfa == rhs_._push_dfa &&
-                    _next_dfa == rhs_._next_dfa &&
-                    _eol_index == rhs_._eol_index &&
-                    _transitions == rhs_._transitions;
+                return lhs_._end_state == rhs_._end_state &&
+                    lhs_._push_pop_dfa == rhs_._push_pop_dfa &&
+                    lhs_._id == rhs_._id &&
+                    lhs_._user_id == rhs_._user_id &&
+                    lhs_._push_dfa == rhs_._push_dfa &&
+                    lhs_._next_dfa == rhs_._next_dfa &&
+                    lhs_._eol_index == rhs_._eol_index &&
+                    lhs_._transitions == rhs_._transitions;
             }
         };
 
@@ -365,7 +369,7 @@ namespace lexertl
                         {
                             trans_iter_ = state_._transitions.insert
                             (id_type_string_token_pair(static_cast<id_type>
-                            (next_ - 1), token_vector_[col_index_])).first;
+                                (next_ - 1), token_vector_[col_index_])).first;
                         }
                         else
                         {

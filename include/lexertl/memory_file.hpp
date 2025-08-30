@@ -15,9 +15,9 @@
 #include <Windows.h>
 #else
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 // Only files small enough to fit into memory are supported.

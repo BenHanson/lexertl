@@ -6,13 +6,15 @@
 #ifndef LEXERTL_RE_TOKENISER_HPP
 #define LEXERTL_RE_TOKENISER_HPP
 
-#include <cstring>
+#include "../../enums.hpp"
 #include "re_token.hpp"
+#include "re_tokeniser_helper.hpp"
 #include "../../runtime_error.hpp"
 #include "../../size_t.hpp"
-#include <sstream>
 #include "../../string_token.hpp"
-#include "re_tokeniser_helper.hpp"
+
+#include <cstring>
+#include <sstream>
 
 namespace lexertl
 {
@@ -381,18 +383,19 @@ namespace lexertl
                         case 's':
                             if (negate_)
                             {
+                                state_._flags = state_._flags |
 #ifdef _WIN32
-                                state_._flags = state_._flags | dot_not_cr_lf;
+                                    dot_not_cr_lf;
 #else
-                                state_._flags = state_._flags | dot_not_newline;
+                                    dot_not_newline;
 #endif
                             }
                             else
                             {
-#ifdef _WIN32
-                                state_._flags = state_._flags & ~dot_not_cr_lf;
-#else
                                 state_._flags = state_._flags &
+#ifdef _WIN32
+                                    ~dot_not_cr_lf;
+#else
                                     ~dot_not_newline;
 #endif
                             }
@@ -762,7 +765,8 @@ namespace lexertl
                     }
                 } while (ch_ == '_' || ch_ == '-' ||
                     (ch_ >= 'A' && ch_ <= 'Z') ||
-                    (ch_ >= 'a' && ch_ <= 'z') || (ch_ >= '0' && ch_ <= '9'));
+                    (ch_ >= 'a' && ch_ <= 'z') ||
+                    (ch_ >= '0' && ch_ <= '9'));
 
                 if (ch_ != '}')
                 {

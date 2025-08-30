@@ -6,6 +6,7 @@
 #ifndef LEXERTL_ITERATION_NODE_HPP
 #define LEXERTL_ITERATION_NODE_HPP
 
+#include "../../enums.hpp"
 #include "node.hpp"
 
 namespace lexertl
@@ -32,17 +33,17 @@ namespace lexertl
                 typename node_vector::iterator iter_;
                 typename node_vector::iterator end_;
 
-                _next->append_firstpos(node::_firstpos);
-                _next->append_lastpos(node::_lastpos);
+                _next->append_firstpos(node::firstpos());
+                _next->append_lastpos(node::lastpos());
 
-                for (iter_ = node::_lastpos.begin(),
-                    end_ = node::_lastpos.end(); iter_ != end_; ++iter_)
+                for (iter_ = node::lastpos().begin(),
+                    end_ = node::lastpos().end(); iter_ != end_; ++iter_)
                 {
-                    (*iter_)->append_followpos(node::_firstpos);
+                    (*iter_)->append_followpos(node::firstpos());
                 }
 
-                for (iter_ = node::_firstpos.begin(),
-                    end_ = node::_firstpos.end(); iter_ != end_; ++iter_)
+                for (iter_ = node::firstpos().begin(),
+                    end_ = node::firstpos().end(); iter_ != end_; ++iter_)
                 {
                     (*iter_)->greedy(greedy_);
                 }

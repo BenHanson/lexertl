@@ -9,17 +9,22 @@
 #include "abstemious.hpp"
 #include "compile_assert.hpp"
 #include "enums.hpp"
-#include <map>
 #include "narrow.hpp"
+#include "parser/tokeniser/re_token.hpp"
 #include "parser/tokeniser/re_tokeniser.hpp"
+#include "parser/tokeniser/re_tokeniser_state.hpp"
 #include "runtime_error.hpp"
+#include "string_token.hpp"
 
 #include <deque>
 #include <locale>
+#include <map>
 #include <set>
 #include "size_t.hpp"
 #include <sstream>
+#include <stack>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace lexertl

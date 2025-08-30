@@ -9,6 +9,8 @@
 #include "enums.hpp"
 #include "containers/ptr_vector.hpp"
 
+#include <vector>
+
 namespace lexertl
 {
     namespace detail

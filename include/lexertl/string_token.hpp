@@ -7,8 +7,10 @@
 #define LEXERTL_STRING_TOKEN_HPP
 
 #include "char_traits.hpp"
+#include "stream_num.hpp"
+
 #include <ios> // Needed by GCC 4.4
-#include <iostream>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -66,14 +68,16 @@ namespace lexertl
                 _ranges.front().second == char_traits::max_val();
         }
 
-        bool operator <(const basic_string_token& rhs_) const
+        friend bool operator <(const basic_string_token& lhs_,
+            const basic_string_token& rhs_)
         {
-            return _ranges < rhs_._ranges;
+            return lhs_._ranges < rhs_._ranges;
         }
 
-        bool operator ==(const basic_string_token& rhs_) const
+        friend bool operator ==(const basic_string_token& lhs_,
+            const basic_string_token& rhs_)
         {
-            return _ranges == rhs_._ranges;
+            return lhs_._ranges == rhs_._ranges;
         }
 
         bool negatable() const
@@ -393,8 +397,8 @@ namespace lexertl
 
                     out_ += '\\';
                     out_ += 'x';
-                    ss_ << std::hex <<
-                        static_cast<std::size_t>(ch_);
+                    ss_ << std::hex;
+                    stream_num(static_cast<std::size_t>(ch_), ss_);
                     out_ += ss_.str();
                 }
                 else

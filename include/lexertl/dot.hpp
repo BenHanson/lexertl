@@ -7,11 +7,15 @@
 #ifndef LEXERTL_DOT_HPP
 #define LEXERTL_DOT_HPP
 
-#include <ostream>
 #include "rules.hpp"
-#include "state_machine.hpp"
 #include "sm_to_csm.hpp"
+#include "state_machine.hpp"
 #include "stream_num.hpp"
+
+#include <ios>
+#include <ostream>
+#include <sstream>
+#include <string>
 
 namespace lexertl
 {

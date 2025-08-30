@@ -6,11 +6,12 @@
 #ifndef LEXERTL_NODE_HPP
 #define LEXERTL_NODE_HPP
 
-#include <assert.h>
 #include "../../enums.hpp"
 #include "../../containers/ptr_vector.hpp"
 #include "../../runtime_error.hpp"
 #include "../../size_t.hpp"
+
+#include <assert.h>
 #include <stack>
 #include <vector>
 
@@ -233,15 +234,15 @@ namespace lexertl
             }
 
         protected:
-            const bool _nullable;
-            node_vector _firstpos;
-            node_vector _lastpos;
-
             virtual void copy_node(node_ptr_vector& node_ptr_vector_,
                 node_stack& new_node_stack_, bool_stack& perform_op_stack_,
                 bool& down_) const = 0;
 
         private:
+            const bool _nullable;
+            node_vector _firstpos;
+            node_vector _lastpos;
+
             basic_node(const basic_node&); // No copy construction.
             const basic_node& operator =(const basic_node&); // No assignment.
         };

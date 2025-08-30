@@ -6,8 +6,13 @@
 #ifndef LEXERTL_SERIALISE_HPP
 #define LEXERTL_SERIALISE_HPP
 
+#include "internals.hpp"
 #include "runtime_error.hpp"
 #include "state_machine.hpp"
+
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace lexertl
 {

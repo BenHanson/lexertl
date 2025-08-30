@@ -28,10 +28,10 @@ namespace lexertl
                 _left(left_),
                 _right(right_)
             {
-                _left->append_firstpos(node::_firstpos);
-                _right->append_firstpos(node::_firstpos);
-                _left->append_lastpos(node::_lastpos);
-                _right->append_lastpos(node::_lastpos);
+                _left->append_firstpos(node::firstpos());
+                _right->append_firstpos(node::firstpos());
+                _left->append_lastpos(node::lastpos());
+                _right->append_lastpos(node::lastpos());
             }
 
             virtual ~basic_selection_node()

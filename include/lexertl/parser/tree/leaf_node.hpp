@@ -32,10 +32,10 @@ namespace lexertl
                 _greedy(greedy_),
                 _followpos()
             {
-                if (!node::_nullable)
+                if (!node::nullable())
                 {
-                    node::_firstpos.push_back(this);
-                    node::_lastpos.push_back(this);
+                    node::firstpos().push_back(this);
+                    node::lastpos().push_back(this);
                 }
             }
 

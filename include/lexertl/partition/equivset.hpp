@@ -6,10 +6,13 @@
 #ifndef LEXERTL_EQUIVSET_HPP
 #define LEXERTL_EQUIVSET_HPP
 
+#include "../enums.hpp"
+#include "../parser/tree/node.hpp"
+
 #include <algorithm>
 #include <iterator>
-#include "../parser/tree/node.hpp"
 #include <set>
+#include <vector>
 
 namespace lexertl
 {

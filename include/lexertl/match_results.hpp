@@ -8,9 +8,11 @@
 
 #include "char_traits.hpp"
 #include "enums.hpp"
+
 #include <iterator>
 #include <stack>
 #include <string>
+#include <utility>
 
 namespace lexertl
 {
@@ -107,15 +109,16 @@ namespace lexertl
             return static_cast<id_type>(~1);
         }
 
-        bool operator ==(const match_results& rhs_) const
+        friend bool operator ==(const match_results& lhs_,
+            const match_results& rhs_)
         {
-            return id == rhs_.id &&
-                user_id == rhs_.user_id &&
-                first == rhs_.first &&
-                second == rhs_.second &&
-                eoi == rhs_.eoi &&
-                bol == rhs_.bol &&
-                state == rhs_.state;
+            return lhs_.id == rhs_.id &&
+                lhs_.user_id == rhs_.user_id &&
+                lhs_.first == rhs_.first &&
+                lhs_.second == rhs_.second &&
+                lhs_.eoi == rhs_.eoi &&
+                lhs_.bol == rhs_.bol &&
+                lhs_.state == rhs_.state;
         }
     };
 

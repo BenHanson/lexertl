@@ -8,6 +8,8 @@
 #define LEXERTL_UTF_ITERATORS_HPP
 
 #include <iterator>
+#include <stdexcept>
+#include <utility>
 
 namespace lexertl
 {
@@ -49,19 +51,22 @@ namespace lexertl
             return _char;
         }
 
-        bool operator >(const basic_utf8_in_iterator& rhs_) const
+        friend bool operator >(const basic_utf8_in_iterator& lhs_,
+            const basic_utf8_in_iterator& rhs_)
         {
-            return _it > rhs_._it;
+            return lhs_._it > rhs_._it;
         }
 
-        bool operator ==(const basic_utf8_in_iterator& rhs_) const
+        friend bool operator ==(const basic_utf8_in_iterator& lhs_,
+            const basic_utf8_in_iterator& rhs_)
         {
-            return _it == rhs_._it;
+            return lhs_._it == rhs_._it;
         }
 
-        bool operator !=(const basic_utf8_in_iterator& rhs_) const
+        friend bool operator !=(const basic_utf8_in_iterator& lhs_,
+            const basic_utf8_in_iterator& rhs_)
         {
-            return _it != rhs_._it;
+            return lhs_._it != rhs_._it;
         }
 
         basic_utf8_in_iterator& operator ++()
@@ -80,9 +85,10 @@ namespace lexertl
             return temp_;
         }
 
-        basic_utf8_in_iterator operator +(const std::size_t count_) const
+        friend basic_utf8_in_iterator operator +
+            (const basic_utf8_in_iterator& lhs_, const std::size_t count_)
         {
-            basic_utf8_in_iterator temp_ = *this;
+            basic_utf8_in_iterator temp_ = lhs_;
 
             for (std::size_t i_ = 0; i_ < count_; ++i_)
             {
@@ -92,9 +98,10 @@ namespace lexertl
             return temp_;
         }
 
-        basic_utf8_in_iterator operator -(const std::size_t count_) const
+        friend basic_utf8_in_iterator operator -
+            (const basic_utf8_in_iterator& lhs_, const std::size_t count_)
         {
-            basic_utf8_in_iterator temp_ = *this;
+            basic_utf8_in_iterator temp_ = lhs_;
 
             for (std::size_t i_ = 0; i_ < count_; ++i_)
             {
@@ -286,14 +293,16 @@ namespace lexertl
             return _bytes[_index];
         }
 
-        bool operator ==(const basic_utf8_out_iterator& rhs_) const
+        friend bool operator ==(const basic_utf8_out_iterator& lhs_,
+            const basic_utf8_out_iterator& rhs_)
         {
-            return _it == rhs_._it;
+            return lhs_._it == rhs_._it;
         }
 
-        bool operator !=(const basic_utf8_out_iterator& rhs_) const
+        friend bool operator !=(const basic_utf8_out_iterator& lhs_,
+            const basic_utf8_out_iterator& rhs_)
         {
-            return _it != rhs_._it;
+            return lhs_._it != rhs_._it;
         }
 
         basic_utf8_out_iterator& operator ++()
@@ -416,14 +425,16 @@ namespace lexertl
             return _char;
         }
 
-        bool operator ==(const basic_utf16_in_iterator& rhs_) const
+        friend bool operator ==(const basic_utf16_in_iterator& lhs_,
+            const basic_utf16_in_iterator& rhs_)
         {
-            return _it == rhs_._it;
+            return lhs_._it == rhs_._it;
         }
 
-        bool operator !=(const basic_utf16_in_iterator& rhs_) const
+        friend bool operator !=(const basic_utf16_in_iterator& lhs_,
+            const basic_utf16_in_iterator& rhs_)
         {
-            return _it != rhs_._it;
+            return lhs_._it != rhs_._it;
         }
 
         basic_utf16_in_iterator& operator ++()
@@ -442,9 +453,10 @@ namespace lexertl
             return temp_;
         }
 
-        basic_utf16_in_iterator operator +(const std::size_t count_) const
+        friend basic_utf16_in_iterator operator +
+            (const basic_utf16_in_iterator& lhs_, const std::size_t count_)
         {
-            basic_utf16_in_iterator temp_ = *this;
+            basic_utf16_in_iterator temp_ = lhs_;
 
             for (std::size_t i_ = 0; i_ < count_; ++i_)
             {
@@ -454,9 +466,10 @@ namespace lexertl
             return temp_;
         }
 
-        basic_utf16_in_iterator operator -(const std::size_t count_) const
+        friend basic_utf16_in_iterator operator -
+            (const basic_utf16_in_iterator& lhs_, const std::size_t count_)
         {
-            basic_utf16_in_iterator temp_ = *this;
+            basic_utf16_in_iterator temp_ = lhs_;
 
             for (std::size_t i_ = 0; i_ < count_; ++i_)
             {
@@ -552,14 +565,16 @@ namespace lexertl
             return _chars[_index];
         }
 
-        bool operator ==(const basic_utf16_out_iterator& rhs_) const
+        friend bool operator ==(const basic_utf16_out_iterator& lhs_,
+            const basic_utf16_out_iterator& rhs_)
         {
-            return _it == rhs_._it;
+            return lhs_._it == rhs_._it;
         }
 
-        bool operator !=(const basic_utf16_out_iterator& rhs_) const
+        friend bool operator !=(const basic_utf16_out_iterator& lhs_,
+            const basic_utf16_out_iterator& rhs_)
         {
-            return _it != rhs_._it;
+            return lhs_._it != rhs_._it;
         }
 
         basic_utf16_out_iterator& operator ++()
@@ -666,14 +681,16 @@ namespace lexertl
             return val_;
         }
 
-        bool operator ==(const basic_flip_iterator& rhs_) const
+        friend bool operator ==(const basic_flip_iterator& lhs_,
+            const basic_flip_iterator& rhs_)
         {
-            return _it == rhs_._it;
+            return lhs_._it == rhs_._it;
         }
 
-        bool operator !=(const basic_flip_iterator& rhs_) const
+        friend bool operator !=(const basic_flip_iterator& lhs_,
+            const basic_flip_iterator& rhs_)
         {
-            return _it != rhs_._it;
+            return lhs_._it != rhs_._it;
         }
 
         basic_flip_iterator& operator ++()

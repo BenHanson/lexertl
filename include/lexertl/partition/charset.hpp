@@ -7,11 +7,12 @@
 #ifndef LEXERTL_CHARSET_HPP
 #define LEXERTL_CHARSET_HPP
 
+#include "../size_t.hpp"
+#include "../string_token.hpp"
+
 #include <algorithm>
 #include <iterator>
 #include <set>
-#include "../size_t.hpp"
-#include "../string_token.hpp"
 
 namespace lexertl
 {

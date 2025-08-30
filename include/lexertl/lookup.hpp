@@ -6,10 +6,12 @@
 #ifndef LEXERTL_LOOKUP_HPP
 #define LEXERTL_LOOKUP_HPP
 
-#include <assert.h>
 #include "bool.hpp"
 #include "match_results.hpp"
 #include "runtime_error.hpp"
+
+#include <assert.h>
+#include <iterator>
 
 namespace lexertl
 {

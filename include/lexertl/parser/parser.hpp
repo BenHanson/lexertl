@@ -8,18 +8,24 @@
 
 #include "../bool.hpp"
 #include "../containers/ptr_stack.hpp"
+#include "../enums.hpp"
 #include "../runtime_error.hpp"
 #include "../size_t.hpp"
 #include "tokeniser/re_tokeniser.hpp"
 #include "tree/end_node.hpp"
 #include "tree/iteration_node.hpp"
 #include "tree/leaf_node.hpp"
+#include "tree/node.hpp"
 #include "tree/selection_node.hpp"
 #include "tree/sequence_node.hpp"
 
 #include <algorithm>
 #include <assert.h>
+#include <locale>
 #include <map>
+#include <memory>
+#include <sstream>
+#include <stack>
 #include <vector>
 
 namespace lexertl
@@ -33,8 +39,8 @@ namespace lexertl
             - All operators decompose to sequence,
               selection ('|') and iteration ('*')
             - Regex tokens are stored on a stack.
-            - When a complete sequence of regex tokens is on the
-              stack it is processed.
+            - When a complete sequence of regex tokens
+              is on the stack it is processed.
 
         Grammar:
 

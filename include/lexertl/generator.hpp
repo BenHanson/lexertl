@@ -6,17 +6,26 @@
 #ifndef LEXERTL_GENERATOR_HPP
 #define LEXERTL_GENERATOR_HPP
 
-#include <algorithm>
 #include "bool.hpp"
-#include "partition/charset.hpp"
 #include "char_traits.hpp"
-#include "partition/equivset.hpp"
-#include <memory>
-#include "parser/parser.hpp"
 #include "containers/ptr_list.hpp"
+#include "enums.hpp"
+#include "internals.hpp"
+#include "parser/parser.hpp"
+#include "partition/charset.hpp"
+#include "partition/equivset.hpp"
 #include "rules.hpp"
+#include "runtime_error.hpp"
 #include "size_t.hpp"
 #include "state_machine.hpp"
+
+#include <algorithm>
+#include <list>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace lexertl
 {
