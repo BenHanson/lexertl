@@ -579,7 +579,7 @@ namespace lexertl
                 }
             } while (tokens_.back()._type != detail::END);
 
-            strip_parens(tokens_);
+            //strip_parens(tokens_);
             record_abstemious(tokens_, ab_indexes_);
 
             if (!name_)
