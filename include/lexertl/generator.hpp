@@ -19,7 +19,6 @@
 #include "size_t.hpp"
 #include "state_machine.hpp"
 
-#include <algorithm>
 #include <list>
 #include <memory>
 #include <set>
@@ -196,21 +195,6 @@ namespace lexertl
         typedef typename rules::std_string_deque_deque std_string_deque_deque;
         typedef typename parser::string_token string_token;
 
-        static bool all_of(const equivset_list& equiv_list_)
-        {
-            for (typename equivset_list::list::const_iterator iter_ =
-                equiv_list_->begin(), end_ = equiv_list_->end();
-                iter_ != end_; ++iter_)
-            {
-                const equivset* equivset_ = *iter_;
-
-                if (equivset_->_greedy != greedy_no)
-                    return false;
-            }
-
-            return true;
-        }
-
         static void build_dfa(const charset_map& charset_map_,
             const node* root_, internals& internals_, sm& sm_,
             const id_type dfa_index_, id_type& cr_id_, id_type& nl_id_,
@@ -303,14 +287,12 @@ namespace lexertl
                             dfa_alphabet_);
 
                         // Prune abstemious transitions from end states.
-                        if (*ptr_ && !(*ptr_ & greedy_bit) &&
-                            all_of(equiv_list_))
+                        if (!(*ptr_ && !(*ptr_ & greedy_bit) &&
+                            equivset_->_greedy == greedy_no))
                         {
-                            continue;
+                            set_transitions(transition_, equivset_, dfa_, ptr_,
+                                index_, eol_set_);
                         }
-
-                        set_transitions(transition_, equivset_, dfa_, ptr_,
-                            index_, eol_set_);
                     }
                 }
             }
