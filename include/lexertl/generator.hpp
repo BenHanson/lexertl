@@ -306,7 +306,7 @@ namespace lexertl
         // unless this has been suppressed (bad idea).
         // Because of this we don't worry about end_states that are part of a
         // followset that have other transitions as we should error out anyway
-        // (i.e. we could be supressing other paths that have nothing to do
+        // (i.e. we could be suppressing other paths that have nothing to do
         // with the end_states we are interested in).
         static void prune_eol_clashes(node_vector& followpos_,
             const id_type cr_id_, const id_type nl_id_,
