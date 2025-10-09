@@ -580,10 +580,10 @@ namespace lexertl
             } while (tokens_.back()._type != detail::END);
 
             strip_parens(tokens_);
-            record_abstemious(tokens_, ab_indexes_);
 
             if (!name_)
             {
+                record_abstemious(tokens_, ab_indexes_);
                 abstemious<rules_char_type, char_type>::
                     prune(tokens_, ab_indexes_);
                 // Need to fill ab_indexes_ again following prune
