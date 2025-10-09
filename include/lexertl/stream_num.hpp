@@ -12,34 +12,34 @@
 
 namespace lexertl
 {
-	template<typename T>
-	void stream_num(const T num_, std::ostream& ss_)
-	{
-		ss_ << num_;
-	}
+    template<typename T>
+    void stream_num(const T num_, std::ostream& ss_)
+    {
+        ss_ << num_;
+    }
 
-	template<typename T>
-	void stream_num(const T num_, std::wostream& ss_)
-	{
-		ss_ << num_;
-	}
+    template<typename T>
+    void stream_num(const T num_, std::wostream& ss_)
+    {
+        ss_ << num_;
+    }
 
-	// MSVC doesn't support streaming integers etc to
-	// std::basic_ostringstream<char32_t>.
-	/*template<typename T>
-	void stream_num(const T num_, std::basic_ostream<char32_t>& ss_)
-	{
-		std::stringstream css_;
-		std::string count_;
+    // MSVC doesn't support streaming integers etc to
+    // std::basic_ostringstream<char32_t>.
+    /*template<typename T>
+    void stream_num(const T num_, std::basic_ostream<char32_t>& ss_)
+    {
+        std::stringstream css_;
+        std::string count_;
 
-		css_ << num_;
-		count_ = css_.str();
+        css_ << num_;
+        count_ = css_.str();
 
-		for (char c_ : count_)
-		{
-			ss_ << static_cast<char32_t>(c_);
-		}
-	}*/
+        for (char c_ : count_)
+        {
+            ss_ << static_cast<char32_t>(c_);
+        }
+    }*/
 }
 
 #endif
