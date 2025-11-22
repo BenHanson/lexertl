@@ -44,6 +44,10 @@ namespace lexertl
                     case detail::AREPEATN:
                         op_._type = detail::REPEATN;
                         op_._extra = op_._extra.substr(0, op_._extra.find(','));
+
+                        if (op_._extra.size() == 1 && op_._extra.front() == '0')
+                            remove_sequence(tokens_, start_, idx_);
+
                         break;
                     default:
                         break;
