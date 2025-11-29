@@ -116,11 +116,15 @@ namespace lexertl
         void minimise_dfa(const id_type dfa_alphabet_,
             id_type_vector& dfa_, std::size_t size_) const
         {
+            id_type_vector lookup_(size_ / dfa_alphabet_, npos());
+
+            if (lookup_.empty())
+                return;
+
             const id_type* first_ = &dfa_.front();
             const id_type* end_ = first_ + size_;
             id_type index_ = 1;
             id_type new_index_ = 1;
-            id_type_vector lookup_(size_ / dfa_alphabet_, npos());
             id_type* lookup_ptr_ = &lookup_.front();
             index_set index_set_;
             const id_type bol_index_ = dfa_.front();
