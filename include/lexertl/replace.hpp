@@ -74,6 +74,8 @@ namespace lexertl
 
             if (iter_ != fmt_.end())
                 std::copy(fmt_->second.cbegin(), fmt_->second.cend(), out_);
+            else
+                std::copy(results_.first, results_.second, out_);
 
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
@@ -110,6 +112,8 @@ namespace lexertl
 
                 std::copy(iter_->second, end_fmt_, out_);
             }
+            else
+                std::copy(results_.first, results_.second, out_);
 
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
@@ -250,6 +254,8 @@ namespace lexertl
 
             if (iter_ != fmt_.end())
                 ret_.append(iter_->second);
+            else
+                ret_.append(results_.first, results_.second);
 
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
