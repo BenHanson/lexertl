@@ -183,9 +183,10 @@ namespace lexertl
                 dfa_ < dfas_; ++dfa_)
             {
                 lexer_state(stream_);
-                stream_ << rules_.state(dfa_) << std::endl << std::endl;
+                stream_ << rules_.state(static_cast<id_type>(dfa_)) <<
+                    std::endl << std::endl;
 
-                dump_ex(csm_._sm_vector[dfa_], stream_);
+                dump_ex(csm_._sm_deque[dfa_], stream_);
             }
         }
 
@@ -511,8 +512,6 @@ namespace lexertl
                 case static_cast<char_type>(']'):
                 case static_cast<char_type>('.'):
                 case static_cast<char_type>('/'):
-                case static_cast<char_type>('\\'):
-                case static_cast<char_type>('"'):
                     stream_ << static_cast<char_type>('\\');
                     break;
                 default:
