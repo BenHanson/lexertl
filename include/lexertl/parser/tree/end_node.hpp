@@ -118,8 +118,8 @@ namespace lexertl
             id_type _next_dfa;
             id_type _push_dfa;
             bool _pop_dfa;
-            greedy_repeat _greedy;
             node_vector _followpos;
+            greedy_repeat _greedy;
 
             virtual void copy_node(node_ptr_vector&/*node_ptr_vector_*/,
                 node_stack&/*new_node_stack_*/,

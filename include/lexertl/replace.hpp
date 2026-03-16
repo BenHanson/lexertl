@@ -10,19 +10,125 @@
 #include "match_results.hpp"
 #include "state_machine.hpp"
 
-#include <iterator>
+#include <algorithm>
 #include <map>
 #include <string>
 
 namespace lexertl
 {
+    template<class char_type>
+    const char_type* find_end(const char_type* ptr_)
+    {
+        for (; *ptr_; ++ptr_)
+            ;
+
+        return ptr_;
+    }
+
+    // Stream overloads
     template<class out_iter, class fwd_iter, class id_type, class char_type,
-        class traits, class alloc>
+        class straits, class salloc>
     out_iter replace(out_iter out_, fwd_iter first_, fwd_iter second_,
         const basic_state_machine<char_type, id_type>& sm_,
-        const std::basic_string<char_type, traits, alloc>& fmt_)
+        const std::basic_string<char_type, straits, salloc>& fmt_)
     {
-        return replace(out_, first_, second_, sm_, fmt_.c_str());
+        fwd_iter last_ = first_;
+        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            std::copy(last_, results_.first, out_);
+            std::copy(fmt_.begin(), fmt_.end(), out_);
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        std::copy(last_, results_.first, out_);
+        return out_;
+    }
+
+    template<class out_iter, class fwd_iter, class id_type, class char_type,
+        class straits, class salloc>
+    out_iter replace(out_iter out_, fwd_iter first_, fwd_iter second_,
+        const basic_state_machine<char_type, id_type>& sm_,
+        const std::map<id_type,
+            std::basic_string<char_type, straits, salloc> >& fmt_)
+    {
+        fwd_iter last_ = first_;
+        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type, std::basic_string
+                <char_type, straits, salloc> >::const_iterator
+                iter_ = fmt_.find(results_.id);
+
+            std::copy(last_, results_.first, out_);
+
+            if (iter_ == fmt_.end())
+                std::copy(results_.first, results_.second, out_);
+            else
+                std::copy(iter_->second.begin(), iter_->second.end(), out_);
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        std::copy(last_, results_.first, out_);
+        return out_;
+    }
+
+    template<class out_iter, class fwd_iter, class id_type, class char_type,
+        class straits, class salloc>
+    out_iter replace(out_iter out_, fwd_iter first_, fwd_iter second_,
+        const basic_state_machine<char_type, id_type>& sm_,
+        const std::map<id_type,
+            std::basic_string<char_type, straits, salloc>(*)
+                (typename std::basic_string<char_type, straits,
+                    salloc>::const_iterator&,
+                typename std::basic_string<char_type, straits,
+                    salloc>::const_iterator&)>& fmt_)
+    {
+        fwd_iter last_ = first_;
+        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type, std::basic_string
+                <char_type, straits, salloc>(*)
+                (typename std::basic_string<char_type, straits, salloc>::
+                    const_iterator&,
+                typename std::basic_string<char_type, straits, salloc>::
+                    const_iterator&)>::const_iterator iter_ =
+                    fmt_.find(results_.id);
+
+            std::copy(last_, results_.first, out_);
+
+            if (iter_ == fmt_.end())
+                std::copy(results_.first, results_.second, out_);
+            else
+            {
+                const std::basic_string<char_type, straits, salloc> str_ =
+                    iter_->second(results_.first, results_.second);
+
+                std::copy(str_.begin(), str_.end(), out_);
+            }
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        std::copy(last_, results_.first, out_);
+        return out_;
     }
 
     template<class out_iter, class fwd_iter, class id_type, class char_type>
@@ -30,12 +136,9 @@ namespace lexertl
         const basic_state_machine<char_type, id_type>& sm_,
         const char_type* fmt_)
     {
-        const char_type* end_fmt_ = fmt_;
         fwd_iter last_ = first_;
-        lexertl::match_results<fwd_iter> results_(first_, second_);
-
-        while (*end_fmt_)
-            ++end_fmt_;
+        const char_type* end_fmt_ = find_end(fmt_);
+        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
@@ -52,30 +155,31 @@ namespace lexertl
         return out_;
     }
 
-    template<class out_iter, class fwd_iter, class id_type, class char_type,
-        class traits, class alloc>
+    template<class out_iter, class fwd_iter, class id_type, class char_type>
     out_iter replace(out_iter out_, fwd_iter first_, fwd_iter second_,
         const basic_state_machine<char_type, id_type>& sm_,
-        const std::map<id_type, std::basic_string<char_type, traits, alloc> >& fmt_)
+        const std::map<id_type, const char_type*> fmt_)
     {
         fwd_iter last_ = first_;
-        lexertl::match_results<fwd_iter> results_(first_, second_);
-
+        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            typename std::map<id_type,
-                std::basic_string<char_type, traits, alloc> >::
-                    const_iterator iter_ = fmt_.find(results_.id);
+            typename std::map<id_type, const char_type*>::
+                const_iterator iter_ = fmt_.find(results_.id);
 
             std::copy(last_, results_.first, out_);
 
-            if (iter_ != fmt_.end())
-                std::copy(fmt_->second.cbegin(), fmt_->second.cend(), out_);
-            else
+            if (iter_ == fmt_.end())
                 std::copy(results_.first, results_.second, out_);
+            else
+            {
+                const char_type* end_fmt_ = find_end(iter_->second);
+
+                std::copy(iter_->second, end_fmt_, out_);
+            }
 
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
@@ -88,32 +192,32 @@ namespace lexertl
     template<class out_iter, class fwd_iter, class id_type, class char_type>
     out_iter replace(out_iter out_, fwd_iter first_, fwd_iter second_,
         const basic_state_machine<char_type, id_type>& sm_,
-        const std::map<id_type, const char_type*>& fmt_)
+        const std::map<id_type,
+        const char_type*(*)(const char_type*, const char_type*)> fmt_)
     {
         fwd_iter last_ = first_;
-        lexertl::match_results<fwd_iter> results_(first_, second_);
-
+        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            typename std::map<id_type, const char_type*>::const_iterator iter_ =
+            typename std::map<id_type, const char_type*(*)
+                (const char_type*, const char_type*)>::const_iterator iter_ =
                 fmt_.find(results_.id);
 
             std::copy(last_, results_.first, out_);
 
-            if (iter_ != fmt_.cend())
-            {
-                const char_type* end_fmt_ = iter_->second;
-
-                while (*end_fmt_)
-                    ++end_fmt_;
-
-                std::copy(iter_->second, end_fmt_, out_);
-            }
-            else
+            if (iter_ == fmt_.end())
                 std::copy(results_.first, results_.second, out_);
+            else
+            {
+                const char_type* str_ =
+                    iter_->second(results_.first, results_.second);
+                const char_type* end_str_ = find_end(str_);
+
+                std::copy(str_, end_str_, out_);
+            }
 
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
@@ -123,16 +227,113 @@ namespace lexertl
         return out_;
     }
 
-    template<class id_type, class char_type, class straits, class salloc,
-        class ftraits, class falloc>
+    // String overloads
+    template<class id_type, class char_type,
+        class straits, class salloc, class ftraits, class falloc>
     std::basic_string<char_type, straits, salloc>
         replace(const std::basic_string<char_type, straits, salloc>& s_,
-        const basic_state_machine<char_type, id_type>& sm_,
-        const std::basic_string<char_type, ftraits, falloc>& fmt_)
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::basic_string<char_type, ftraits, falloc>& fmt_)
     {
         std::basic_string<char_type, straits, salloc> ret_;
+        const char_type* last_ = s_.c_str();
+        lexertl::match_results<const char_type*, id_type>
+            results_(s_.c_str(), s_.c_str() + s_.size());
 
-        replace(std::back_inserter(ret_), s_.cbegin(), s_.cend(), sm_, fmt_);
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            ret_.append(last_, results_.first);
+            ret_.append(fmt_);
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type,
+        class straits, class salloc, class ftraits, class falloc>
+    std::basic_string<char_type, straits, salloc>
+        replace(const std::basic_string<char_type, straits, salloc>& s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::map<id_type,
+                std::basic_string<char_type, ftraits, falloc> >& fmt_)
+    {
+        std::basic_string<char_type, straits, salloc> ret_;
+        const char_type* last_ = s_.c_str();
+        lexertl::match_results<const char_type*, id_type>
+            results_(s_.c_str(), s_.c_str() + s_.size());
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type,
+                std::basic_string<char_type, ftraits, falloc> >::
+                    const_iterator iter_ = fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second);
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type,
+        class straits, class salloc, class ftraits, class falloc>
+    std::basic_string<char_type, straits, salloc>
+        replace(const std::basic_string<char_type, straits, salloc>& s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::map<id_type,
+                std::basic_string<char_type, ftraits, falloc>(*)
+                    (typename std::basic_string<char_type, straits, salloc>::
+                        const_iterator&,
+                    typename std::basic_string<char_type, straits, salloc>::
+                        const_iterator&)>& fmt_)
+    {
+        std::basic_string<char_type, straits, salloc> ret_;
+        const char_type* last_ = s_.c_str();
+        lexertl::match_results<const char_type*, id_type>
+            results_(s_.c_str(), s_.c_str() + s_.size());
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type,
+                std::basic_string<char_type, ftraits, falloc>(*)
+                    (typename std::basic_string<char_type, straits, salloc>::
+                        const_iterator&,
+                    typename std::basic_string<char_type, straits, salloc>::
+                        const_iterator&)>::const_iterator iter_ =
+                            fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second(results_.first, results_.second));
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
         return ret_;
     }
 
@@ -143,22 +344,23 @@ namespace lexertl
             const char_type* fmt_)
     {
         std::basic_string<char_type, straits, salloc> ret_;
+        const char_type* last_ = s_.c_str();
+        const char_type* end_fmt_ = find_end(fmt_);
+        lexertl::match_results<const char_type*, id_type>
+            results_(s_.c_str(), s_.c_str() + s_.size());
 
-        replace(std::back_inserter(ret_), s_.cbegin(), s_.cend(), sm_, fmt_);
-        return ret_;
-    }
+        // Lookahead
+        lexertl::lookup(sm_, results_);
 
-    template<class id_type, class char_type, class straits, class salloc,
-        class ftraits, class falloc>
-    std::basic_string<char_type, straits, salloc>
-        replace(const std::basic_string<char_type, straits, salloc>& s_,
-            const basic_state_machine<char_type, id_type>& sm_,
-            const std::map<id_type,
-                std::basic_string<char_type, ftraits, falloc> >& fmt_)
-    {
-        std::basic_string<char_type, straits, salloc> ret_;
+        while (results_.id != 0)
+        {
+            ret_.append(last_, results_.first);
+            ret_.append(fmt_, end_fmt_);
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
 
-        replace(std::back_inserter(ret_), s_.cbegin(), s_.cend(), sm_, fmt_);
+        ret_.append(last_, results_.first);
         return ret_;
     }
 
@@ -169,8 +371,66 @@ namespace lexertl
             const std::map<id_type, const char_type*>& fmt_)
     {
         std::basic_string<char_type, straits, salloc> ret_;
+        const char_type* last_ = s_.c_str();
+        lexertl::match_results<const char_type*, id_type>
+            results_(s_.c_str(), s_.c_str() + s_.size());
 
-        replace(std::back_inserter(ret_), s_.cbegin(), s_.cend(), sm_, fmt_);
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type, const char_type*>::
+                const_iterator iter_ = fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second);
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type, class straits, class salloc>
+    std::basic_string<char_type, straits, salloc>
+        replace(const std::basic_string<char_type, straits, salloc>& s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::map<id_type, const char_type*(*)
+                (const char_type*, const char_type*)>& fmt_)
+    {
+        std::basic_string<char_type, straits, salloc> ret_;
+        const char_type* last_ = s_.c_str();
+        lexertl::match_results<const char_type*, id_type>
+            results_(s_.c_str(), s_.c_str() + s_.size());
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type, const char_type*(*)
+                (const char_type*, const char_type*)>::
+                    const_iterator iter_ = fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second(results_.first, results_.second));
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
         return ret_;
     }
 
@@ -180,25 +440,10 @@ namespace lexertl
             const basic_state_machine<char_type, id_type>& sm_,
             const std::basic_string<char_type, straits, salloc>& fmt_)
     {
-        std::basic_string<char_type, straits, salloc> ret_;
-        const char_type* end_s_ = s_;
-        
-        while (*end_s_)
-            ++end_s_;
-
-        replace(std::back_inserter(ret_), s_, end_s_, sm_, fmt_);
-        return ret_;
-    }
-
-    template<class id_type, class char_type>
-    std::basic_string<char_type> replace(const char_type* s_,
-        const basic_state_machine<char_type, id_type>& sm_,
-        const char_type* fmt_)
-    {
         std::basic_string<char_type> ret_;
-        const char_type* end_s_ = s_; while (*end_s_) ++end_s_;
+        const char_type* end_s_ = find_end(s_);
         const char_type* last_ = s_;
-        lexertl::match_results<const char_type*> results_(s_, end_s_);
+        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
@@ -222,40 +467,160 @@ namespace lexertl
             const std::map<id_type,
                 std::basic_string<char_type, straits, salloc> >& fmt_)
     {
-        std::basic_string<char_type, straits, salloc> ret_;
-        const char_type* end_s_ = s_;
-
-        while (*end_s_)
-            ++end_s_;
-
-        replace(std::back_inserter(ret_), s_, end_s_, sm_, fmt_);
-        return ret_;
-    }
-
-    template<class id_type, class char_type>
-    std::basic_string<char_type> replace(const char_type* s_,
-        const basic_state_machine<char_type, id_type>& sm_,
-        const std::map<id_type, const char_type*>& fmt_)
-    {
         std::basic_string<char_type> ret_;
-        const char_type* end_s_ = s_; while (*end_s_) ++end_s_;
+        const char_type* end_s_ = find_end(s_);
         const char_type* last_ = s_;
-        lexertl::match_results<const char_type*> results_(s_, end_s_);
+        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            typename std::map<id_type, const char_type*>::const_iterator iter_ =
-                fmt_.find(results_.id);
+            typename std::map<id_type,
+                std::basic_string<char_type, straits, salloc> >::
+                    const_iterator iter_ = fmt_.find(results_.id);
 
             ret_.append(last_, results_.first);
 
-            if (iter_ != fmt_.end())
-                ret_.append(iter_->second);
-            else
+            if (iter_ == fmt_.end())
                 ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second);
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type, class straits, class salloc>
+    std::basic_string<char_type, straits, salloc>
+        replace(const char_type* s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::map<id_type,
+                std::basic_string<char_type, straits, salloc>(*)
+            (const char_type*, const char_type*)>& fmt_)
+    {
+        std::basic_string<char_type> ret_;
+        const char_type* end_s_ = find_end(s_);
+        const char_type* last_ = s_;
+        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type,
+                std::basic_string<char_type, straits, salloc>(*)
+                    (const char_type*, const char_type*)>::
+                        const_iterator iter_ = fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second(results_.first, results_.second));
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type>
+    std::basic_string<char_type>
+        replace(const char_type* s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const char_type* fmt_)
+    {
+        std::basic_string<char_type> ret_;
+        const char_type* end_s_ = find_end(s_);
+        const char_type* last_ = s_;
+        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            ret_.append(last_, results_.first);
+            ret_.append(fmt_);
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type>
+    std::basic_string<char_type>
+        replace(const char_type* s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::map<id_type, const char_type*>& fmt_)
+    {
+        std::basic_string<char_type> ret_;
+        const char_type* end_s_ = find_end(s_);
+        const char_type* last_ = s_;
+        lexertl::match_results<const char_type*, id_type>results_(s_, end_s_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type, const char_type*>::
+                const_iterator iter_ = fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second);
+
+            last_ = results_.second;
+            lexertl::lookup(sm_, results_);
+        }
+
+        ret_.append(last_, results_.first);
+        return ret_;
+    }
+
+    template<class id_type, class char_type>
+    std::basic_string<char_type>
+        replace(const char_type* s_,
+            const basic_state_machine<char_type, id_type>& sm_,
+            const std::map<id_type,
+                const char_type* (*)(const char_type*, const char_type*)>& fmt_)
+    {
+        std::basic_string<char_type> ret_;
+        const char_type* end_s_ = find_end(s_);
+        const char_type* last_ = s_;
+        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
+
+        // Lookahead
+        lexertl::lookup(sm_, results_);
+
+        while (results_.id != 0)
+        {
+            typename std::map<id_type, const char_type* (*)
+                (const char_type*, const char_type*)>::
+                    const_iterator iter_ = fmt_.find(results_.id);
+
+            ret_.append(last_, results_.first);
+
+            if (iter_ == fmt_.end())
+                ret_.append(results_.first, results_.second);
+            else
+                ret_.append(iter_->second(results_.first, results_.second));
 
             last_ = results_.second;
             lexertl::lookup(sm_, results_);
