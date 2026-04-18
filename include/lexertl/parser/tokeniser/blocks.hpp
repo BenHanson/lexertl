@@ -974,6 +974,11 @@
         return "[\\x10920-\\x1093F]";
     }
 
+    static const char* InSidetic()
+    {
+        return "[\\x10940-\\x1095F]";
+    }
+
     static const char* InMeroitic_Hieroglyphs()
     {
         return "[\\x10980-\\x1099F]";
@@ -1229,6 +1234,11 @@
         return "[\\x11B00-\\x11B5F]";
     }
 
+    static const char* InSharada_Supplement()
+    {
+        return "[\\x11B60-\\x11B7F]";
+    }
+
     static const char* InSunuwar()
     {
         return "[\\x11BC0-\\x11BFF]";
@@ -1252,6 +1262,11 @@
     static const char* InGunjala_Gondi()
     {
         return "[\\x11D60-\\x11DAF]";
+    }
+
+    static const char* InTolong_Siki()
+    {
+        return "[\\x11DB0-\\x11DEF]";
     }
 
     static const char* InMakasar()
@@ -1354,6 +1369,11 @@
         return "[\\x16E40-\\x16E9F]";
     }
 
+    static const char* InBeria_Erfe()
+    {
+        return "[\\x16EA0-\\x16EDF]";
+    }
+
     static const char* InMiao()
     {
         return "[\\x16F00-\\x16F9F]";
@@ -1382,6 +1402,11 @@
     static const char* InTangut_Supplement()
     {
         return "[\\x18D00-\\x18D7F]";
+    }
+
+    static const char* InTangut_Components_Supplement()
+    {
+        return "[\\x18D80-\\x18DFF]";
     }
 
     static const char* InKana_Extended_B()
@@ -1422,6 +1447,11 @@
     static const char* InSymbols_for_Legacy_Computing_Supplement()
     {
         return "[\\x1CC00-\\x1CEBF]";
+    }
+
+    static const char* InMiscellaneous_Symbols_Supplement()
+    {
+        return "[\\x1CEC0-\\x1CEFF]";
     }
 
     static const char* InZnamenny_Musical_Notation()
@@ -1512,6 +1542,11 @@
     static const char* InOl_Onal()
     {
         return "[\\x1E5D0-\\x1E5FF]";
+    }
+
+    static const char* InTai_Yo()
+    {
+        return "[\\x1E6C0-\\x1E6FF]";
     }
 
     static const char* InEthiopic_Extended_B()
@@ -1667,6 +1702,11 @@
     static const char* InCJK_Unified_Ideographs_Extension_H()
     {
         return "[\\x31350-\\x323AF]";
+    }
+
+    static const char* InCJK_Unified_Ideographs_Extension_J()
+    {
+        return "[\\x323B0-\\x3347F]";
     }
 
     static const char* InTags()

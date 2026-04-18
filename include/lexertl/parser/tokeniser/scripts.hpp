@@ -18,11 +18,11 @@
     {
         return "[\\x600-\\x604\\x606-\\x60b\\x60d-\\x61a\\x61c-\\x61e"
             "\\x620-\\x63f\\x641-\\x64a\\x656-\\x66f\\x671-\\x6dc\\x6de-\\x6ff"
-            "\\x750-\\x77f\\x870-\\x88e\\x890\\x891\\x897-\\x8e1\\x8e3-\\x8ff"
-            "\\xfb50-\\xfbc2\\xfbd3-\\xfd3d\\xfd40-\\xfd8f\\xfd92-\\xfdc7"
-            "\\xfdcf\\xfdf0-\\xfdff\\xfe70-\\xfe74\\xfe76-\\xfefc"
-            "\\x10e60-\\x10e7e\\x10ec2-\\x10ec4\\x10efc-\\x10eff"
-            "\\x1ee00-\\x1ee03\\x1ee05-\\x1ee1f\\x1ee21\\x1ee22\\x1ee24\\x1ee27"
+            "\\x750-\\x77f\\x870-\\x891\\x897-\\x8e1\\x8e3-\\x8ff"
+            "\\xfb50-\\xfd3d\\xfd40-\\xfdcf\\xfdf0-\\xfdff\\xfe70-\\xfe74"
+            "\\xfe76-\\xfefc\\x10e60-\\x10e7e\\x10ec2-\\x10ec7"
+            "\\x10ed0-\\x10ed8\\x10efa-\\x10eff\\x1ee00-\\x1ee03"
+            "\\x1ee05-\\x1ee1f\\x1ee21\\x1ee22\\x1ee24\\x1ee27"
             "\\x1ee29-\\x1ee32\\x1ee34-\\x1ee37\\x1ee39\\x1ee3b\\x1ee42\\x1ee47"
             "\\x1ee49\\x1ee4b\\x1ee4d-\\x1ee4f\\x1ee51\\x1ee52\\x1ee54\\x1ee57"
             "\\x1ee59\\x1ee5b\\x1ee5d\\x1ee5f\\x1ee61\\x1ee62\\x1ee64"
@@ -67,6 +67,11 @@
         return "[\\x980-\\x983\\x985-\\x98c\\x98f\\x990\\x993-\\x9a8"
             "\\x9aa-\\x9b0\\x9b2\\x9b6-\\x9b9\\x9bc-\\x9c4\\x9c7\\x9c8"
             "\\x9cb-\\x9ce\\x9d7\\x9dc\\x9dd\\x9df-\\x9e3\\x9e6-\\x9fe]";
+    }
+
+    static const char* IsBeria_Erfe()
+    {
+        return "[\\x16ea0-\\x16eb8\\x16ebb-\\x16ed3]";
     }
 
     static const char* IsBhaiksuki()
@@ -144,22 +149,22 @@
             "\\xfd5-\\xfd8\\x10fb\\x16eb-\\x16ed\\x1735\\x1736\\x1802\\x1803"
             "\\x1805\\x1cd3\\x1ce1\\x1ce9-\\x1cec\\x1cee-\\x1cf3"
             "\\x1cf5-\\x1cf7\\x1cfa\\x2000-\\x200b\\x200e-\\x2064"
-            "\\x2066-\\x2070\\x2074-\\x207e\\x2080-\\x208e\\x20a0-\\x20c0"
+            "\\x2066-\\x2070\\x2074-\\x207e\\x2080-\\x208e\\x20a0-\\x20c1"
             "\\x2100-\\x2125\\x2127-\\x2129\\x212c-\\x2131\\x2133-\\x214d"
             "\\x214f-\\x215f\\x2189-\\x218b\\x2190-\\x2429\\x2440-\\x244a"
-            "\\x2460-\\x27ff\\x2900-\\x2b73\\x2b76-\\x2b95\\x2b97-\\x2bff"
-            "\\x2e00-\\x2e5d\\x2ff0-\\x3004\\x3006\\x3008-\\x3020"
-            "\\x3030-\\x3037\\x303c-\\x303f\\x309b\\x309c\\x30a0\\x30fb\\x30fc"
-            "\\x3190-\\x319f\\x31c0-\\x31e5\\x31ef\\x3220-\\x325f"
-            "\\x327f-\\x32cf\\x32ff\\x3358-\\x33ff\\x4dc0-\\x4dff"
-            "\\xa700-\\xa721\\xa788-\\xa78a\\xa830-\\xa839\\xa92e\\xa9cf\\xab5b"
-            "\\xab6a\\xab6b\\xfd3e\\xfd3f\\xfe10-\\xfe19\\xfe30-\\xfe52"
-            "\\xfe54-\\xfe66\\xfe68-\\xfe6b\\xfeff\\xff01-\\xff20"
-            "\\xff3b-\\xff40\\xff5b-\\xff65\\xff70\\xff9e\\xff9f"
-            "\\xffe0-\\xffe6\\xffe8-\\xffee\\xfff9-\\xfffd\\x10100-\\x10102"
-            "\\x10107-\\x10133\\x10137-\\x1013f\\x10190-\\x1019c"
-            "\\x101d0-\\x101fc\\x102e1-\\x102fb\\x1bca0-\\x1bca3"
-            "\\x1cc00-\\x1ccf9\\x1cd00-\\x1ceb3\\x1cf50-\\x1cfc3"
+            "\\x2460-\\x27ff\\x2900-\\x2b73\\x2b76-\\x2bff\\x2e00-\\x2e5d"
+            "\\x2ff0-\\x3004\\x3006\\x3008-\\x3020\\x3030-\\x3037"
+            "\\x303c-\\x303f\\x309b\\x309c\\x30a0\\x30fb\\x30fc\\x3190-\\x319f"
+            "\\x31c0-\\x31e5\\x31ef\\x3220-\\x325f\\x327f-\\x32cf\\x32ff"
+            "\\x3358-\\x33ff\\x4dc0-\\x4dff\\xa700-\\xa721\\xa788-\\xa78a"
+            "\\xa830-\\xa839\\xa92e\\xa9cf\\xab5b\\xab6a\\xab6b\\xfd3e\\xfd3f"
+            "\\xfe10-\\xfe19\\xfe30-\\xfe52\\xfe54-\\xfe66\\xfe68-\\xfe6b"
+            "\\xfeff\\xff01-\\xff20\\xff3b-\\xff40\\xff5b-\\xff65\\xff70"
+            "\\xff9e\\xff9f\\xffe0-\\xffe6\\xffe8-\\xffee\\xfff9-\\xfffd"
+            "\\x10100-\\x10102\\x10107-\\x10133\\x10137-\\x1013f"
+            "\\x10190-\\x1019c\\x101d0-\\x101fc\\x102e1-\\x102fb"
+            "\\x1bca0-\\x1bca3\\x1cc00-\\x1ccfc\\x1cd00-\\x1ceb3"
+            "\\x1ceba-\\x1ced0\\x1cee0-\\x1cef0\\x1cf50-\\x1cfc3"
             "\\x1d000-\\x1d0f5\\x1d100-\\x1d126\\x1d129-\\x1d166"
             "\\x1d16a-\\x1d17a\\x1d183\\x1d184\\x1d18c-\\x1d1a9"
             "\\x1d1ae-\\x1d1ea\\x1d2c0-\\x1d2d3\\x1d2e0-\\x1d2f3"
@@ -174,14 +179,14 @@
             "\\x1f0a0-\\x1f0ae\\x1f0b1-\\x1f0bf\\x1f0c1-\\x1f0cf"
             "\\x1f0d1-\\x1f0f5\\x1f100-\\x1f1ad\\x1f1e6-\\x1f1ff"
             "\\x1f201\\x1f202\\x1f210-\\x1f23b\\x1f240-\\x1f248\\x1f250\\x1f251"
-            "\\x1f260-\\x1f265\\x1f300-\\x1f6d7\\x1f6dc-\\x1f6ec"
-            "\\x1f6f0-\\x1f6fc\\x1f700-\\x1f776\\x1f77b-\\x1f7d9"
-            "\\x1f7e0-\\x1f7eb\\x1f7f0\\x1f800-\\x1f80b\\x1f810-\\x1f847"
-            "\\x1f850-\\x1f859\\x1f860-\\x1f887\\x1f890-\\x1f8ad"
-            "\\x1f8b0-\\x1f8bb\\x1f8c0\\x1f8c1\\x1f900-\\x1fa53"
-            "\\x1fa60-\\x1fa6d\\x1fa70-\\x1fa7c\\x1fa80-\\x1fa89"
-            "\\x1fa8f-\\x1fac6\\x1face-\\x1fadc\\x1fadf-\\x1fae9"
-            "\\x1faf0-\\x1faf8\\x1fb00-\\x1fb92\\x1fb94-\\x1fbf9\\xe0001"
+            "\\x1f260-\\x1f265\\x1f300-\\x1f6d8\\x1f6dc-\\x1f6ec"
+            "\\x1f6f0-\\x1f6fc\\x1f700-\\x1f7d9\\x1f7e0-\\x1f7eb\\x1f7f0"
+            "\\x1f800-\\x1f80b\\x1f810-\\x1f847\\x1f850-\\x1f859"
+            "\\x1f860-\\x1f887\\x1f890-\\x1f8ad\\x1f8b0-\\x1f8bb"
+            "\\x1f8c0\\x1f8c1\\x1f8d0-\\x1f8d8\\x1f900-\\x1fa57"
+            "\\x1fa60-\\x1fa6d\\x1fa70-\\x1fa7c\\x1fa80-\\x1fa8a"
+            "\\x1fa8e-\\x1fac6\\x1fac8\\x1facd-\\x1fadc\\x1fadf-\\x1faea"
+            "\\x1faef-\\x1faf8\\x1fb00-\\x1fb92\\x1fb94-\\x1fbfa\\xe0001"
             "\\xe0020-\\xe007f]";
     }
 
@@ -345,10 +350,10 @@
     {
         return "[\\x2e80-\\x2e99\\x2e9b-\\x2ef3\\x2f00-\\x2fd5\\x3005\\x3007"
             "\\x3021-\\x3029\\x3038-\\x303b\\x3400-\\x4dbf\\x4e00-\\x9fff"
-            "\\xf900-\\xfa6d\\xfa70-\\xfad9\\x16fe2\\x16fe3\\x16ff0\\x16ff1"
-            "\\x20000-\\x2a6df\\x2a700-\\x2b739\\x2b740-\\x2b81d"
-            "\\x2b820-\\x2cea1\\x2ceb0-\\x2ebe0\\x2ebf0-\\x2ee5d"
-            "\\x2f800-\\x2fa1d\\x30000-\\x3134a\\x31350-\\x323af]";
+            "\\xf900-\\xfa6d\\xfa70-\\xfad9\\x16fe2\\x16fe3\\x16ff0-\\x16ff6"
+            "\\x20000-\\x2a6df\\x2a700-\\x2b81d\\x2b820-\\x2cead"
+            "\\x2ceb0-\\x2ebe0\\x2ebf0-\\x2ee5d\\x2f800-\\x2fa1d"
+            "\\x30000-\\x3134a\\x31350-\\x33479]";
     }
 
     static const char* IsHangul()
@@ -395,12 +400,13 @@
     static const char* IsInherited()
     {
         return "[\\x300-\\x36f\\x485\\x486\\x64b-\\x655\\x670\\x951-\\x954"
-            "\\x1ab0-\\x1ace\\x1cd0-\\x1cd2\\x1cd4-\\x1ce0\\x1ce2-\\x1ce8"
-            "\\x1ced\\x1cf4\\x1cf8\\x1cf9\\x1dc0-\\x1dff\\x200c\\x200d"
-            "\\x20d0-\\x20f0\\x302a-\\x302d\\x3099\\x309a\\xfe00-\\xfe0f"
-            "\\xfe20-\\xfe2d\\x101fd\\x102e0\\x1133b\\x1cf00-\\x1cf2d"
-            "\\x1cf30-\\x1cf46\\x1d167-\\x1d169\\x1d17b-\\x1d182"
-            "\\x1d185-\\x1d18b\\x1d1aa-\\x1d1ad\\xe0100-\\xe01ef]";
+            "\\x1ab0-\\x1add\\x1ae0-\\x1aeb\\x1cd0-\\x1cd2\\x1cd4-\\x1ce0"
+            "\\x1ce2-\\x1ce8\\x1ced\\x1cf4\\x1cf8\\x1cf9\\x1dc0-\\x1dff"
+            "\\x200c\\x200d\\x20d0-\\x20f0\\x302a-\\x302d\\x3099\\x309a"
+            "\\xfe00-\\xfe0f\\xfe20-\\xfe2d\\x101fd\\x102e0\\x1133b"
+            "\\x1cf00-\\x1cf2d\\x1cf30-\\x1cf46\\x1d167-\\x1d169"
+            "\\x1d17b-\\x1d182\\x1d185-\\x1d18b\\x1d1aa-\\x1d1ad"
+            "\\xe0100-\\xe01ef]";
     }
 
     static const char* IsInscriptional_Pahlavi()
@@ -427,7 +433,7 @@
     {
         return "[\\xc80-\\xc8c\\xc8e-\\xc90\\xc92-\\xca8\\xcaa-\\xcb3"
             "\\xcb5-\\xcb9\\xcbc-\\xcc4\\xcc6-\\xcc8\\xcca-\\xccd\\xcd5\\xcd6"
-            "\\xcdd\\xcde\\xce0-\\xce3\\xce6-\\xcef\\xcf1-\\xcf3]";
+            "\\xcdc-\\xcde\\xce0-\\xce3\\xce6-\\xcef\\xcf1-\\xcf3]";
     }
 
     static const char* IsKatakana()
@@ -494,11 +500,11 @@
             "\\xf8-\\x2b8\\x2e0-\\x2e4\\x1d00-\\x1d25\\x1d2c-\\x1d5c"
             "\\x1d62-\\x1d65\\x1d6b-\\x1d77\\x1d79-\\x1dbe\\x1e00-\\x1eff"
             "\\x2071\\x207f\\x2090-\\x209c\\x212a\\x212b\\x2132\\x214e"
-            "\\x2160-\\x2188\\x2c60-\\x2c7f\\xa722-\\xa787\\xa78b-\\xa7cd"
-            "\\xa7d0\\xa7d1\\xa7d3\\xa7d5-\\xa7dc\\xa7f2-\\xa7ff"
-            "\\xab30-\\xab5a\\xab5c-\\xab64\\xab66-\\xab69\\xfb00-\\xfb06"
-            "\\xff21-\\xff3a\\xff41-\\xff5a\\x10780-\\x10785\\x10787-\\x107b0"
-            "\\x107b2-\\x107ba\\x1df00-\\x1df1e\\x1df25-\\x1df2a]";
+            "\\x2160-\\x2188\\x2c60-\\x2c7f\\xa722-\\xa787\\xa78b-\\xa7dc"
+            "\\xa7f1-\\xa7ff\\xab30-\\xab5a\\xab5c-\\xab64\\xab66-\\xab69"
+            "\\xfb00-\\xfb06\\xff21-\\xff3a\\xff41-\\xff5a\\x10780-\\x10785"
+            "\\x10787-\\x107b0\\x107b2-\\x107ba\\x1df00-\\x1df1e"
+            "\\x1df25-\\x1df2a]";
     }
 
     static const char* IsLepcha()
@@ -806,7 +812,7 @@
 
     static const char* IsSharada()
     {
-        return "[\\x11180-\\x111df]";
+        return "[\\x11180-\\x111df\\x11b60-\\x11b67]";
     }
 
     static const char* IsShavian()
@@ -817,6 +823,11 @@
     static const char* IsSiddham()
     {
         return "[\\x11580-\\x115b5\\x115b8-\\x115dd]";
+    }
+
+    static const char* IsSidetic()
+    {
+        return "[\\x10940-\\x10959]";
     }
 
     static const char* IsSignWriting()
@@ -892,6 +903,11 @@
         return "[\\xaa80-\\xaac2\\xaadb-\\xaadf]";
     }
 
+    static const char* IsTai_Yo()
+    {
+        return "[\\x1e6c0-\\x1e6de\\x1e6e0-\\x1e6f5\\x1e6fe\\x1e6ff]";
+    }
+
     static const char* IsTakri()
     {
         return "[\\x11680-\\x116b9\\x116c0-\\x116c9]";
@@ -912,15 +928,15 @@
 
     static const char* IsTangut()
     {
-        return "[\\x16fe0\\x17000-\\x187f7\\x18800-\\x18aff"
-            "\\x18d00-\\x18d08]";
+        return "[\\x16fe0\\x17000-\\x18aff\\x18d00-\\x18d1e"
+            "\\x18d80-\\x18df2]";
     }
 
     static const char* IsTelugu()
     {
         return "[\\xc00-\\xc0c\\xc0e-\\xc10\\xc12-\\xc28\\xc2a-\\xc39"
             "\\xc3c-\\xc44\\xc46-\\xc48\\xc4a-\\xc4d\\xc55\\xc56\\xc58-\\xc5a"
-            "\\xc5d\\xc60-\\xc63\\xc66-\\xc6f\\xc77-\\xc7f]";
+            "\\xc5c\\xc5d\\xc60-\\xc63\\xc66-\\xc6f\\xc77-\\xc7f]";
     }
 
     static const char* IsThaana()
@@ -952,6 +968,11 @@
     static const char* IsTodhri()
     {
         return "[\\x105c0-\\x105f3]";
+    }
+
+    static const char* IsTolong_Siki()
+    {
+        return "[\\x11db0-\\x11ddb\\x11de0-\\x11de9]";
     }
 
     static const char* IsToto()
