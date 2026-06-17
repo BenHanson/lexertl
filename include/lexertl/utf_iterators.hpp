@@ -494,16 +494,13 @@ namespace lexertl
             if (_it == _eoi)
                 return;
 
-            if (*_it < 0xd800)
+            if (*_it < 0xd800 || *_it > 0xdfff)
             {
                 _char = *_it;
                 _end = _it;
                 ++_end;
                 return;
             }
-
-            if (*_it > 0xdbff)
-                invalid_utf16();
 
             char_type ch_ = (*_it - 0xd800) << 10;
 
