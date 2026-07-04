@@ -1,6 +1,6 @@
 // utf_iterators.hpp
 // Copyright (c) 2012-2023 Ben Hanson (http://www.benhanson.net/)
-// Inspired by http://utfcpp.sourceforge.net/
+// Inspired by https://github.com/nemtrif/utfcpp/
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
