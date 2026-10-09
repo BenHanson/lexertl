@@ -31,6 +31,7 @@ namespace lexertl
             const char_type* _curr;
             id_type _id;
             std::size_t _flags;
+            std::size_t _any_flags;
             std::stack<std::size_t> _flags_stack;
             std::locale _locale;
             const char_type* _macro_name;
@@ -47,6 +48,7 @@ namespace lexertl
                 _curr(start_),
                 _id(id_),
                 _flags(flags_),
+                _any_flags(flags_ & (dot_not_newline | dot_not_cr_lf)),
                 _flags_stack(),
                 _locale(locale_),
                 _macro_name(macro_name_),
