@@ -9,6 +9,8 @@
 #include "parser/tokeniser/re_token.hpp"
 #include "parser/tokeniser/re_tokeniser.hpp"
 
+#include <algorithm>
+#include <functional>
 #include <vector>
 
 namespace lexertl
@@ -45,8 +47,12 @@ namespace lexertl
                         op_._type = detail::REPEATN;
                         op_._extra = op_._extra.substr(0, op_._extra.find(','));
 
-                        if (op_._extra.size() == 1 && *op_._extra.begin() == '0')
+                        if (std::adjacent_find(op_._extra.begin(),
+                            op_._extra.end(), std::not_equal_to<char_type>()) ==
+                            op_._extra.end() && op_._extra[0] == '0')
+                        {
                             remove_sequence(tokens_, start_, idx_);
+                        }
 
                         break;
                     default:
@@ -80,7 +86,7 @@ namespace lexertl
                 switch (token_._type)
                 {
                 case detail::OR:
-                    idx_ = end_block(tokens_, idx_ + 1);
+                    idx_ = end_block(tokens_, idx_);
                     break;
                 case detail::CLOSEPAREN:
                     ++idx_;
@@ -179,7 +185,20 @@ namespace lexertl
             iter_ = tokens_.erase(iter_, tokens_.begin() + idx_ + 1);
 
             if (iter_->_type == detail::OR)
-                tokens_.erase(iter_);
+            {
+                typename token_deque::iterator prev_ = iter_ - 1;
+                typename token_deque::iterator next_ = iter_ + 1;
+
+                if (prev_->_type == detail::BEGIN ||
+                    prev_->_type == detail::OPENPAREN ||
+                    prev_->_type == detail::OR ||
+                    next_->_type == detail::CLOSEPAREN ||
+                    next_->_type == detail::END ||
+                    next_->_type == detail::OR)
+                {
+                    tokens_.erase(iter_);
+                }
+            }
             else if (iter_->_type != detail::BEGIN &&
                 (iter_ - 1)->_type == detail::OR)
             {
