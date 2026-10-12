@@ -1246,7 +1246,7 @@ namespace lexertl
 
                 narrow(regex_.c_str(), ss_);
 
-                if (tokens_deque_.back()[1]._type == detail::BOL)
+                if (tokens_deque_.front()[1]._type == detail::BOL)
                 {
                     _features[curr_] |= bol_bit;
                 }
