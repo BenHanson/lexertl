@@ -55,6 +55,13 @@ namespace lexertl
                 _str.swap(rhs_._str);
             }
 
+            friend bool operator==(const basic_re_token& lhs_, const basic_re_token& rhs_)
+            {
+                return lhs_._type == rhs_._type &&
+                    lhs_._extra == rhs_._extra &&
+                    lhs_._str == rhs_._str;
+            }
+
             char precedence(const token_type type_) const
             {
                 // Moved in here for Solaris compiler.
