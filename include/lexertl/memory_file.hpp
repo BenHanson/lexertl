@@ -35,7 +35,7 @@ namespace lexertl
             _fh(0),
             _fmh(0)
 #else
-            _fh(0)
+            _fh(-1)
 #endif
         {
         }
@@ -48,7 +48,7 @@ namespace lexertl
             _fh(0),
             _fmh(0)
 #else
-            _fh(0)
+            _fh(-1)
 #endif
         {
             open(pathname_);
@@ -131,7 +131,8 @@ namespace lexertl
 #ifdef _WIN32
                 ::UnmapViewOfFile(_data);
 #else
-                ::munmap(const_cast<char_type*>(_data), _size);
+                ::munmap(const_cast<char_type*>(_data),
+                    _size * sizeof(char_type));
 #endif
                 _data = 0;
                 _size = 0;
@@ -148,10 +149,10 @@ namespace lexertl
 
             _fh = 0;
 #else
-            if (_fh)
+            if (_fh > -1)
                 ::close(_fh);
 
-            _fh = 0;
+            _fh = -1;
 #endif
         }
 
