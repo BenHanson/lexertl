@@ -231,9 +231,17 @@ namespace lexertl
                     nl_id_ = *set_mapping_[nl_id_].begin();
                 }
 
-                zero_id_ = sm_traits::compressed ?
-                    *set_mapping_[charset_map_.find(string_token(0, 0))->
-                    second].begin() : sm_traits::npos();
+                if (sm_traits::compressed)
+                {
+                    auto iter_ = charset_map_.find(string_token(0, 0));
+
+                    if (iter_ == charset_map_.end())
+                        zero_id_ = 0;
+                    else
+                        zero_id_ = *set_mapping_[iter_->second].begin();
+                }
+                else
+                    zero_id_ = sm_traits::npos();
             }
 
             dfa_alphabet_ = charset_list_->size() + transitions_index +
@@ -355,8 +363,15 @@ namespace lexertl
                     continue;
                 }
 
-                const index_set& cr_set_ =
-                    set_mapping_[node_->token()];
+                const id_type token_ = node_->token();
+
+                if (token_ >= set_mapping_.size())
+                {
+                    ++nl_iter_;
+                    continue;
+                }
+
+                const index_set& cr_set_ = set_mapping_[token_];
 
                 if (cr_set_.find(cr_id_) != cr_set_.end())
                 {
@@ -412,8 +427,7 @@ namespace lexertl
                 if (nl_iter_ == end_)
                     break;
 
-                const index_set& nl_set_ =
-                    set_mapping_[node_->token()];
+                const index_set& nl_set_ = set_mapping_[token_];
 
                 if (nl_set_.find(nl_id_) != nl_set_.end())
                 {
@@ -455,7 +469,12 @@ namespace lexertl
             const id_type nl_id_, const index_set_vector& set_mapping_)
         {
             const node* node_ = *iter_;
-            const index_set& set_ = set_mapping_[node_->token()];
+            const id_type token_ = node_->token();
+
+            if (token_ >= set_mapping_.size())
+                return;
+
+            const index_set& set_ = set_mapping_[token_];
 
             if (set_.find(cr_id_) != set_.end())
             {
