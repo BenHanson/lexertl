@@ -250,7 +250,7 @@ namespace lexertl
             {
             }
 
-            friend bool operator ==(const state lhs_, const state rhs_)
+            friend bool operator ==(const state& lhs_, const state& rhs_)
             {
                 return lhs_._end_state == rhs_._end_state &&
                     lhs_._push_pop_dfa == rhs_._push_pop_dfa &&
@@ -497,8 +497,10 @@ namespace lexertl
                     }
 
                     new_ptr_->_end_state = ptr_->_end_state;
-                    new_ptr_->_id = ptr_->_end_state;
+                    new_ptr_->_push_pop_dfa = ptr_->_push_pop_dfa;
+                    new_ptr_->_id = ptr_->_id;
                     new_ptr_->_user_id = ptr_->_user_id;
+                    new_ptr_->_push_dfa = ptr_->_push_dfa;
                     new_ptr_->_next_dfa = ptr_->_next_dfa;
 
                     if (ptr_->_eol_index != npos())
