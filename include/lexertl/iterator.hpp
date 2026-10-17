@@ -11,6 +11,7 @@
 #include "match_results.hpp"
 #include "state_machine.hpp"
 
+#include <cstddef>
 #include <iterator>
 #include <string>
 
@@ -22,7 +23,7 @@ namespace lexertl
     public:
         typedef typename results::id_type id_type;
         typedef results value_type;
-        typedef ptrdiff_t difference_type;
+        typedef std::ptrdiff_t difference_type;
         typedef const value_type* pointer;
         typedef const value_type& reference;
         typedef std::forward_iterator_tag iterator_category;
