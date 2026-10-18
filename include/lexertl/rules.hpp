@@ -593,9 +593,9 @@ namespace lexertl
             check_empty(name_, tokens_, state_);
 
             if (ab_indexes_.empty() &&
-                tokens_[1]._type != detail::token_type::BOL)
+                tokens_[1]._type != detail::BOL)
             {
-                ret_.push_back(std::move(tokens_));
+                ret_.push_back(tokens_);
             }
             else
                 ret_ = split(tokens_);
