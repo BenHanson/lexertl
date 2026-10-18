@@ -233,7 +233,8 @@ namespace lexertl
 
                 if (sm_traits::compressed)
                 {
-                    auto iter_ = charset_map_.find(string_token(0, 0));
+                    typename charset_map::const_iterator iter_ =
+                        charset_map_.find(string_token(0, 0));
 
                     if (iter_ == charset_map_.end())
                         zero_id_ = 0;
@@ -691,6 +692,42 @@ namespace lexertl
             return std::string();
         }
 
+        template<class InputIt, class Size, class OutputIt>
+        static OutputIt copy_n(InputIt first, Size count, OutputIt d_first)
+        {
+            if (count > 0)
+            {
+                *d_first = *first;
+                ++d_first;
+
+                for (Size i = 1; i != count; ++i, (void)++d_first)
+                    *d_first = *++first;
+            }
+
+            return d_first;
+        }
+
+        // Gives the state that follows '$' its own copy.
+        // That state is shared by every path that ends in an identical '$'
+        // (e.g. "a$" and "b$" in "(a|b)$"), so patching it in place would
+        // leak the \r / \n transitions to unrelated paths.
+        static id_type clone_state(typename internals::id_type_vector& dfa_,
+            const id_type state_, const std::size_t dfa_alphabet_)
+        {
+            const std::size_t new_state_ = dfa_.size() / dfa_alphabet_;
+
+            if (new_state_ >= sm_traits::npos())
+            {
+                throw runtime_error("The id_type you have chosen cannot "
+                    "hold all the dfa states.");
+            }
+
+            dfa_.resize(dfa_.size() + dfa_alphabet_, 0);
+            copy_n(dfa_.begin() + state_ * dfa_alphabet_, dfa_alphabet_,
+                dfa_.begin() + new_state_ * dfa_alphabet_);
+            return static_cast<id_type>(new_state_);
+        }
+
         // Uncompressed
         static void fix_clashes(const id_type_set& eol_set_,
             const id_type cr_id_, const id_type nl_id_,
@@ -698,6 +735,7 @@ namespace lexertl
             typename internals::id_type_vector& dfa_,
             const std::size_t dfa_alphabet_, const false_&)
         {
+            const std::size_t trans_ = transitions_index;
             typename id_type_set::const_iterator eol_iter_ =
                 eol_set_.begin();
             typename id_type_set::const_iterator eol_end_ =
@@ -705,31 +743,35 @@ namespace lexertl
 
             for (; eol_iter_ != eol_end_; ++eol_iter_)
             {
-                id_type* ptr_ = &dfa_.front() + *eol_iter_ * dfa_alphabet_;
-                const id_type eol_state_ = ptr_[eol_index];
-                const id_type cr_state_ = ptr_[cr_id_ + transitions_index];
-                const id_type nl_state_ = ptr_[nl_id_ + transitions_index];
+                const std::size_t eol_row_ = *eol_iter_ * dfa_alphabet_;
+                const id_type cr_state_ = cr_id_ == sm_traits::npos() ? 0 :
+                    dfa_[eol_row_ + trans_ + cr_id_];
+                const id_type nl_state_ = nl_id_ == sm_traits::npos() ? 0 :
+                    dfa_[eol_row_ + trans_ + nl_id_];
+
+                if (!cr_state_ && !nl_state_)
+                    continue;
+
+                const id_type new_state_ = clone_state(dfa_,
+                    dfa_[eol_row_ + eol_index], dfa_alphabet_);
+                const std::size_t new_row_ = new_state_ * dfa_alphabet_;
+
+                dfa_[eol_row_ + eol_index] = new_state_;
 
                 if (cr_state_)
                 {
-                    ptr_[transitions_index + cr_id_] = 0;
-                    ptr_ = &dfa_.front() + eol_state_ * dfa_alphabet_;
+                    dfa_[eol_row_ + trans_ + cr_id_] = 0;
 
-                    if (ptr_[transitions_index + cr_id_] == 0)
-                    {
-                        ptr_[transitions_index + cr_id_] = cr_state_;
-                    }
+                    if (dfa_[new_row_ + trans_ + cr_id_] == 0)
+                        dfa_[new_row_ + trans_ + cr_id_] = cr_state_;
                 }
 
                 if (nl_state_)
                 {
-                    ptr_[transitions_index + nl_id_] = 0;
-                    ptr_ = &dfa_.front() + eol_state_ * dfa_alphabet_;
+                    dfa_[eol_row_ + trans_ + nl_id_] = 0;
 
-                    if (ptr_[transitions_index + nl_id_] == 0)
-                    {
-                        ptr_[transitions_index + nl_id_] = nl_state_;
-                    }
+                    if (dfa_[new_row_ + trans_ + nl_id_] == 0)
+                        dfa_[new_row_ + trans_ + nl_id_] = nl_state_;
                 }
             }
         }
@@ -740,72 +782,70 @@ namespace lexertl
             typename internals::id_type_vector& dfa_,
             const std::size_t dfa_alphabet_, const true_&)
         {
+            if (zero_id_ == sm_traits::npos())
+                return;
+
+            const std::size_t trans_ = transitions_index;
+            // \r and \n are encoded as 0,0,0x0d (24 bit) or 0,0x0d (16 bit)
+            const std::size_t zeros_ = sm_traits::char_24_bit ? 2 : 1;
             typename id_type_set::const_iterator eol_iter_ =
                 eol_set_.begin();
             typename id_type_set::const_iterator eol_end_ =
                 eol_set_.end();
-            std::size_t i_ = 0;
 
             for (; eol_iter_ != eol_end_; ++eol_iter_)
             {
-                id_type* ptr_ = &dfa_.front() + *eol_iter_ * dfa_alphabet_;
-                const id_type eol_state_ = ptr_[eol_index];
-                id_type cr_state_ = 0;
-                id_type nl_state_ = 0;
+                const std::size_t eol_row_ = *eol_iter_ * dfa_alphabet_;
+                std::size_t row_ = eol_row_;
 
-                for (; i_ < (sm_traits::char_24_bit ? 2 : 1); ++i_)
+                // Follow the leading zero bytes to the state that reads the
+                // final byte of \r or \n.
+                for (std::size_t i_ = 0; i_ < zeros_; ++i_)
                 {
-                    ptr_ = &dfa_.front() + ptr_[transitions_index + zero_id_] *
-                        dfa_alphabet_;
+                    row_ = static_cast<std::size_t>
+                        (dfa_[row_ + trans_ + zero_id_]) * dfa_alphabet_;
                 }
 
-                cr_state_ = ptr_[transitions_index + cr_id_];
+                const id_type cr_state_ = cr_id_ == sm_traits::npos() ? 0 :
+                    dfa_[row_ + trans_ + cr_id_];
+                const id_type nl_state_ = nl_id_ == sm_traits::npos() ? 0 :
+                    dfa_[row_ + trans_ + nl_id_];
+
+                if (!cr_state_ && !nl_state_) continue;
+
+                const id_type succ_ = dfa_[eol_row_ + eol_index];
+
+                // Cannot add a zero byte path if one is already there.
+                if (dfa_[succ_ * dfa_alphabet_ + trans_ + zero_id_] != 0)
+                    continue;
+
+                const id_type new_state_ = clone_state(dfa_, succ_,
+                    dfa_alphabet_);
+                std::size_t prev_row_ = new_state_ * dfa_alphabet_;
+
+                dfa_[eol_row_ + eol_index] = new_state_;
+
+                for (std::size_t i_ = 0; i_ < zeros_; ++i_)
+                {
+                    const std::size_t next_ = dfa_.size() / dfa_alphabet_;
+
+                    if (next_ >= sm_traits::npos())
+                    {
+                        throw runtime_error("The id_type you have chosen "
+                            "cannot hold all the dfa states.");
+                    }
+
+                    dfa_.resize(dfa_.size() + dfa_alphabet_, 0);
+                    dfa_[prev_row_ + trans_ + zero_id_] =
+                        static_cast<id_type>(next_);
+                    prev_row_ = next_ * dfa_alphabet_;
+                }
 
                 if (cr_state_)
-                {
-                    ptr_ = &dfa_.front() + eol_state_ * dfa_alphabet_;
-
-                    if (ptr_[transitions_index + zero_id_] != 0) continue;
-
-                    ptr_[transitions_index + zero_id_] =
-                        static_cast<id_type>(dfa_.size() / dfa_alphabet_);
-                    dfa_.resize(dfa_.size() + dfa_alphabet_, 0);
-
-                    for (i_ = 0; i_ < (sm_traits::char_24_bit ? 1 : 0); ++i_)
-                    {
-                        ptr_ = &dfa_.front() + dfa_.size() - dfa_alphabet_;
-                        ptr_[transitions_index + zero_id_] =
-                            static_cast<id_type>(dfa_.size() / dfa_alphabet_);
-                        dfa_.resize(dfa_.size() + dfa_alphabet_, 0);
-                    }
-
-                    ptr_ = &dfa_.front() + dfa_.size() - dfa_alphabet_;
-                    ptr_[transitions_index + cr_id_] = cr_state_;
-                }
-
-                nl_state_ = ptr_[transitions_index + nl_id_];
+                    dfa_[prev_row_ + trans_ + cr_id_] = cr_state_;
 
                 if (nl_state_)
-                {
-                    ptr_ = &dfa_.front() + eol_state_ * dfa_alphabet_;
-
-                    if (ptr_[transitions_index + zero_id_] != 0) continue;
-
-                    ptr_[transitions_index + zero_id_] =
-                        static_cast<id_type>(dfa_.size() / dfa_alphabet_);
-                    dfa_.resize(dfa_.size() + dfa_alphabet_, 0);
-
-                    for (i_ = 0; i_ < (sm_traits::char_24_bit ? 1 : 0); ++i_)
-                    {
-                        ptr_ = &dfa_.front() + dfa_.size() - dfa_alphabet_;
-                        ptr_[transitions_index + zero_id_] =
-                            static_cast<id_type>(dfa_.size() / dfa_alphabet_);
-                        dfa_.resize(dfa_.size() + dfa_alphabet_, 0);
-                    }
-
-                    ptr_ = &dfa_.front() + dfa_.size() - dfa_alphabet_;
-                    ptr_[transitions_index + nl_id_] = nl_state_;
-                }
+                    dfa_[prev_row_ + trans_ + nl_id_] = nl_state_;
             }
         }
 
