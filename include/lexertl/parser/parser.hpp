@@ -611,7 +611,7 @@ namespace lexertl
 
                     if (second_msb_ > first_msb_ + 1)
                     {
-                        insert_range(first_mid_ + 1, second_mid_ - 1,
+                        insert_range(first_msb_ + 1, second_msb_ - 1,
                             0, 0xff,
                             0, 0xff, data_);
                     }
