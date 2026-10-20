@@ -1342,6 +1342,17 @@ namespace lexertl
                         hex_ += 10 + (static_cast<std::size_t>(ch_) - 'A');
                     }
 
+                    if (hex_ > 0x10ffff)
+                    {
+                        std::ostringstream ss_;
+
+                        ss_ << "Escape \\x" << std::hex << hex_ <<
+                            " exceeds maximum value 0x10ffff preceding index " <<
+                            std::dec << state_.index();
+                        state_.error(ss_);
+                        throw runtime_error(ss_.str());
+                    }
+
                     eos_ = state_.eos();
 
                     if (!eos_)
