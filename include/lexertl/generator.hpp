@@ -658,6 +658,41 @@ namespace lexertl
                             "to suppress this error.)";
                         throw runtime_error(ss_.str());
                     }
+                    else
+                    {
+                        const id_type token = node_->token();
+
+                        if (token == parser::bol_token())
+                        {
+                            const node_vector& followpos_ = node_->followpos();
+                            typename node_vector::const_iterator fiter_ =
+                                followpos_.begin();
+                            typename node_vector::const_iterator fend_ =
+                                followpos_.end();
+
+                            for (; fiter_ != fend_; ++fiter_)
+                            {
+                                if ((*fiter_)->end_state())
+                                {
+                                    throw runtime_error("regex '^' matches "
+                                        "zero chars.\n(Use regex_flags::"
+                                        "match_zero_len to suppress this "
+                                        "error.)");
+                                }
+                                else if ((*fiter_)->token() == parser::eol_token())
+                                {
+                                    throw runtime_error("regex '^$' matches "
+                                        "zero chars.\n(Use regex_flags::"
+                                        "match_zero_len to suppress this "
+                                        "error.)");
+                                }
+                            }
+                        }
+                        else if (token == parser::eol_token())
+                            throw runtime_error("regex '$' matches zero chars."
+                                "\n(Use regex_flags::match_zero_len "
+                                "to suppress this error.)");
+                    }
                 }
             }
         }
