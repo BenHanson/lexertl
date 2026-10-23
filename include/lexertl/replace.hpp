@@ -33,16 +33,24 @@ namespace lexertl
         const std::basic_string<char_type, straits, salloc>& fmt_)
     {
         fwd_iter last_ = first_;
-        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
+        typedef lexertl::match_results<fwd_iter, id_type> match_results;
+        match_results results_(first_, second_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            std::copy(last_, results_.first, out_);
-            std::copy(fmt_.begin(), fmt_.end(), out_);
-            last_ = results_.second;
+            // lookup() reports a character that matches no rule as a token
+            // with id npos(). That is not a match, so leave it alone (it
+            // is copied later, as part of the text up to the next match).
+            if (results_.id != match_results::npos())
+            {
+                std::copy(last_, results_.first, out_);
+                std::copy(fmt_.cbegin(), fmt_.cend(), out_);
+                last_ = results_.second;
+            }
+
             lexertl::lookup(sm_, results_);
         }
 
@@ -138,16 +146,24 @@ namespace lexertl
     {
         fwd_iter last_ = first_;
         const char_type* end_fmt_ = find_end(fmt_);
-        lexertl::match_results<fwd_iter, id_type> results_(first_, second_);
+        typedef lexertl::match_results<fwd_iter, id_type> match_results;
+        match_results results_(first_, second_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            std::copy(last_, results_.first, out_);
-            std::copy(fmt_, end_fmt_, out_);
-            last_ = results_.second;
+            // lookup() reports a character that matches no rule as a token
+            // with id npos(). That is not a match, so leave it alone (it
+            // is copied later, as part of the text up to the next match).
+            if (results_.id != match_results::npos())
+            {
+                std::copy(last_, results_.first, out_);
+                std::copy(fmt_, end_fmt_, out_);
+                last_ = results_.second;
+            }
+
             lexertl::lookup(sm_, results_);
         }
 
@@ -237,17 +253,24 @@ namespace lexertl
     {
         std::basic_string<char_type, straits, salloc> ret_;
         const char_type* last_ = s_.c_str();
-        lexertl::match_results<const char_type*, id_type>
-            results_(s_.c_str(), s_.c_str() + s_.size());
+        typedef lexertl::match_results<const char_type*, id_type> match_results;
+        match_results results_(s_.c_str(), s_.c_str() + s_.size());
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            ret_.append(last_, results_.first);
-            ret_.append(fmt_);
-            last_ = results_.second;
+            // lookup() reports a character that matches no rule as a token
+            // with id npos(). That is not a match, so leave it alone (it
+            // is copied later, as part of the text up to the next match).
+            if (results_.id != match_results::npos())
+            {
+                ret_.append(last_, results_.first);
+                ret_.append(fmt_);
+                last_ = results_.second;
+            }
+
             lexertl::lookup(sm_, results_);
         }
 
@@ -349,17 +372,24 @@ namespace lexertl
         std::basic_string<char_type, straits, salloc> ret_;
         const char_type* last_ = s_.c_str();
         const char_type* end_fmt_ = find_end(fmt_);
-        lexertl::match_results<const char_type*, id_type>
-            results_(s_.c_str(), s_.c_str() + s_.size());
+        typedef lexertl::match_results<const char_type*, id_type> match_results;
+        match_results results_(s_.c_str(), s_.c_str() + s_.size());
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            ret_.append(last_, results_.first);
-            ret_.append(fmt_, end_fmt_);
-            last_ = results_.second;
+            // lookup() reports a character that matches no rule as a token
+            // with id npos(). That is not a match, so leave it alone (it
+            // is copied later, as part of the text up to the next match).
+            if (results_.id != match_results::npos())
+            {
+                ret_.append(last_, results_.first);
+                ret_.append(fmt_, end_fmt_);
+                last_ = results_.second;
+            }
+
             lexertl::lookup(sm_, results_);
         }
 
@@ -446,16 +476,24 @@ namespace lexertl
         std::basic_string<char_type> ret_;
         const char_type* end_s_ = find_end(s_);
         const char_type* last_ = s_;
-        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
+        typedef lexertl::match_results<const char_type*, id_type> match_results;
+        match_results results_(s_, end_s_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            ret_.append(last_, results_.first);
-            ret_.append(fmt_);
-            last_ = results_.second;
+            // lookup() reports a character that matches no rule as a token
+            // with id npos(). That is not a match, so leave it alone (it
+            // is copied later, as part of the text up to the next match).
+            if (results_.id != match_results::npos())
+            {
+                ret_.append(last_, results_.first);
+                ret_.append(fmt_);
+                last_ = results_.second;
+            }
+
             lexertl::lookup(sm_, results_);
         }
 
@@ -546,16 +584,24 @@ namespace lexertl
         std::basic_string<char_type> ret_;
         const char_type* end_s_ = find_end(s_);
         const char_type* last_ = s_;
-        lexertl::match_results<const char_type*, id_type> results_(s_, end_s_);
+        typedef lexertl::match_results<const char_type*, id_type> match_results;
+        match_results results_(s_, end_s_);
 
         // Lookahead
         lexertl::lookup(sm_, results_);
 
         while (results_.id != 0)
         {
-            ret_.append(last_, results_.first);
-            ret_.append(fmt_);
-            last_ = results_.second;
+            // lookup() reports a character that matches no rule as a token
+            // with id npos(). That is not a match, so leave it alone (it
+            // is copied later, as part of the text up to the next match).
+            if (results_.id != match_results::npos())
+            {
+                ret_.append(last_, results_.first);
+                ret_.append(fmt_);
+                last_ = results_.second;
+            }
+
             lexertl::lookup(sm_, results_);
         }
 
