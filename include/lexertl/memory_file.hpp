@@ -61,10 +61,9 @@ namespace lexertl
 
         void open(const char* pathname_)
         {
-            if (_data)
-            {
-                close();
-            }
+            // Always close: for an empty file (or if mapping fails) _data is
+            // null but the file is still open and would be leaked.
+            close();
 
 #ifdef _WIN32
             _fh = ::CreateFileA(pathname_, GENERIC_READ, FILE_SHARE_READ, 0,
