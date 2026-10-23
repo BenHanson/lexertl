@@ -70,6 +70,10 @@ namespace lexertl
         string substr(const std::size_t soffset_,
             const std::size_t eoffset_) const
         {
+            // Offsets that do not fit give an empty string
+            if (soffset_ > length() || eoffset_ > length() - soffset_)
+                return string();
+
             return string(first + soffset_, second - eoffset_);
         }
 
