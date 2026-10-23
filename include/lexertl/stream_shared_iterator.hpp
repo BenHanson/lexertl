@@ -10,6 +10,8 @@
 #include "runtime_error.hpp"
 #include "size_t.hpp"
 
+#include <algorithm>
+#include <cstring>
 #include <istream>
 #include <iterator>
 #include <vector>
@@ -44,6 +46,14 @@ namespace lexertl
             // For exception safety don't call new yet
             _shared(0)
         {
+            // A zero size would be undefined behaviour (buffer) or would
+            // silently truncate the input (increment).
+            if (buff_size_ == 0 || increment_ == 0)
+            {
+                throw runtime_error("stream_shared_iterator buffer size and "
+                    "increment must be greater than zero.");
+            }
+
             // Safe to call potentially throwing new now.
             _shared = new shared(stream_, buff_size_, increment_);
             ++_shared->_ref_count;
@@ -53,7 +63,7 @@ namespace lexertl
         basic_stream_shared_iterator(const basic_stream_shared_iterator& rhs_) :
             _master(false),
             _live(false),
-            _index(rhs_._master ? rhs_._shared->lowest() : rhs_._index),
+            _index(start_index(rhs_)),
             _shared(rhs_._shared)
         {
             if (_shared)
@@ -83,42 +93,48 @@ namespace lexertl
             }
         }
 
-        basic_stream_shared_iterator& operator =
+        basic_stream_shared_iterator& operator=
             (const basic_stream_shared_iterator& rhs_)
         {
             if (this != &rhs_)
             {
-                _master = false;
-                _index = rhs_._master ? rhs_._shared->lowest() : rhs_._index;
+                // Same rules as the copy constructor and destructor:
+                // a reference is held for as long as _shared is set, and
+                // a (copied) iterator is registered as a client.
+                shared* const old_shared_ = _shared;
+                // An unused master is a client without being live
+                const bool registered_ = _live || _master;
 
-                if (!_live && !rhs_._live)
+                _index = start_index(rhs_);
+                _master = false;
+
+                if (old_shared_ && old_shared_ == rhs_._shared)
                 {
+                    // Same stream: the reference count does not change.
+                    if (!registered_)
+                        old_shared_->_clients.push_back(this);
+                }
+                else
+                {
+                    // Take the new reference before giving up the old one
                     if (rhs_._shared)
                     {
                         ++rhs_._shared->_ref_count;
+                        rhs_._shared->_clients.push_back(this);
                     }
-                }
-                else if (!_live && rhs_._live)
-                {
-                    rhs_._shared->_clients.push_back(this);
 
-                    if (!_shared)
+                    if (old_shared_)
                     {
-                        ++rhs_._shared->_ref_count;
-                    }
-                }
-                else if (_live && !rhs_._live)
-                {
-                    _shared->erase(this);
+                        old_shared_->erase(this);
 
-                    if (!rhs_._shared)
-                    {
-                        --_shared->_ref_count;
+                        if (--old_shared_->_ref_count == 0)
+                            delete old_shared_;
                     }
+
+                    _shared = rhs_._shared;
                 }
 
-                _live = rhs_._live;
-                _shared = rhs_._shared;
+                _live = _shared != 0;
             }
 
             return *this;
@@ -131,7 +147,7 @@ namespace lexertl
                 (lhs_._shared == rhs_._shared ||
                     (lhs_._index == shared::npos() ||
                         rhs_._index == shared::npos()) &&
-                        (!lhs_._shared || !rhs_._shared));
+                    (!lhs_._shared || !rhs_._shared));
         }
 
         friend bool operator !=(const basic_stream_shared_iterator& lhs_,
@@ -211,13 +227,16 @@ namespace lexertl
                 }
                 else
                 {
-                    // Some systems have memcpy in namespace std
+                    // Some systems have memmove in namespace std
                     using namespace std;
                     const size_t start_ = _buffer.size() - lowest_;
                     const size_t len_ = _buffer.size() - start_;
 
-                    memcpy(&_buffer.front(), &_buffer[lowest_], start_ *
-                        sizeof(char_type));
+                    // The ranges overlap when lowest_ is in the first half
+                    // of the buffer, so this must be memmove, not memcpy.
+                    // (lowest_ can equal _buffer.size(), so no operator[] here)
+                    memmove(_buffer.data(), _buffer.data() + lowest_,
+                        start_ * sizeof(char_type));
                     _stream.read(&_buffer.front() + start_, len_);
                     read_ = static_cast<size_t>(_stream.gcount());
                     subtract(lowest_);
@@ -317,6 +336,18 @@ namespace lexertl
         bool _live;
         std::size_t _index;
         shared* _shared;
+
+        // Where a copy of rhs_ starts. A master that has not been used yet
+        // starts at the lowest index still in the buffer, unless the stream
+        // was empty: then there is nothing to start at (it is the end).
+        static std::size_t start_index(const basic_stream_shared_iterator& rhs_)
+        {
+            if (rhs_._master)
+                return rhs_._shared->_len ? rhs_._shared->lowest() :
+                    shared::npos();
+
+            return rhs_._index;
+        }
 
         void check_master()
         {
