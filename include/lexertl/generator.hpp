@@ -213,6 +213,8 @@ namespace lexertl
             size_t_vector hash_vector_;
             id_type zero_id_ = sm_traits::npos();
             id_type_set eol_set_;
+            // Rule order of the rule that ends each state (0 is the jam state)
+            id_type_vector unique_ids_(1, 0);
 
             set_mapping_.resize(charset_map_.size());
             partition_charsets(charset_map_, charset_list_, is_dfa());
@@ -261,7 +263,8 @@ namespace lexertl
             // 'jam' state
             dfa_.resize(dfa_alphabet_, 0);
             closure(followpos_, seen_sets_, seen_vectors_, hash_vector_,
-                static_cast<id_type>(dfa_alphabet_), dfa_, flags_, used_ids_);
+                static_cast<id_type>(dfa_alphabet_), dfa_, unique_ids_, flags_,
+                used_ids_);
 
             // Loop over states
             for (id_type index_ = 0; index_ < static_cast<id_type>
@@ -278,15 +281,11 @@ namespace lexertl
                     iter_ != end_; ++iter_)
                 {
                     equivset* equivset_ = *iter_;
-
-                    prune_eol_clashes(equivset_->_followpos, cr_id_, nl_id_,
-                        set_mapping_);
-
                     const id_type transition_ =
                         closure(&equivset_->_followpos, seen_sets_,
                             seen_vectors_, hash_vector_,
-                            static_cast<id_type>(dfa_alphabet_), dfa_, flags_,
-                            used_ids_);
+                            static_cast<id_type>(dfa_alphabet_), dfa_,
+                            unique_ids_, flags_, used_ids_);
 
                     if (transition_ != sm_traits::npos())
                     {
@@ -306,293 +305,10 @@ namespace lexertl
                 }
             }
 
+            fix_eol_ties(eol_set_, unique_ids_, dfa_, dfa_alphabet_);
             fix_clashes(eol_set_, cr_id_, nl_id_, zero_id_, dfa_, dfa_alphabet_,
                 compressed());
             append_dfa(charset_list_, internals_, sm_, dfa_index_, lookup());
-        }
-
-        // Removing clashes will cause an error about rules that cannot match,
-        // unless this has been suppressed (bad idea).
-        // Because of this we don't worry about end_states that are part of a
-        // followset that have other transitions as we should error out anyway
-        // (i.e. we could be suppressing other paths that have nothing to do
-        // with the end_states we are interested in).
-        static void prune_eol_clashes(node_vector& followpos_,
-            const id_type cr_id_, const id_type nl_id_,
-            const index_set_vector& set_mapping_)
-        {
-            typename node_vector::iterator iter_ = followpos_.begin();
-            typename node_vector::iterator end_ = followpos_.end();
-
-            for (; iter_ != end_; ++iter_)
-            {
-                const node* node_ = *iter_;
-
-                if (!node_->end_state())
-                {
-                    if (node_->token() == parser::eol_token())
-                    {
-                        prune_NL(iter_, end_, followpos_, cr_id_, nl_id_,
-                            set_mapping_);
-                    }
-                    else
-                    {
-                        prune_eol(iter_, end_, followpos_, cr_id_, nl_id_,
-                            set_mapping_);
-                    }
-                }
-            }
-        }
-
-        static void prune_NL(typename node_vector::iterator& iter_,
-            typename node_vector::iterator& end_,
-            node_vector& followpos_, const id_type cr_id_,
-            const id_type nl_id_, const index_set_vector& set_mapping_)
-        {
-            // Search for NL followed by end state
-            typename node_vector::iterator nl_iter_ = iter_;
-
-            ++nl_iter_;
-
-            while (nl_iter_ != end_)
-            {
-                node* node_ = *nl_iter_;
-
-                if (node_->end_state())
-                {
-                    ++nl_iter_;
-                    continue;
-                }
-
-                const id_type token_ = node_->token();
-
-                if (token_ >= set_mapping_.size())
-                {
-                    ++nl_iter_;
-                    continue;
-                }
-
-                const index_set& cr_set_ = set_mapping_[token_];
-
-                if (cr_set_.find(cr_id_) != cr_set_.end())
-                {
-                    const node_vector& cr_followpos_ =
-                        node_->followpos();
-                    typename node_vector::const_iterator temp_iter_ =
-                        cr_followpos_.begin();
-                    typename node_vector::const_iterator temp_end_ =
-                        cr_followpos_.end();
-
-                    for (; temp_iter_ != temp_end_; ++temp_iter_)
-                    {
-                        node* cr_node_ = *temp_iter_;
-
-                        if (cr_node_->end_state())
-                            continue;
-
-                        const index_set& nl_set_ =
-                            set_mapping_[cr_node_->token()];
-
-                        if (nl_set_.find(nl_id_) != nl_set_.end())
-                        {
-                            const node_vector& nl_followpos_ =
-                                cr_node_->followpos();
-                            typename node_vector::const_iterator nl_iter2_ =
-                                nl_followpos_.begin();
-                            typename node_vector::const_iterator nl_end2_ =
-                                nl_followpos_.end();
-                            bool found_ = false;
-
-                            for (; nl_iter2_ != nl_end2_; ++nl_iter2_)
-                            {
-                                const node* nl_node_ = *nl_iter2_;
-
-                                found_ = nl_node_->end_state();
-
-                                if (found_)
-                                    break;
-                            }
-
-                            if (found_)
-                            {
-                                // This might be suppressing additional paths
-                                // but we should be erroring out anyway.
-                                nl_iter_ = followpos_.erase(nl_iter_);
-                                end_ = followpos_.end();
-                                continue;
-                            }
-                        }
-                    }
-                }
-
-                if (nl_iter_ == end_)
-                    break;
-
-                const index_set& nl_set_ = set_mapping_[token_];
-
-                if (nl_set_.find(nl_id_) != nl_set_.end())
-                {
-                    const node_vector& nl_followpos_ =
-                        node_->followpos();
-                    typename node_vector::const_iterator temp_iter_ =
-                        nl_followpos_.begin();
-                    typename node_vector::const_iterator temp_end_ =
-                        nl_followpos_.end();
-                    bool found_ = false;
-
-                    for (; temp_iter_ != temp_end_; ++temp_iter_)
-                    {
-                        const node* nl_node_ = *temp_iter_;
-
-                        found_ = nl_node_->end_state();
-
-                        if (found_)
-                            break;
-                    }
-
-                    if (found_)
-                    {
-                        // This might be suppressing additional paths
-                        // but we should be erroring out anyway.
-                        nl_iter_ = followpos_.erase(nl_iter_);
-                        end_ = followpos_.end();
-                        continue;
-                    }
-                }
-
-                ++nl_iter_;
-            }
-        }
-
-        static void prune_eol(typename node_vector::iterator& iter_,
-            typename node_vector::iterator& end_,
-            node_vector& followpos_, const id_type cr_id_,
-            const id_type nl_id_, const index_set_vector& set_mapping_)
-        {
-            const node* node_ = *iter_;
-            const id_type token_ = node_->token();
-
-            if (token_ >= set_mapping_.size())
-                return;
-
-            const index_set& set_ = set_mapping_[token_];
-
-            if (set_.find(cr_id_) != set_.end())
-            {
-                const node_vector& cr_followpos_ =
-                    node_->followpos();
-                typename node_vector::const_iterator cr_iter_ =
-                    cr_followpos_.begin();
-                typename node_vector::const_iterator cr_end_ =
-                    cr_followpos_.end();
-                bool found_ = false;
-
-                for (; cr_iter_ != cr_end_; ++cr_iter_)
-                {
-                    const node* cr_node_ = *cr_iter_;
-
-                    if (cr_node_->end_state())
-                        continue;
-
-                    const id_type idx_ = cr_node_->token();
-
-                    // ^ and $ have out of bounds ids
-                    // so skip if either of these show up
-                    if (idx_ >= set_mapping_.size())
-                        continue;
-
-                    const index_set& cr_set_ = set_mapping_[idx_];
-
-                    if (cr_set_.find(nl_id_) != cr_set_.end())
-                    {
-                        const node_vector& nl_followpos_ =
-                            cr_node_->followpos();
-                        typename node_vector::const_iterator nl_iter_ =
-                            nl_followpos_.begin();
-                        typename node_vector::const_iterator nl_end_ =
-                            nl_followpos_.end();
-
-                        found_ = false;
-
-                        for (; nl_iter_ != nl_end_; ++nl_iter_)
-                        {
-                            const node* nl_node_ = *nl_iter_;
-
-                            found_ = nl_node_->end_state();
-
-                            if (found_)
-                                break;
-                        }
-
-                        if (found_)
-                        {
-                            // Search for any EOL tokens
-                            typename node_vector::iterator temp_iter_ = iter_;
-
-                            ++temp_iter_;
-
-                            while (temp_iter_ != end_)
-                            {
-                                node_ = *temp_iter_;
-
-                                if (!node_->end_state() &&
-                                    node_->token() == parser::eol_token())
-                                {
-                                    temp_iter_ = followpos_.erase(temp_iter_);
-                                    end_ = followpos_.end();
-                                    continue;
-                                }
-
-                                ++temp_iter_;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (set_.find(nl_id_) != set_.end())
-            {
-                const node_vector& nl_followpos_ =
-                    node_->followpos();
-                typename node_vector::const_iterator nl_iter_ =
-                    nl_followpos_.begin();
-                typename node_vector::const_iterator nl_end_ =
-                    nl_followpos_.end();
-                bool found_ = false;
-
-                for (; nl_iter_ != nl_end_; ++nl_iter_)
-                {
-                    const node* nl_node_ = *nl_iter_;
-
-                    found_ = nl_node_->end_state();
-
-                    if (found_)
-                        break;
-                }
-
-                if (found_)
-                {
-                    // Search for any EOL tokens
-                    typename node_vector::iterator temp_iter_ = iter_;
-
-                    ++temp_iter_;
-
-                    while (temp_iter_ != end_)
-                    {
-                        node_ = *temp_iter_;
-
-                        if (!node_->end_state() &&
-                            node_->token() == parser::eol_token())
-                        {
-                            temp_iter_ = followpos_.erase(temp_iter_);
-                            end_ = followpos_.end();
-                            continue;
-                        }
-
-                        ++temp_iter_;
-                    }
-                }
-            }
         }
 
         static void set_transitions(const id_type transition_,
@@ -781,6 +497,49 @@ namespace lexertl
             copy_n(dfa_.begin() + state_ * dfa_alphabet_, dfa_alphabet_,
                 dfa_.begin() + new_state_ * dfa_alphabet_);
             return static_cast<id_type>(new_state_);
+        }
+
+        // A state that is an end state, and whose $ also leads to an end
+        // state, matches at the same position either way ($ consumes
+        // nothing). Lookup lets the $ path override the state's own end
+        // state, which is wrong when the state's own rule comes first.
+        // In that case give the state its own copy of the $ state that
+        // ends with the state's own rule.
+        static void fix_eol_ties(const id_type_set& eol_set_,
+            const id_type_vector& unique_ids_,
+            typename internals::id_type_vector& dfa_,
+            const std::size_t dfa_alphabet_)
+        {
+            const std::size_t end_ = end_state_index;
+            const std::size_t eol_ = eol_index;
+            const std::size_t to_ = next_dfa_index;
+            typename id_type_set::const_iterator iter_ = eol_set_.begin();
+            typename id_type_set::const_iterator iter_end_ = eol_set_.end();
+
+            for (; iter_ != iter_end_; ++iter_)
+            {
+                const id_type state_ = *iter_;
+                const std::size_t row_ = state_ * dfa_alphabet_;
+                const id_type succ_ = dfa_[row_ + eol_];
+
+                if (dfa_[row_ + end_] == 0 ||
+                    dfa_[succ_ * dfa_alphabet_ + end_] == 0 ||
+                    unique_ids_[state_] >= unique_ids_[succ_])
+                {
+                    continue;
+                }
+
+                const id_type new_state_ = clone_state(dfa_, succ_,
+                    dfa_alphabet_);
+                const std::size_t new_row_ = new_state_ * dfa_alphabet_;
+
+                for (std::size_t i_ = end_; i_ <= to_; ++i_)
+                {
+                    dfa_[new_row_ + i_] = dfa_[row_ + i_];
+                }
+
+                dfa_[row_ + eol_] = new_state_;
+            }
         }
 
         // Uncompressed
@@ -1035,8 +794,7 @@ namespace lexertl
             }
         }
 
-        static void fill_rhs_list(const charset_map& map_,
-            charset_list& list_)
+        static void fill_rhs_list(const charset_map& map_, charset_list& list_)
         {
             typename charset_map::const_iterator iter_ = map_.begin();
             typename charset_map::const_iterator end_ = map_.end();
@@ -1109,12 +867,14 @@ namespace lexertl
         static id_type closure(const node_vector* followpos_,
             node_set_vector& seen_sets_, node_vector_vector& seen_vectors_,
             size_t_vector& hash_vector_, const id_type size_,
-            id_type_vector& dfa_, const std::size_t flags_,
-            std::set<id_type>& used_ids_)
+            id_type_vector& dfa_, id_type_vector& unique_ids_,
+            const std::size_t flags_, std::set<id_type>& used_ids_)
         {
             bool end_state_ = false;
             id_type id_ = 0;
             id_type user_id_ = sm_traits::npos();
+            // Rule order, so that the earlier rule can win a tie.
+            id_type unique_id_ = 0;
             id_type next_dfa_ = 0;
             id_type push_dfa_ = sm_traits::npos();
             bool pop_dfa_ = false;
@@ -1131,8 +891,8 @@ namespace lexertl
                 followpos_->begin(), end_ = followpos_->end();
                 iter_ != end_; ++iter_)
             {
-                closure_ex(*iter_, end_state_, id_, user_id_, next_dfa_,
-                    push_dfa_, pop_dfa_, set_ptr_.get(),
+                closure_ex(*iter_, end_state_, id_, user_id_, unique_id_,
+                    next_dfa_, push_dfa_, pop_dfa_, set_ptr_.get(),
                     vector_ptr_.get(), hash_, greedy_, flags_, used_ids_);
             }
 
@@ -1159,6 +919,8 @@ namespace lexertl
                 seen_vectors_->push_back(static_cast<node_vector*>(0));
                 seen_vectors_->back() = vector_ptr_.release();
                 hash_vector_.push_back(hash_);
+                // unique_ids_[0] is for the jam state...
+                unique_ids_.push_back(unique_id_);
                 // State 0 is the jam state...
                 index_ = static_cast<id_type>(seen_sets_->size());
 
@@ -1188,8 +950,8 @@ namespace lexertl
             return index_;
         }
 
-        static void closure_ex(node* node_, bool& end_state_,
-            id_type& id_, id_type& user_id_, id_type& next_dfa_,
+        static void closure_ex(node* node_, bool& end_state_, id_type& id_,
+            id_type& user_id_, id_type& unique_id_, id_type& next_dfa_,
             id_type& push_dfa_, bool& pop_dfa_, node_set* set_ptr_,
             node_vector* vector_ptr_, std::size_t& hash_,
             greedy_repeat& greedy_, const std::size_t flags_,
@@ -1204,6 +966,7 @@ namespace lexertl
                     end_state_ = true;
                     id_ = node_->id();
                     user_id_ = node_->user_id();
+                    unique_id_ = node_->unique_id();
                     next_dfa_ = node_->next_dfa();
                     push_dfa_ = node_->push_dfa();
                     pop_dfa_ = node_->pop_dfa();
