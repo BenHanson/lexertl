@@ -7,7 +7,7 @@
 # file licence_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 cmake_minimum_required (VERSION 3.5)
-project(lexertl VERSION 1.0.0)
+project(lexertl VERSION 1.3.5)
 
 # Define project
 add_library(lexertl INTERFACE)
